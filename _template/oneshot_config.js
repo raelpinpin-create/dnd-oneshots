@@ -1,7 +1,7 @@
 // =========================================================================
 // ⚡ ONE-SHOT PARTY & FIREBASE ROOM CONFIG (Template — Clone into <slug>/)
 // =========================================================================
-// Load this BEFORE ../shared/cos_firebase_config.js and ../shared/cos_rpg_engine.js!
+// Load this BEFORE ../shared/dnd_firebase_config.js and ../shared/dnd_rpg_engine.js!
 // Every one-shot gets its own isolated Firebase RTDB room under `campaigns/oneshot_<slug>`.
 
 window.COS_CAMPAIGN_ROOM = "oneshot_template";

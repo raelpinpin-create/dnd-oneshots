@@ -1,10 +1,10 @@
 // =========================================================================
-// 🔥 SHARED ONE-SHOT VAULT — LIVE FIREBASE REALTIME DATABASE CONFIG
+// 🔥 SHARED D&D ENGINE — LIVE FIREBASE REALTIME DATABASE CONFIG
 // =========================================================================
-// Project: dnd-curse-of-strahd-467ea (Shared RTDB with per-one-shot room isolation)
+// Project: dnd-curse-of-strahd-467ea (Shared RTDB with per-campaign/one-shot room isolation)
 // Database: https://dnd-curse-of-strahd-467ea-default-rtdb.asia-southeast1.firebasedatabase.app
-// Each one-shot sets `window.COS_CAMPAIGN_ROOM = "oneshot_<slug>"` in its own
-// `oneshot_config.js` BEFORE loading this file!
+// Each one-shot sets `window.COS_CAMPAIGN_ROOM = "oneshot_<slug>"` (or `window.DND_CAMPAIGN_ROOM`)
+// in its own `oneshot_config.js` BEFORE loading this file!
 
 window.COS_FIREBASE_CONFIG = {
     apiKey: "AIzaSyDduYuWQrhKN1SHat1RvGl92ClPSVRnL-w",
@@ -17,4 +17,5 @@ window.COS_FIREBASE_CONFIG = {
     measurementId: "G-NCMJ98GR6X"
 };
 
-window.COS_CAMPAIGN_ROOM = window.COS_CAMPAIGN_ROOM || "oneshot_sandbox";
+window.COS_CAMPAIGN_ROOM = window.DND_CAMPAIGN_ROOM || window.COS_CAMPAIGN_ROOM || "oneshot_sandbox";
+window.DND_CAMPAIGN_ROOM = window.COS_CAMPAIGN_ROOM;

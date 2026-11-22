@@ -12427,4 +12427,5 @@
         openNoteEditor: openJournalEditor,
         openNoteReader: openJournalReader
     };
+    window.DND_RPG = window.COS_RPG;
 })();
