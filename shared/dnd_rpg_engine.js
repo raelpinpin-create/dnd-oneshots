@@ -35,32 +35,12 @@
         return list;
     }
 
-    const DEFAULT_PARTY_MEMBERS = [
-        { id: 'piper',   name: 'Piper',   emoji: '🎩', label: '🎩 Piper',   defCur: 17, defMax: 17, defAc: '13' },
-        { id: 'jacomir', name: 'Jacomir', emoji: '👑', label: '👑 Jacomir', defCur: 23, defMax: 31, defAc: '17' },
-        { id: 'yvaine',  name: 'Yvaine',  emoji: '🔫', label: '🔫 Yvaine',  defCur: 28, defMax: 28, defAc: '16' }
+    const PARTY_MEMBERS = [
+        { id: 'piper',   name: 'Piper',   emoji: '🎩', label: '🎩 Piper' },
+        { id: 'jacomir', name: 'Jacomir', emoji: '👑', label: '👑 Jacomir' },
+        { id: 'yvaine',  name: 'Yvaine',  emoji: '🔫', label: '🔫 Yvaine' },
+        { id: 'dm',      name: 'DM Vault', emoji: '🛡️', label: '🛡️ Return to DM' }
     ];
-
-    function getPartyMembers() {
-        const src = (adapter && Array.isArray(adapter.partyMembers) && adapter.partyMembers.length > 0)
-            ? adapter.partyMembers
-            : ((Array.isArray(window.ONESHOT_PARTY) && window.ONESHOT_PARTY.length > 0)
-                ? window.ONESHOT_PARTY
-                : DEFAULT_PARTY_MEMBERS);
-        const list = src
-            .filter(m => m && m.id && m.id !== 'dm')
-            .map(m => ({
-                id: String(m.id),
-                name: m.name || String(m.id),
-                emoji: m.emoji || '⚔️',
-                label: m.label || `${m.emoji || '⚔️'} ${m.name || m.id}`,
-                defCur: typeof m.defCur === 'number' ? m.defCur : (typeof m.maxHp === 'number' ? m.maxHp : 20),
-                defMax: typeof m.defMax === 'number' ? m.defMax : (typeof m.maxHp === 'number' ? m.maxHp : 20),
-                defAc: String(m.defAc || m.ac || '14')
-            }));
-        list.push({ id: 'dm', name: 'DM Vault', emoji: '🛡️', label: '🛡️ Return to DM' });
-        return list;
-    }
 
     // Comprehensive Barovian + Starting Gear Auto-Recognition Catalog
     const GEAR_CATALOG = [
@@ -5504,10 +5484,8 @@
         let magic = 0;
         const mMatch = low.match(/\+(\d+)/);
         if (mMatch) magic = parseInt(mMatch[1]) || 0;
-        // Default ability mod from adapter (fallback +3)
-        const heroAbil = (adapter && typeof adapter.defaultAbilityMod === 'number')
-            ? adapter.defaultAbilityMod
-            : (adapter.heroId === 'yvaine' ? 4 : (adapter.heroId === 'jacomir' ? 3 : (adapter.heroId === 'piper' ? 2 : 3)));
+        // Default ability mod by hero (Piper DEX +2, Jacomir STR +3, Yvaine DEX +4)
+        const heroAbil = adapter.heroId === 'yvaine' ? 4 : (adapter.heroId === 'jacomir' ? 3 : 2);
         const pb = 2;
         let dice = '1d6', dmgType = low.includes('silver') ? 'Silvered Slashing' : 'Slashing';
         let extraDice = '', extraType = '';
@@ -6726,13 +6704,12 @@
                 const btn = document.getElementById('rpg-hdr-sync-btn');
                 if (btn) {
                     btn.innerHTML = `✅ Synced (${timeStr})`;
-                    btn.style.borderColor = '#22c55e';
-                    btn.style.color = '#86efac';
+                    btn.style.borderColor = 'var(--accent-green)';
                     setTimeout(() => {
                         if (btn) {
                             btn.innerHTML = `☁️ Sync`;
-                            btn.style.borderColor = 'rgba(63, 185, 128, 0.48)';
-                            btn.style.color = '#86efac';
+                            btn.style.borderColor = '';
+                            btn.style.color = '';
                         }
                     }, 4000);
                 }
@@ -6741,7 +6718,7 @@
                     if (combined && navigator.clipboard && navigator.clipboard.writeText) {
                         navigator.clipboard.writeText(combined).catch(() => {});
                     }
-                    adapter.log(`☁️ <strong>Synced Official Checkpoint to DM (${esc(timeStr)})!</strong><br><small style="color:#86efac;">Sheet state saved to DM Screen &amp; set as your 🔄 Reset restore point.</small>`);
+                    adapter.log(`☁️ <strong>Synced Official Checkpoint to DM (${esc(timeStr)})!</strong><br><small style="color:var(--accent-green);">Sheet state saved to DM Screen &amp; set as your 🔄 Reset restore point.</small>`);
                 }
             }).catch(err => {
                 if (!silentToast) adapter.log(`⚠️ Cloud Sync failed: ${esc(err.message)}`);
@@ -6899,12 +6876,12 @@
         // 4. Discreet Multi-Recipient Messages Listener (ONLY loads threads where this hero is a participant!)
         startMessagesListener();
 
-        // 5. Live Party Mini-HUD Listener (Reads configured party heroes' states — never _dm_state)
+        // 5. Live Party Mini-HUD Listener (Reads ONLY piper, jacomir, yvaine states — never _dm_state)
         campaignRtdbRef('heroes').on('value', snap => {
             const val = snap.val() || {};
             const nextParty = {};
-            getPartyMembers().filter(m => m.id !== 'dm').forEach(m => {
-                if (val[m.id] && val[m.id].state) nextParty[m.id] = val[m.id].state;
+            ['jacomir', 'piper', 'yvaine'].forEach(hid => {
+                if (val[hid] && val[hid].state) nextParty[hid] = val[hid].state;
             });
             livePartyMap = nextParty;
             renderPartyMiniHud();
@@ -7044,7 +7021,7 @@
         if (others.length === 0) return 'Notes';
         return others.map(id => {
             if (id === 'dm') return 'DM';
-            const m = getPartyMembers().find(p => p.id === id);
+            const m = PARTY_MEMBERS.find(p => p.id === id);
             return m ? m.name : id;
         }).join(' + ');
     }
@@ -7305,9 +7282,8 @@
     function executeSession1FactoryReset() {
         try {
             if (typeof window.resetHP === 'function') window.resetHP();
-            if (typeof adapter.onBaselineReset === 'function') {
-                adapter.onBaselineReset();
-            } else if (adapter.heroId === 'jacomir' && window.COS_CAMPAIGN_ROOM === 'curse_of_strahd_main') {
+            // Jacomir's Session 1 end baseline is 23/31 HP
+            if (adapter.heroId === 'jacomir') {
                 const hpInp = document.getElementById('hp-input');
                 if (hpInp && typeof window.applyDamage === 'function') {
                     hpInp.value = '8';
@@ -7642,7 +7618,7 @@
     }
 
     function sendTransfer(forceOfflineCode = false) {
-        const recipObj = getPartyMembers().find(m => m.id === tradeRecipient);
+        const recipObj = PARTY_MEMBERS.find(m => m.id === tradeRecipient);
         if (!recipObj) {
             adapter.log('⚠️ Select a recipient first!');
             return;
@@ -7845,8 +7821,7 @@
             const syncBtn = document.createElement('button');
             syncBtn.type = 'button';
             syncBtn.id = 'rpg-hdr-sync-btn';
-            syncBtn.className = 'rpg-header-btn';
-            syncBtn.style.cssText = 'background:linear-gradient(180deg, rgba(94, 184, 138, 0.2) 0%, #1c2224 100%); border-color:rgba(94, 184, 138, 0.42); color:#a3dec0;';
+            syncBtn.className = 'rpg-header-btn rpg-btn-sync';
             syncBtn.title = 'Save official Session Checkpoint (Vitals, Slots, Gear, Presets, Notes & Live Party preference) directly to DM via Firebase';
             syncBtn.onclick = () => pushSyncedCheckpoint(false);
             syncBtn.innerHTML = `☁️ Sync`;
@@ -8242,6 +8217,10 @@
         if (topQb) {
             topQb.innerHTML = inCombat ? beltHtml : '';
         }
+        const mobQb = document.getElementById('rpg-mobile-combat-belt');
+        if (mobQb) {
+            mobQb.innerHTML = (!inCombat && beltHtml) ? beltHtml : '';
+        }
         if (typeof syncCombatActionLocks === 'function') syncCombatActionLocks();
     }
 
@@ -8529,9 +8508,7 @@
             const handSlotOpts = activeSlots.filter(s => s.group === 'hand').map(s =>
                 `<option value="${s.id}" ${s.id === selectedSlot ? 'selected' : ''}>${s.icon} ${s.label}</option>`
             ).join('') + `<option value="both_1h">⚔️ Main or Off-Hand (1H)</option>`;
-            const defAbil = (adapter && typeof adapter.defaultAbilityMod === 'number')
-                ? adapter.defaultAbilityMod
-                : (adapter.heroId === 'yvaine' ? 4 : (adapter.heroId === 'jacomir' ? 3 : (adapter.heroId === 'piper' ? 2 : 3)));
+            const defAbil = adapter.heroId === 'yvaine' ? 4 : (adapter.heroId === 'jacomir' ? 3 : 2);
             kindFieldsHtml = `
                 <div class="rpg-form-grid">
                     <label class="rpg-field-lbl">Weapon Slot
@@ -9449,7 +9426,7 @@
             pill.innerText = firebaseReady ? '🟢 Live Firestore Sync' : '🟡 Offline Trade Codes';
         }
 
-        const others = getPartyMembers().filter(m => m.id !== adapter.heroId);
+        const others = PARTY_MEMBERS.filter(m => m.id !== adapter.heroId);
         if (!tradeRecipient || tradeRecipient === adapter.heroId) tradeRecipient = others[0].id;
 
         const items = adapter.getItems();
@@ -9583,7 +9560,7 @@
         `;
 
         const unreadTotal = getTotalUnreadMessages();
-        const msgPeers = getPartyMembers().filter(m => m.id !== adapter.heroId).map(m => ({
+        const msgPeers = PARTY_MEMBERS.filter(m => m.id !== adapter.heroId).map(m => ({
             id: m.id,
             label: m.id === 'dm' ? 'DM' : m.name
         }));
@@ -9803,6 +9780,7 @@
         turn: { action: true, bonus: true, reaction: true, move: true },
         advLocked: false,
         rightTab: 'combat',
+        mobileTab: 'combat',
         tabPrefV3: true,
         skillsTrainedOnly: false,
         showPartyHud: false
@@ -9845,6 +9823,7 @@
             }
             hudState.advLocked = Boolean(p.advLocked);
             hudState.rightTab = (p.tabPrefV3 && typeof p.rightTab === 'string') ? p.rightTab : 'combat';
+            hudState.mobileTab = (typeof p.mobileTab === 'string' && ['combat', 'magic', 'checks', 'gear', 'notes', 'all'].includes(p.mobileTab)) ? p.mobileTab : 'combat';
             hudState.tabPrefV3 = true;
             hudState.skillsTrainedOnly = Boolean(p.skillsTrainedOnly);
             hudState.showPartyHud = Boolean(p.showPartyHud);
@@ -9927,7 +9906,11 @@
     function renderPartyMiniHud() {
         const host = document.getElementById('rpg-party-hud');
         if (!host || !adapter) return;
-        const roster = getPartyMembers().filter(r => r.id !== 'dm' && r.id !== adapter.heroId);
+        const roster = [
+            { id: 'jacomir', name: 'Jacomir', defCur: 23, defMax: 31, defAc: '17' },
+            { id: 'piper',   name: 'Piper',   defCur: 17, defMax: 17, defAc: '13' },
+            { id: 'yvaine',  name: 'Yvaine',  defCur: 28, defMax: 28, defAc: '16' }
+        ].filter(r => r.id !== adapter.heroId);
         const chipsHtml = roster.map(r => {
             const remote = livePartyMap[r.id] || null;
             const cur = (remote && typeof remote.curHp === 'number') ? remote.curHp : r.defCur;
@@ -10208,25 +10191,72 @@
     }
 
     function classifyRightColumnPanels() {
+        const leftCol = document.querySelector('.main-layout > div:nth-child(1)');
         const rightCol = document.querySelector('.main-layout > div:nth-child(2)');
+
+        if (leftCol) {
+            Array.from(leftCol.children).forEach(el => {
+                if (!el.classList) return;
+                if (el.classList.contains('vitals-plate')) {
+                    el.dataset.mobileAlways = '1';
+                    el.dataset.mobileOrder = '10';
+                } else if (el.classList.contains('perks-compact-panel')) {
+                    el.dataset.mobileCats = 'combat checks';
+                    el.dataset.mobileOrder = '25';
+                } else if (el.classList.contains('rpg-gold-panel')) {
+                    el.dataset.mobileCats = 'gear';
+                    el.dataset.mobileOrder = '55';
+                } else if (el.id === 'player-notes-panel' || el.classList.contains('notes-panel')) {
+                    el.dataset.mobileCats = 'notes';
+                    el.dataset.mobileOrder = '60';
+                } else if (el.classList.contains('panel') && (el.querySelector('.saves-grid-2x3') || el.querySelector('.stat-row-list'))) {
+                    el.dataset.mobileCats = 'checks';
+                    el.dataset.mobileOrder = '40';
+                } else if (el.classList.contains('panel')) {
+                    el.dataset.mobileCats = 'checks';
+                    el.dataset.mobileOrder = '42';
+                }
+            });
+        }
+
         if (!rightCol) return;
         const panels = Array.from(rightCol.children).filter(el => el.classList && el.classList.contains('panel'));
-        panels.forEach(p => {
+        panels.forEach((p, idx) => {
             if (p.querySelector('#rpg-hub-mount')) {
                 p.dataset.rpgCats = 'gear';
+                p.dataset.mobileCats = 'gear';
+                p.dataset.mobileOrder = '50';
                 return;
             }
             const titleTxt = (p.querySelector('.panel-title')?.innerText || '').toLowerCase();
             if (titleTxt.includes('weapon') || titleTxt.includes('firearm') || titleTxt.includes('arsenal')) {
                 p.dataset.rpgCats = 'combat';
-            } else if (titleTxt.includes('maneuver') || titleTxt.includes('fighter') || titleTxt.includes('monster slayer')) {
+                p.dataset.mobileCats = 'combat';
+                p.dataset.mobileOrder = '30';
+            } else if (titleTxt.includes('wild magic')) {
+                p.dataset.rpgCats = 'magic';
+                p.dataset.mobileCats = 'combat magic';
+                p.dataset.mobileOrder = '28';
+            } else if (titleTxt.includes('maneuver') || titleTxt.includes('monster slayer')) {
                 p.dataset.rpgCats = 'combat magic';
+                p.dataset.mobileCats = 'combat magic';
+                p.dataset.mobileOrder = '32';
+            } else if (titleTxt.includes('fighter')) {
+                p.dataset.rpgCats = 'combat magic';
+                p.dataset.mobileCats = 'combat magic';
+                p.dataset.mobileOrder = '34';
             } else if (titleTxt.includes('spell') || titleTxt.includes('occult')) {
                 p.dataset.rpgCats = 'combat magic';
-            } else if (titleTxt.includes('wild magic') || titleTxt.includes('font of magic') || titleTxt.includes('metamagic')) {
+                p.dataset.mobileCats = (adapter && adapter.heroId === 'piper') ? 'combat magic' : 'magic';
+                p.dataset.mobileOrder = '33';
+            } else if (titleTxt.includes('font of magic') || titleTxt.includes('metamagic')) {
                 p.dataset.rpgCats = 'magic';
+                p.dataset.mobileCats = 'magic';
+                p.dataset.mobileOrder = '36';
             } else {
                 p.dataset.rpgCats = 'combat magic';
+                p.dataset.mobileCats = 'combat magic';
+                p.dataset.mobileOrder = String(35 + idx);
             }
         });
     }
@@ -10234,11 +10264,16 @@
     function setRightColumnTab(tabId) {
         hudState.rightTab = tabId || 'all';
         saveHudState();
+        classifyRightColumnPanels();
+        const isMobileMode = document.documentElement.getAttribute('data-view-mode') === 'mobile';
         const rightCol = document.querySelector('.main-layout > div:nth-child(2)');
         if (rightCol) {
-            classifyRightColumnPanels();
             Array.from(rightCol.children).forEach(el => {
                 if (!el.classList || !el.classList.contains('panel')) return;
+                if (isMobileMode) {
+                    el.classList.remove('rpg-tab-hidden');
+                    return;
+                }
                 const cats = (el.dataset.rpgCats || 'combat magic gear').split(/\s+/);
                 const show = (hudState.rightTab === 'all') || cats.includes(hudState.rightTab);
                 el.classList.toggle('rpg-tab-hidden', !show);
@@ -10250,6 +10285,57 @@
                 btn.setAttribute('aria-pressed', btn.dataset.tab === hudState.rightTab ? 'true' : 'false');
             });
         }
+        if (isMobileMode) {
+            applyMobileTabLayout();
+        }
+    }
+
+    function applyMobileTabLayout() {
+        classifyRightColumnPanels();
+        const isMobileMode = document.documentElement.getAttribute('data-view-mode') === 'mobile';
+        const mobTab = hudState.mobileTab || 'combat';
+
+        // Clear desktop right-tab hiding when in Mobile mode; clear mobile-tab hiding when in PC/Tablet mode
+        document.querySelectorAll('.main-layout [data-mobile-cats]').forEach(el => {
+            if (!isMobileMode) {
+                el.classList.remove('rpg-mobile-tab-hidden');
+                return;
+            }
+            el.classList.remove('rpg-tab-hidden');
+            const cats = (el.dataset.mobileCats || '').split(/\s+/).filter(Boolean);
+            const show = (mobTab === 'all') || cats.includes(mobTab);
+            el.classList.toggle('rpg-mobile-tab-hidden', !show);
+        });
+
+        if (!isMobileMode) {
+            const rightCol = document.querySelector('.main-layout > div:nth-child(2)');
+            if (rightCol) {
+                Array.from(rightCol.children).forEach(el => {
+                    if (!el.classList || !el.classList.contains('panel')) return;
+                    const cats = (el.dataset.rpgCats || 'combat magic gear').split(/\s+/);
+                    const show = (hudState.rightTab === 'all') || cats.includes(hudState.rightTab);
+                    el.classList.toggle('rpg-tab-hidden', !show);
+                });
+            }
+        }
+
+        const mobBar = document.getElementById('rpg-mobile-tabs');
+        if (mobBar) {
+            mobBar.querySelectorAll('.rpg-mobile-tab').forEach(btn => {
+                const active = btn.dataset.mobTab === mobTab;
+                btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+                if (active && isMobileMode && typeof btn.scrollIntoView === 'function') {
+                    try { btn.scrollIntoView({ block: 'nearest', inline: 'nearest', container: 'nearest' }); } catch (e) {}
+                }
+            });
+        }
+    }
+
+    function setMobileTab(tabId) {
+        const valid = ['combat', 'magic', 'checks', 'gear', 'notes', 'all'];
+        hudState.mobileTab = valid.includes(tabId) ? tabId : 'combat';
+        saveHudState();
+        applyMobileTabLayout();
     }
 
     // 🧠 AUTO-CONCENTRATION & QUICK STATUS PILLS
@@ -10631,18 +10717,198 @@
         announceStatus(hudState.showPartyHud ? 'Live Party vitals bar shown.' : 'Live Party vitals bar hidden.');
     }
 
+    const THEME_STORAGE_KEY = 'cos_sheet_theme_v1';
+    const THEME_CATALOG = [
+        {
+            id: 'obsidian',
+            name: 'Obsidian Brass',
+            desc: 'Smoked charcoal & antique brass',
+            scheme: 'dark',
+            swatches: ['#0c0d10', '#c8a45c', '#5eb88a']
+        },
+        {
+            id: 'midnight',
+            name: 'Midnight Slate',
+            desc: 'Deep indigo Ravenloft twilight',
+            scheme: 'dark',
+            swatches: ['#0c1220', '#7ea8dc', '#c8a45c']
+        },
+        {
+            id: 'velvet',
+            name: 'Barovian Velvet',
+            desc: 'Smoked plum & candlelight gold',
+            scheme: 'dark',
+            swatches: ['#150d14', '#d48b9c', '#c8a45c']
+        },
+        {
+            id: 'pine',
+            name: 'Pine Forest Slate',
+            desc: 'Svalich evergreen & moss brass',
+            scheme: 'dark',
+            swatches: ['#0c1512', '#6fa884', '#c2a65c']
+        },
+        {
+            id: 'parchment',
+            name: 'Warm Parchment',
+            desc: 'Soft aged vellum (Light Mode)',
+            scheme: 'light',
+            swatches: ['#f1eadc', '#8a5d1c', '#9c3333']
+        }
+    ];
+
+    function getStoredThemeId() {
+        try {
+            const raw = localStorage.getItem(THEME_STORAGE_KEY);
+            return THEME_CATALOG.some(t => t.id === raw) ? raw : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function syncThemeTrayUI() {
+        const currentId = getStoredThemeId();
+        const sysDark = typeof window.matchMedia === 'function'
+            ? window.matchMedia('(prefers-color-scheme: dark)').matches
+            : true;
+        document.querySelectorAll('#rpg-theme-list .rpg-theme-option').forEach(btn => {
+            const active = btn.dataset.themeId === currentId;
+            btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        const sysBtn = document.getElementById('rpg-theme-system-btn');
+        if (sysBtn) {
+            sysBtn.setAttribute('aria-pressed', currentId === null ? 'true' : 'false');
+        }
+        const sysLabel = document.getElementById('rpg-theme-system-mode');
+        if (sysLabel) {
+            sysLabel.textContent = sysDark ? 'Currently Dark' : 'Currently Light';
+        }
+    }
+
+    function applySheetTheme(themeId, persist = true) {
+        const root = document.documentElement;
+        const meta = document.querySelector('meta[name="color-scheme"]');
+        const entry = THEME_CATALOG.find(t => t.id === themeId) || null;
+        if (entry) {
+            root.setAttribute('data-theme', entry.id);
+            if (meta) meta.setAttribute('content', entry.scheme);
+            if (persist) {
+                try { localStorage.setItem(THEME_STORAGE_KEY, entry.id); } catch (e) {}
+            }
+        } else {
+            root.removeAttribute('data-theme');
+            if (meta) meta.setAttribute('content', 'light dark');
+            if (persist) {
+                try { localStorage.removeItem(THEME_STORAGE_KEY); } catch (e) {}
+            }
+        }
+        syncThemeTrayUI();
+    }
+
+    function setSheetTheme(themeId) {
+        applySheetTheme(themeId === 'system' ? null : themeId, true);
+    }
+
+    const VIEW_MODE_STORAGE_KEY = 'cos_sheet_view_mode_v1';
+    const VIEW_MODE_CATALOG = [
+        {
+            id: 'pc',
+            icon: '🖥️',
+            shortLabel: 'PC',
+            name: 'PC (Default)',
+            desc: 'Full 2-column desktop command sheet'
+        },
+        {
+            id: 'tablet',
+            icon: '📟',
+            shortLabel: 'Tablet',
+            name: 'Tablet',
+            desc: 'Medium touch-sized hybrid layout'
+        },
+        {
+            id: 'mobile',
+            icon: '📱',
+            shortLabel: 'Mobile',
+            name: 'Mobile Phone',
+            desc: 'Thumb-first 5-tab mobile RPG app'
+        }
+    ];
+
+    function getStoredViewMode() {
+        try {
+            const raw = localStorage.getItem(VIEW_MODE_STORAGE_KEY);
+            return VIEW_MODE_CATALOG.some(v => v.id === raw) ? raw : 'pc';
+        } catch (e) {
+            return 'pc';
+        }
+    }
+
+    function syncFormatTrayUI() {
+        const curMode = document.documentElement.getAttribute('data-view-mode') || getStoredViewMode();
+        const entry = VIEW_MODE_CATALOG.find(v => v.id === curMode) || VIEW_MODE_CATALOG[0];
+        document.querySelectorAll('#rpg-format-tray [data-format-id]').forEach(btn => {
+            const active = btn.dataset.formatId === entry.id;
+            btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        const fabFormatBtn = document.getElementById('rpg-fab-format-btn');
+        if (fabFormatBtn) {
+            fabFormatBtn.innerHTML = `${entry.icon} Format: <strong style="color:var(--accent-gold-bright, #fde68a);">${esc(entry.shortLabel)}</strong>`;
+        }
+    }
+
+    function applySheetViewMode(modeId, persist = true) {
+        const entry = VIEW_MODE_CATALOG.find(v => v.id === modeId) || VIEW_MODE_CATALOG[0];
+        document.documentElement.setAttribute('data-view-mode', entry.id);
+        if (persist) {
+            try { localStorage.setItem(VIEW_MODE_STORAGE_KEY, entry.id); } catch (e) {}
+        }
+        syncFormatTrayUI();
+        applyMobileTabLayout();
+    }
+
+    function setSheetViewMode(modeId) {
+        const entry = VIEW_MODE_CATALOG.find(v => v.id === modeId) || VIEW_MODE_CATALOG[0];
+        applySheetViewMode(entry.id, true);
+        announceStatus(`Switched display format to ${entry.name}.`);
+    }
+
+    function initThemeListeners() {
+        applySheetTheme(getStoredThemeId(), false);
+        applySheetViewMode(getStoredViewMode(), false);
+        if (window.__cosThemeListenersAttached) return;
+        window.__cosThemeListenersAttached = true;
+        window.addEventListener('storage', (e) => {
+            if (e.key === THEME_STORAGE_KEY) {
+                applySheetTheme(e.newValue, false);
+            } else if (e.key === VIEW_MODE_STORAGE_KEY) {
+                applySheetViewMode(e.newValue || 'pc', false);
+            }
+        });
+        if (typeof window.matchMedia === 'function') {
+            const mql = window.matchMedia('(prefers-color-scheme: dark)');
+            const onSysChange = () => syncThemeTrayUI();
+            if (typeof mql.addEventListener === 'function') mql.addEventListener('change', onSysChange);
+            else if (typeof mql.addListener === 'function') mql.addListener(onSysChange);
+        }
+    }
+
     function toggleFabMenu(forceState) {
         const bubbles = document.getElementById('rpg-fab-bubbles');
         const mainBtn = document.getElementById('rpg-dice-fab-btn');
         const tray = document.getElementById('rpg-dice-tray');
+        const themeTray = document.getElementById('rpg-theme-tray');
+        const formatTray = document.getElementById('rpg-format-tray');
         if (!bubbles) return;
-        if (typeof forceState !== 'boolean' && tray && tray.classList.contains('is-open')) {
+        if (typeof forceState !== 'boolean' && ((tray && tray.classList.contains('is-open')) || (themeTray && themeTray.classList.contains('is-open')) || (formatTray && formatTray.classList.contains('is-open')))) {
             toggleDiceTray(false);
+            toggleThemeTray(false);
+            toggleFormatTray(false);
             return;
         }
         const next = typeof forceState === 'boolean' ? forceState : !bubbles.classList.contains('is-open');
         bubbles.classList.toggle('is-open', next);
         if (next && tray) tray.classList.remove('is-open');
+        if (next && themeTray) themeTray.classList.remove('is-open');
+        if (next && formatTray) formatTray.classList.remove('is-open');
         if (mainBtn) {
             mainBtn.classList.toggle('is-open', next);
             mainBtn.setAttribute('aria-expanded', next ? 'true' : 'false');
@@ -10652,17 +10918,64 @@
 
     function toggleDiceTray(forceState) {
         const tray = document.getElementById('rpg-dice-tray');
+        const themeTray = document.getElementById('rpg-theme-tray');
+        const formatTray = document.getElementById('rpg-format-tray');
         const bubbles = document.getElementById('rpg-fab-bubbles');
         const mainBtn = document.getElementById('rpg-dice-fab-btn');
         if (!tray) return;
         const next = typeof forceState === 'boolean' ? forceState : !tray.classList.contains('is-open');
         tray.classList.toggle('is-open', next);
         if (next && bubbles) bubbles.classList.remove('is-open');
+        if (next && themeTray) themeTray.classList.remove('is-open');
+        if (next && formatTray) formatTray.classList.remove('is-open');
         if (mainBtn) {
-            mainBtn.classList.toggle('is-open', next || (bubbles && bubbles.classList.contains('is-open')));
-            mainBtn.setAttribute('aria-expanded', (next || (bubbles && bubbles.classList.contains('is-open'))) ? 'true' : 'false');
+            const anyOpen = next || Boolean(bubbles && bubbles.classList.contains('is-open')) || Boolean(themeTray && themeTray.classList.contains('is-open')) || Boolean(formatTray && formatTray.classList.contains('is-open'));
+            mainBtn.classList.toggle('is-open', anyOpen);
+            mainBtn.setAttribute('aria-expanded', anyOpen ? 'true' : 'false');
         }
         syncDiceFabBadge();
+    }
+
+    function toggleThemeTray(forceState) {
+        const themeTray = document.getElementById('rpg-theme-tray');
+        const tray = document.getElementById('rpg-dice-tray');
+        const formatTray = document.getElementById('rpg-format-tray');
+        const bubbles = document.getElementById('rpg-fab-bubbles');
+        const mainBtn = document.getElementById('rpg-dice-fab-btn');
+        if (!themeTray) return;
+        const next = typeof forceState === 'boolean' ? forceState : !themeTray.classList.contains('is-open');
+        themeTray.classList.toggle('is-open', next);
+        if (next && bubbles) bubbles.classList.remove('is-open');
+        if (next && tray) tray.classList.remove('is-open');
+        if (next && formatTray) formatTray.classList.remove('is-open');
+        if (next) syncThemeTrayUI();
+        syncDiceFabBadge();
+        if (mainBtn) {
+            const anyOpen = next || Boolean(bubbles && bubbles.classList.contains('is-open')) || Boolean(tray && tray.classList.contains('is-open')) || Boolean(formatTray && formatTray.classList.contains('is-open'));
+            mainBtn.classList.toggle('is-open', anyOpen);
+            mainBtn.setAttribute('aria-expanded', anyOpen ? 'true' : 'false');
+        }
+    }
+
+    function toggleFormatTray(forceState) {
+        const formatTray = document.getElementById('rpg-format-tray');
+        const themeTray = document.getElementById('rpg-theme-tray');
+        const tray = document.getElementById('rpg-dice-tray');
+        const bubbles = document.getElementById('rpg-fab-bubbles');
+        const mainBtn = document.getElementById('rpg-dice-fab-btn');
+        if (!formatTray) return;
+        const next = typeof forceState === 'boolean' ? forceState : !formatTray.classList.contains('is-open');
+        formatTray.classList.toggle('is-open', next);
+        if (next && bubbles) bubbles.classList.remove('is-open');
+        if (next && tray) tray.classList.remove('is-open');
+        if (next && themeTray) themeTray.classList.remove('is-open');
+        if (next) syncFormatTrayUI();
+        syncDiceFabBadge();
+        if (mainBtn) {
+            const anyOpen = next || Boolean(bubbles && bubbles.classList.contains('is-open')) || Boolean(tray && tray.classList.contains('is-open')) || Boolean(themeTray && themeTray.classList.contains('is-open'));
+            mainBtn.classList.toggle('is-open', anyOpen);
+            mainBtn.setAttribute('aria-expanded', anyOpen ? 'true' : 'false');
+        }
     }
 
     function syncDiceFabBadge() {
@@ -10670,6 +10983,8 @@
         const diceBubble = document.getElementById('rpg-fab-dice-btn');
         const bubblesOpen = Boolean(document.getElementById('rpg-fab-bubbles')?.classList.contains('is-open'));
         const trayOpen = Boolean(document.getElementById('rpg-dice-tray')?.classList.contains('is-open'));
+        const themeOpen = Boolean(document.getElementById('rpg-theme-tray')?.classList.contains('is-open'));
+        const formatOpen = Boolean(document.getElementById('rpg-format-tray')?.classList.contains('is-open'));
         const mode = (typeof window.rollMode === 'string') ? window.rollMode : 'norm';
         if (diceBubble) {
             diceBubble.classList.toggle('is-adv', mode === 'adv');
@@ -10682,7 +10997,7 @@
             mainBtn.classList.toggle('is-adv', mode === 'adv');
             mainBtn.classList.toggle('is-dis', mode === 'dis');
             const lbl = document.getElementById('rpg-fab-label') || mainBtn;
-            if (bubblesOpen || trayOpen) {
+            if (bubblesOpen || trayOpen || themeOpen || formatOpen) {
                 lbl.textContent = mode === 'adv' ? '✕ ADV' : (mode === 'dis' ? '✕ DIS' : '✕ Close');
             } else if (mode === 'adv') {
                 lbl.textContent = hudState.advLocked ? '✦ ADV 🔒' : '✦ ADV';
@@ -10778,57 +11093,41 @@
         const v = parseCurrentVitalsFromDom();
         const shortHeal = Math.max(1, Math.ceil((v.max || 20) * 0.25));
         const hid = adapter.heroId;
-        const shortBullets = Array.isArray(adapter.shortRestBullets)
-            ? adapter.shortRestBullets
-            : (hid === 'jacomir'
+        const shortBullets = hid === 'jacomir'
+            ? [
+                `Restore <strong>+${shortHeal} HP</strong> (25% Max HP, capped at Max)`,
+                `Refill all <strong>4/4 Superiority Dice (d8)</strong>`,
+                `Recharge <strong>Action Surge</strong> &amp; regain <strong>+1 Second Wind</strong>`,
+                `Regain <strong>+1 Help Token</strong> (up to 2/day)`
+            ]
+            : (hid === 'piper'
                 ? [
                     `Restore <strong>+${shortHeal} HP</strong> (25% Max HP, capped at Max)`,
-                    `Refill all <strong>4/4 Superiority Dice (d8)</strong>`,
-                    `Recharge <strong>Action Surge</strong> &amp; regain <strong>+1 Second Wind</strong>`,
-                    `Regain <strong>+1 Help Token</strong> (up to 2/day)`
+                    `Regain <strong>+1 Help Token</strong> (up to 2/day)`,
+                    `Good time to craft Potions or Bandages in <strong>Craft</strong>`
                 ]
-                : (hid === 'piper'
-                    ? [
-                        `Restore <strong>+${shortHeal} HP</strong> (25% Max HP, capped at Max)`,
-                        `Regain <strong>+1 Help Token</strong> (up to 2/day)`,
-                        `Good time to craft Potions or Bandages in <strong>Craft</strong>`
-                    ]
-                    : (hid === 'yvaine'
-                        ? [
-                            `Restore <strong>+${shortHeal} HP</strong> (25% Max HP, capped at Max)`,
-                            `Top off all <strong>Firearm Chambers</strong> (Lament, Mercy &amp; Less)`,
-                            `Regain <strong>+1 Help Token</strong>`
-                        ]
-                        : [
-                            `Restore <strong>+${shortHeal} HP</strong> (25% Max HP, capped at Max)`,
-                            `Recharge <strong>Short-Rest Class Features</strong>`,
-                            `Regain <strong>+1 Help Token</strong> (up to 2/day)`
-                        ])));
-        const longBullets = Array.isArray(adapter.longRestBullets)
-            ? adapter.longRestBullets
-            : (hid === 'jacomir'
+                : [
+                    `Restore <strong>+${shortHeal} HP</strong> (25% Max HP, capped at Max)`,
+                    `Top off all <strong>Firearm Chambers</strong> (Lament, Mercy &amp; Less)`,
+                    `Regain <strong>+1 Help Token</strong>`
+                ]);
+        const longBullets = hid === 'jacomir'
+            ? [
+                `Restore full <strong>${v.max}/${v.max} HP</strong> &amp; clear Temporary HP`,
+                `Restore all <strong>Superiority Dice</strong>, <strong>Second Wind (3/3)</strong> &amp; <strong>Action Surge</strong>`,
+                `Restore <strong>Heroic Inspiration</strong>, <strong>Help Tokens (2/2)</strong> &amp; Short Rests`
+            ]
+            : (hid === 'piper'
                 ? [
                     `Restore full <strong>${v.max}/${v.max} HP</strong> &amp; clear Temporary HP`,
-                    `Restore all <strong>Superiority Dice</strong>, <strong>Second Wind (3/3)</strong> &amp; <strong>Action Surge</strong>`,
-                    `Restore <strong>Heroic Inspiration</strong>, <strong>Help Tokens (2/2)</strong> &amp; Short Rests`
+                    `Restore all <strong>Spell Slots</strong>, <strong>Sorcery Points (3/3)</strong> &amp; <strong>Tides of Chaos</strong>`,
+                    `Restore <strong>Fierna Charm (1/1)</strong>, <strong>Help Tokens (2/2)</strong> &amp; Short Rests`
                 ]
-                : (hid === 'piper'
-                    ? [
-                        `Restore full <strong>${v.max}/${v.max} HP</strong> &amp; clear Temporary HP`,
-                        `Restore all <strong>Spell Slots</strong>, <strong>Sorcery Points (3/3)</strong> &amp; <strong>Tides of Chaos</strong>`,
-                        `Restore <strong>Fierna Charm (1/1)</strong>, <strong>Help Tokens (2/2)</strong> &amp; Short Rests`
-                    ]
-                    : (hid === 'yvaine'
-                        ? [
-                            `Restore full <strong>${v.max}/${v.max} HP</strong> &amp; clear Temporary HP`,
-                            `Restore all <strong>Spell Slots</strong>, <strong>Hunter's Mark</strong> &amp; <strong>Hunter's Sense (2/2)</strong>`,
-                            `Refill all <strong>Ammo Reserves</strong>, <strong>Whispering Grave</strong>, <strong>Inspiration</strong> &amp; <strong>Help (2/2)</strong>`
-                        ]
-                        : [
-                            `Restore full <strong>${v.max}/${v.max} HP</strong> &amp; clear Temporary HP`,
-                            `Restore all <strong>Spell Slots</strong> &amp; <strong>Daily Class Resources</strong>`,
-                            `Restore <strong>Heroic Inspiration</strong>, <strong>Help Tokens (2/2)</strong> &amp; Short Rests`
-                        ])));
+                : [
+                    `Restore full <strong>${v.max}/${v.max} HP</strong> &amp; clear Temporary HP`,
+                    `Restore all <strong>Spell Slots</strong>, <strong>Hunter's Mark</strong> &amp; <strong>Hunter's Sense (2/2)</strong>`,
+                    `Refill all <strong>Ammo Reserves</strong>, <strong>Whispering Grave</strong>, <strong>Inspiration</strong> &amp; <strong>Help (2/2)</strong>`
+                ]);
 
         body.innerHTML = `
             <div class="rpg-rest-grid">
@@ -10850,7 +11149,8 @@
     function mountVideoGameHudWidgets() {
         loadHudState();
 
-        // 1. Mount BG3 Action Economy Toolbar + Pinned Quick-Belt + Right-Column View Tabs
+        // 1. Mount BG3 Action Economy Toolbar + Pinned Quick-Belt + Right-Column View Tabs + Mobile 5-Tab Navigation
+        const leftCol = document.querySelector('.main-layout > div:nth-child(1)');
         const rightCol = document.querySelector('.main-layout > div:nth-child(2)');
         if (rightCol && !document.getElementById('rpg-action-bar-wrap')) {
             const wrap = document.createElement('div');
@@ -10872,9 +11172,73 @@
                 <button type="button" class="rpg-view-tab" data-tab="gear" aria-pressed="false" onclick="COS_RPG.setRightColumnTab('gear')">🎒 Gear &amp; Bag</button>
                 <button type="button" class="rpg-view-tab" data-tab="all" aria-pressed="false" onclick="COS_RPG.setRightColumnTab('all')">📋 All</button>
             `;
+            const magicLbl = (adapter && adapter.heroId === 'jacomir') ? 'Feats' : 'Magic';
+            const mobTabs = document.createElement('div');
+            mobTabs.id = 'rpg-mobile-tabs';
+            mobTabs.className = 'rpg-mobile-tabs';
+            mobTabs.setAttribute('role', 'toolbar');
+            mobTabs.setAttribute('focusgroup', 'toolbar wrap');
+            mobTabs.setAttribute('aria-label', 'Mobile Sheet Sections');
+            mobTabs.innerHTML = `
+                <button type="button" class="rpg-mobile-tab" data-mob-tab="combat" aria-pressed="true" onclick="COS_RPG.setMobileTab('combat')">
+                    <span class="mob-tab-ico" aria-hidden="true">⚔️</span>
+                    <span class="mob-tab-lbl">Combat</span>
+                </button>
+                <button type="button" class="rpg-mobile-tab" data-mob-tab="magic" aria-pressed="false" onclick="COS_RPG.setMobileTab('magic')">
+                    <span class="mob-tab-ico" aria-hidden="true">✨</span>
+                    <span class="mob-tab-lbl">${magicLbl}</span>
+                </button>
+                <button type="button" class="rpg-mobile-tab" data-mob-tab="checks" aria-pressed="false" onclick="COS_RPG.setMobileTab('checks')">
+                    <span class="mob-tab-ico" aria-hidden="true">🎯</span>
+                    <span class="mob-tab-lbl">Checks</span>
+                </button>
+                <button type="button" class="rpg-mobile-tab" data-mob-tab="gear" aria-pressed="false" onclick="COS_RPG.setMobileTab('gear')">
+                    <span class="mob-tab-ico" aria-hidden="true">🎒</span>
+                    <span class="mob-tab-lbl">Gear</span>
+                </button>
+                <button type="button" class="rpg-mobile-tab" data-mob-tab="notes" aria-pressed="false" onclick="COS_RPG.setMobileTab('notes')">
+                    <span class="mob-tab-ico" aria-hidden="true">📓</span>
+                    <span class="mob-tab-lbl">Notes</span>
+                </button>
+                <button type="button" class="rpg-mobile-tab" data-mob-tab="all" aria-pressed="false" onclick="COS_RPG.setMobileTab('all')" title="View all sections stacked">
+                    <span class="mob-tab-ico" aria-hidden="true">📋</span>
+                    <span class="mob-tab-lbl">All</span>
+                </button>
+            `;
+            const mobCombatBelt = document.createElement('div');
+            mobCombatBelt.id = 'rpg-mobile-combat-belt';
+            mobCombatBelt.className = 'rpg-mobile-combat-belt';
+            mobCombatBelt.dataset.mobileCats = 'combat';
+            mobCombatBelt.dataset.mobileOrder = '29';
+
+            rightCol.insertBefore(mobCombatBelt, rightCol.firstChild);
+            rightCol.insertBefore(mobTabs, rightCol.firstChild);
             rightCol.insertBefore(tabs, rightCol.firstChild);
             rightCol.insertBefore(wrap, rightCol.firstChild);
             installToolbarRovingFallback(tabs);
+            installToolbarRovingFallback(mobTabs);
+        }
+
+        // 1b. Mount Mobile Ability Scores, Passives & Origin Quick-Launch Card (shown on Mobile Checks & Notes tabs)
+        if (leftCol && !document.getElementById('rpg-mobile-dossier-bar')) {
+            const dossierBar = document.createElement('div');
+            dossierBar.id = 'rpg-mobile-dossier-bar';
+            dossierBar.className = 'rpg-mobile-dossier-bar';
+            dossierBar.dataset.mobileCats = 'checks notes';
+            dossierBar.dataset.mobileOrder = '38';
+            dossierBar.innerHTML = `
+                <button type="button" class="rpg-mobile-dossier-btn" onclick="if(typeof openSpellDetailsModal==='function') openSpellDetailsModal('backstory_full')">
+                    <span class="rpg-mobile-dossier-left">
+                        <span class="rpg-mobile-dossier-ico" aria-hidden="true">📜</span>
+                        <span class="rpg-mobile-dossier-txt">
+                            <strong>6 Ability Scores (STR–CHA), Passives &amp; Origin</strong>
+                            <span>Tap to view core attributes, traits, resistances &amp; backstory</span>
+                        </span>
+                    </span>
+                    <span class="rpg-mobile-dossier-arrow" aria-hidden="true">➔</span>
+                </button>
+            `;
+            leftCol.appendChild(dossierBar);
         }
 
         // 2. Mount Concentration & Quick Status Strip seamlessly inside Unified Vitals Plate (or below buffsBar fallback)
@@ -10912,13 +11276,11 @@
 
         // 5. Mount Bottom-Right Video-Game Speed-Dial (Floating Bubbles: Dice, Live Party Toggle, Rules, Portal)
         if (!document.getElementById('rpg-dice-fab-wrap')) {
-            const specialDieBtn = adapter.specialDieHtml
-                ? adapter.specialDieHtml
-                : (adapter.heroId === 'piper'
-                    ? `<button type="button" class="dice-btn" style="grid-column: span 4; border-color:#7c3aed; color:#fde68a; background:#1e1633;" onclick="triggerWildMagicSurge('Manual d100 Surge Roll')">💥 Wild Surge (d100)</button>`
-                    : (adapter.heroId === 'jacomir'
-                        ? `<button type="button" class="dice-btn" style="grid-column: span 4; border-color:#f59e0b; color:#fde68a; background:#271a0c;" onclick="rollSuperiorityDieRaw()">⚔️ Superiority Die (1d8)</button>`
-                        : ''));
+            const specialDieBtn = adapter.heroId === 'piper'
+                ? `<button type="button" class="dice-btn" style="grid-column: span 4; border-color:#7c3aed; color:#fde68a; background:#1e1633;" onclick="triggerWildMagicSurge('Manual d100 Surge Roll')">💥 Wild Surge (d100)</button>`
+                : (adapter.heroId === 'jacomir'
+                    ? `<button type="button" class="dice-btn" style="grid-column: span 4; border-color:#f59e0b; color:#fde68a; background:#271a0c;" onclick="rollSuperiorityDieRaw()">⚔️ Superiority Die (1d8)</button>`
+                    : '');
             const fabWrap = document.createElement('div');
             fabWrap.id = 'rpg-dice-fab-wrap';
             fabWrap.className = 'rpg-dice-fab-wrap';
@@ -10953,32 +11315,94 @@
                         </div>
                     </div>
                 </div>
+                <div id="rpg-theme-tray" class="rpg-theme-tray" role="region" aria-label="Sheet Color Themes">
+                    <div class="rpg-dice-tray-head">
+                        <span>🎨 Sheet Theme</span>
+                        <button type="button" class="btn-act btn-act-pre" style="padding:1px 6px; font-size:0.66rem;" onclick="COS_RPG.toggleThemeTray(false)" aria-label="Close Theme Picker">✕</button>
+                    </div>
+                    <div id="rpg-theme-list" class="rpg-theme-list">
+                        ${THEME_CATALOG.map(t => `
+                            <button type="button" class="rpg-theme-option" data-theme-id="${esc(t.id)}" aria-pressed="false" onclick="COS_RPG.setSheetTheme('${esc(t.id)}')">
+                                <span class="rpg-theme-opt-left">
+                                    <span class="rpg-theme-swatches">${t.swatches.map(c => `<span class="rpg-theme-dot" style="background:${c};"></span>`).join('')}</span>
+                                    <span class="rpg-theme-meta">
+                                        <span class="rpg-theme-name">${esc(t.name)}</span>
+                                        <span class="rpg-theme-desc">${esc(t.desc)}</span>
+                                    </span>
+                                </span>
+                                <span class="rpg-theme-check" aria-hidden="true">✓</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <button type="button" id="rpg-theme-system-btn" class="rpg-theme-option rpg-theme-system-btn" aria-pressed="false" onclick="COS_RPG.setSheetTheme('system')">
+                        <span>🌓 Follow System</span>
+                        <span id="rpg-theme-system-mode" class="rpg-theme-desc">Currently Dark</span>
+                    </button>
+                </div>
+                <div id="rpg-format-tray" class="rpg-theme-tray rpg-format-tray" role="region" aria-label="Display Format Switcher">
+                    <div class="rpg-dice-tray-head">
+                        <span>📱 Display Format</span>
+                        <button type="button" class="btn-act btn-act-pre" style="padding:1px 6px; font-size:0.66rem;" onclick="COS_RPG.toggleFormatTray(false)" aria-label="Close Display Format Switcher">✕</button>
+                    </div>
+                    <div class="rpg-format-pill-bar" role="group" aria-label="Quick Format Switch">
+                        ${VIEW_MODE_CATALOG.map(v => `
+                            <button type="button" class="rpg-format-seg-btn" data-format-id="${esc(v.id)}" aria-pressed="false" onclick="COS_RPG.setSheetViewMode('${esc(v.id)}')">
+                                <span aria-hidden="true">${v.icon}</span>
+                                <span>${esc(v.shortLabel)}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="rpg-format-list" class="rpg-theme-list">
+                        ${VIEW_MODE_CATALOG.map(v => `
+                            <button type="button" class="rpg-theme-option rpg-format-option" data-format-id="${esc(v.id)}" aria-pressed="false" onclick="COS_RPG.setSheetViewMode('${esc(v.id)}')">
+                                <span class="rpg-theme-opt-left">
+                                    <span class="rpg-format-ico" aria-hidden="true">${v.icon}</span>
+                                    <span class="rpg-theme-meta">
+                                        <span class="rpg-theme-name">${esc(v.name)}</span>
+                                        <span class="rpg-theme-desc">${esc(v.desc)}</span>
+                                    </span>
+                                </span>
+                                <span class="rpg-theme-check" aria-hidden="true">✓</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
                 <div id="rpg-fab-bubbles" class="rpg-fab-bubbles" role="menu" aria-label="Quick Utility Menu">
                     <a href="index.html" class="rpg-fab-bubble bubble-portal" role="menuitem" title="Back to Campaign Portal">🏰 Portal</a>
                     <button type="button" class="rpg-fab-bubble bubble-reset" role="menuitem" onclick="COS_RPG.toggleFabMenu(false); COS_RPG.resetSheetToOfficialBaseline(false);" title="Undo unsaved changes &amp; restore last ☁️ Sync checkpoint">🔄 Reset</button>
                     <button type="button" class="rpg-fab-bubble bubble-rules" role="menuitem" onclick="COS_RPG.toggleFabMenu(false); COS_RPG.openRulesModal();" title="Open Combat Controls &amp; Table House Rules">❓ Rules</button>
+                    <button type="button" id="rpg-fab-format-btn" class="rpg-fab-bubble bubble-format" role="menuitem" onclick="COS_RPG.toggleFormatTray(true)" title="Swap sheet display format between PC (Default), Tablet, and Mobile">🖥️ Format: PC</button>
+                    <button type="button" id="rpg-fab-theme-btn" class="rpg-fab-bubble bubble-theme" role="menuitem" onclick="COS_RPG.toggleThemeTray(true)" title="Choose Sheet Color Theme (Obsidian, Midnight, Velvet, Pine Forest, Parchment, System)">🎨 Theme</button>
                     <button type="button" id="rpg-fab-dice-btn" class="rpg-fab-bubble bubble-dice" role="menuitem" onclick="COS_RPG.toggleDiceTray(true)" title="Open Quick Dice Roller &amp; Adv/Dis Modifiers">🎲 Quick Dice</button>
                     <button type="button" id="rpg-fab-trade-btn" class="rpg-fab-bubble bubble-trade" role="menuitem" onclick="COS_RPG.toggleFabMenu(false); COS_RPG.openTradeModal('messages');" title="Open Party Chat, Whispers &amp; Item/Gold Trade">💬 Chat <span id="rpg-fab-trade-badge" class="rpg-badge-count pulse-alert" style="display:none;"></span></button>
                     <button type="button" id="rpg-fab-party-btn" class="rpg-fab-bubble bubble-party" role="menuitemcheckbox" aria-pressed="false" onclick="COS_RPG.togglePartyHud()" title="Toggle Live Teammate HP &amp; Status Row">👥 Live Party</button>
                 </div>
-                <button type="button" id="rpg-dice-fab-btn" class="rpg-dice-fab" aria-expanded="false" aria-controls="rpg-fab-bubbles" onclick="COS_RPG.toggleFabMenu()" title="Open Quick Menu (Live Party, Chat, Dice, Rules, Reset &amp; Portal)"><span id="rpg-fab-label">✦ Menu</span> <span id="rpg-fab-alert-dot" class="rpg-fab-dot" style="display:none;"></span></button>
+                <button type="button" id="rpg-dice-fab-btn" class="rpg-dice-fab" aria-expanded="false" aria-controls="rpg-fab-bubbles" onclick="COS_RPG.toggleFabMenu()" title="Open Quick Menu (Live Party, Chat, Dice, Theme, Format, Rules, Reset &amp; Portal)"><span id="rpg-fab-label">✦ Menu</span> <span id="rpg-fab-alert-dot" class="rpg-fab-dot" style="display:none;"></span></button>
             `;
             document.body.appendChild(fabWrap);
+            syncThemeTrayUI();
+            syncFormatTrayUI();
 
-            // Light-dismiss floating speed-dial & dice tray on outside click or Escape
+            // Light-dismiss floating speed-dial, theme tray, format tray & dice tray on outside click or Escape
             document.addEventListener('click', (e) => {
                 const tray = document.getElementById('rpg-dice-tray');
+                const themeTray = document.getElementById('rpg-theme-tray');
+                const formatTray = document.getElementById('rpg-format-tray');
                 const bubbles = document.getElementById('rpg-fab-bubbles');
-                const openAny = (tray && tray.classList.contains('is-open')) || (bubbles && bubbles.classList.contains('is-open'));
+                const openAny = (tray && tray.classList.contains('is-open')) || (themeTray && themeTray.classList.contains('is-open')) || (formatTray && formatTray.classList.contains('is-open')) || (bubbles && bubbles.classList.contains('is-open'));
                 if (!openAny) return;
                 if (!fabWrap.contains(e.target)) {
                     toggleDiceTray(false);
+                    toggleThemeTray(false);
+                    toggleFormatTray(false);
                     toggleFabMenu(false);
                 }
             });
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     toggleDiceTray(false);
+                    toggleThemeTray(false);
+                    toggleFormatTray(false);
                     toggleFabMenu(false);
                 }
             });
@@ -10989,6 +11413,8 @@
         renderActionEconomyBar();
         renderStatusStrip();
         setRightColumnTab(hudState.rightTab || 'all');
+        applyMobileTabLayout();
+        renderHubPanel();
         applySkillsFilter();
         // Initialize HP baseline silently before first diff so boot doesn't spawn a fake float
         prevTrackedHp = parseCurrentVitalsFromDom();
@@ -11569,6 +11995,7 @@
         const countBadge = document.getElementById('player-notes-count-badge');
         if (countBadge) countBadge.textContent = String(notes.length);
         if (!miniList) return;
+        const prevScrollTop = miniList.scrollTop;
 
         const sorted = getSortedNotes(notes);
         if (sorted.length === 0) {
@@ -11594,6 +12021,7 @@
                 </button>
             `;
         }).join('');
+        miniList.scrollTop = prevScrollTop;
     }
 
     function renderJournalSidebar(notes) {
@@ -11612,6 +12040,7 @@
         }
 
         if (!listEl) return;
+        const prevScrollTop = listEl.scrollTop;
         const filtered = getFilteredNotes(notes);
         if (filtered.length === 0) {
             const q = (journalState.search || '').trim();
@@ -11653,6 +12082,7 @@
                 </button>
             `;
         }).join('');
+        listEl.scrollTop = prevScrollTop;
     }
 
     function renderJournalDetail(notes) {
@@ -12196,6 +12626,7 @@
 
     function init(sheetAdapter) {
         adapter = sheetAdapter;
+        initThemeListeners();
         injectDialogsAndBanner();
         mountVideoGameHudWidgets();
         mountPlayerNotesJournal();
@@ -12399,6 +12830,8 @@
         resetTurnActions,
         renderActionEconomyBar,
         setRightColumnTab,
+        setMobileTab,
+        applyMobileTabLayout,
         setConcentration,
         dropConcentration,
         promptManualConcentration,
@@ -12416,6 +12849,11 @@
         toggleFabMenu,
         togglePartyHud,
         toggleDiceTray,
+        toggleThemeTray,
+        toggleFormatTray,
+        setSheetTheme,
+        setSheetViewMode,
+        getStoredViewMode,
         syncDiceFabBadge,
         consumeTempRollMode,
         setRollFollowup,
@@ -12427,5 +12865,4 @@
         openNoteEditor: openJournalEditor,
         openNoteReader: openJournalReader
     };
-    window.DND_RPG = window.COS_RPG;
 })();
