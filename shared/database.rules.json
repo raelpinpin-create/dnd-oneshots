@@ -1,0 +1,46 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "campaigns": {
+      "$room": {
+        "transfers": {
+          ".read": true,
+          ".indexOn": ["toId", "fromId", "status", "createdAt"],
+          "$transferId": {
+            ".write": true,
+            ".validate": "!newData.exists() || (newData.hasChildren(['fromId', 'toId', 'kind', 'status']) && (newData.child('kind').val() === 'item' || newData.child('kind').val() === 'gold') && (newData.child('status').val() === 'pending' || newData.child('status').val() === 'accepted' || newData.child('status').val() === 'declined' || newData.child('status').val() === 'cancelled'))"
+          }
+        },
+        "dm_state": {
+          ".read": true,
+          ".write": true
+        },
+        "custom_loot": {
+          ".read": true,
+          "$lootKey": {
+            ".write": true
+          }
+        },
+        "loot_overrides": {
+          ".read": true,
+          "$lootKey": {
+            ".write": true
+          }
+        },
+        "heroes": {
+          ".read": true,
+          "$heroId": {
+            ".write": true
+          }
+        },
+        "unlocked_recipes": {
+          ".read": true,
+          "$recipeId": {
+            ".write": true
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <title>One-Shot Party Portal — Template</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg-page: #0b0d12;
+            --bg-card: #12151d;
+            --bg-sub: #171b25;
+            --border: rgba(255, 255, 255, 0.1);
+            --gold: #e2b254;
+            --gold-border: rgba(226, 178, 84, 0.45);
+            --text: #f3f5f9;
+            --dim: #aeb8c9;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: radial-gradient(ellipse 90% 45% at 50% 0%, rgba(226, 178, 84, 0.12), transparent 68%), var(--bg-page);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            min-height: 100vh;
+            padding: 28px 16px;
+            display: flex;
+            justify-content: center;
+        }
+        .wrap { width: 100%; max-width: 980px; display: flex; flex-direction: column; gap: 20px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .back-link {
+            color: var(--gold); text-decoration: none; font-size: 0.82rem; font-weight: 700;
+            padding: 6px 12px; border-radius: 8px; border: 1px solid var(--gold-border); background: var(--bg-sub);
+        }
+        header {
+            background: var(--bg-card); border: 1px solid var(--border); border-top: 2px solid var(--gold);
+            border-radius: 14px; padding: 24px 20px; text-align: center;
+        }
+        header h1 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.75rem; margin-bottom: 6px; }
+        header p { color: var(--dim); font-size: 0.88rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+            display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
+        }
+        .card h2 { font-family: 'Cinzel', serif; font-size: 1.15rem; color: var(--text); }
+        .card p { font-size: 0.8rem; color: var(--dim); line-height: 1.45; }
+        .btn {
+            display: inline-flex; justify-content: center; align-items: center; gap: 6px;
+            padding: 9px 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 700;
+            text-decoration: none; background: var(--bg-sub); color: var(--gold); border: 1px solid var(--gold-border);
+        }
+        .btn:hover { background: #222837; }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="top-bar">
+            <a href="../index.html" class="back-link">← Back to One-Shot Vault</a>
+            <!-- Optional DM Screen button -->
+            <!-- <a href="DM_SCREEN.html" class="back-link">🛡️ Open Mini DM Screen</a> -->
+        </div>
+        <header>
+            <h1>⚡ [ONE-SHOT TITLE]</h1>
+            <p>Level X One-Shot • Live RPG Engine &amp; Firebase Sync Enabled</p>
+        </header>
+        <div class="grid">
+            <!-- Clone cards per generated hero sheet -->
+            <div class="card">
+                <div>
+                    <h2>⚔️ [Hero Name]</h2>
+                    <p>Level X [Class] • Click below to open interactive character sheet.</p>
+                </div>
+                <a href="HERO1_PLAYER_SHEET.html" class="btn">Launch Sheet</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

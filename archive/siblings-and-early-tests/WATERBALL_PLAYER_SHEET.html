@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Waterball — Interactive Player Sheet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #080d1a;
+            --bg-sheet: #0d1424;
+            --panel-bg: #131c31;
+            --panel-sub: #0f1728;
+            --card-border: #223049;
+            --card-border-hover: #38bdf8;
+            --accent-gold: #f59e0b;
+            --accent-blue: #38bdf8;
+            --accent-cyan: #22d3ee;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-purple: #c084fc;
+            --text-light: #f8fafc;
+            --text-dim: #94a3b8;
+            --text-muted: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-light);
+            line-height: 1.5;
+            padding: 16px 12px;
+            display: flex;
+            justify-content: center;
+            font-size: 0.88rem;
+        }
+
+        .sheet-container {
+            width: 100%;
+            max-width: 1180px;
+            background-color: var(--bg-sheet);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+
+        /* Top Header Banner */
+        .header-banner {
+            background: linear-gradient(180deg, #16243d 0%, #0d172a 100%);
+            border-bottom: 1px solid var(--card-border);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .header-title h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-blue);
+            font-size: 1.65rem;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            text-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+        }
+
+        .header-title .subtitle {
+            font-size: 0.82rem;
+            color: #7dd3fc;
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        .header-title .tagline {
+            font-size: 0.74rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pill-badge {
+            padding: 4px 11px;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .pill-blue { background: #0369a1; color: #f0f9ff; border: 1px solid #0284c7; }
+        .pill-gold { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .pill-cyan { background: rgba(34, 211, 238, 0.15); color: #67e8f9; border: 1px solid rgba(34, 211, 238, 0.4); }
+
+        /* Top Dice Roller Console */
+        .top-dice-console {
+            background: #090e1b;
+            border-bottom: 1px solid var(--card-border);
+            padding: 10px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .dice-controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .dice-buttons-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .dice-btn {
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-light);
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .dice-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: rgba(56, 189, 248, 0.12);
+        }
+
+        .dice-mod-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .roll-result-display {
+            background: linear-gradient(135deg, #0f182c 0%, #090f1e 100%);
+            border: 1.5px solid var(--card-border);
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.92rem;
+            color: #f8fafc;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        .roll-result-display.highlight-roll {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);
+        }
+
+        /* Beginner Turn Cheatsheet Bar */
+        .turn-cheatsheet-bar {
+            background: linear-gradient(90deg, #111a2e 0%, #16223b 100%);
+            border-bottom: 1px solid var(--card-border);
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 0.76rem;
+        }
+
+        .turn-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .turn-action { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .turn-bonus { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .turn-reaction { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.3); }
+        .turn-move { background: rgba(245, 158, 11, 0.15); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        /* Main 2-Column Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 16px;
+            padding: 16px 20px;
+        }
+
+        @media (max-width: 960px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+
+        /* Panel Base */
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .panel-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            padding-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        /* Vitals 4-Box Row */
+        .vitals-4box {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .vital-mini-box {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 8px 4px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.15s ease;
+        }
+        .vital-mini-box:hover {
+            border-color: var(--card-border-hover);
+        }
+
+        .vital-mini-lbl {
+            font-size: 0.64rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .vital-mini-val {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-top: 1px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* HP Controller */
+        .hp-ctrl-container {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 9px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .hp-health-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: #090e18;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            position: relative;
+        }
+
+        .hp-health-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: var(--accent-green);
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .hp-health-bar-temp {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            background: rgba(56, 189, 248, 0.7);
+            transition: width 0.3s ease;
+        }
+
+        .hp-btn-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .hp-input-num {
+            background: #090e18;
+            border: 1px solid var(--card-border);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.84rem;
+            font-weight: 600;
+            padding: 4px 6px;
+            border-radius: 4px;
+            width: 55px;
+            text-align: center;
+            outline: none;
+        }
+        .hp-input-num:focus { border-color: var(--accent-blue); }
+
+        .btn-act {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-act:active { transform: scale(0.97); }
+        .btn-act-dmg { background: #991b1b; color: #fee2e2; }
+        .btn-act-dmg:hover { background: #b91c1c; }
+        .btn-act-heal { background: #065f46; color: #d1fae5; }
+        .btn-act-heal:hover { background: #047857; }
+        .btn-act-blue { background: #0284c7; color: #f0f9ff; }
+        .btn-act-blue:hover { background: #0369a1; }
+        .btn-act-pre { background: #1e293b; color: var(--text-light); border: 1px solid var(--card-border); }
+        .btn-act-pre:hover { background: #334155; }
+
+        /* ACTIVE SHAPE CONTROLLER (THE WATER SHIFTER) */
+        .shape-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .shape-card-btn {
+            background: var(--panel-sub);
+            border: 1.5px solid var(--card-border);
+            border-radius: 6px;
+            padding: 8px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        .shape-card-btn:hover {
+            border-color: var(--accent-blue);
+            background: rgba(56, 189, 248, 0.08);
+        }
+        .shape-card-btn.active-shape {
+            border-color: var(--accent-blue);
+            background: rgba(56, 189, 248, 0.16);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+        }
+        .shape-card-btn .shape-icon { font-size: 1.25rem; }
+        .shape-card-btn .shape-name { font-size: 0.72rem; font-weight: 700; color: var(--text-light); }
+        .shape-card-btn .shape-badge { font-size: 0.62rem; color: #7dd3fc; font-weight: 600; }
+
+        /* Form 3 Tool Configuration Sub-Selector */
+        .tool-config-bar {
+            background: #090e18;
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 6px 8px;
+            margin-top: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .tool-config-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+        }
+        .tool-cfg-btn {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            color: var(--text-dim);
+            padding: 4px 6px;
+            border-radius: 4px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s ease;
+        }
+        .tool-cfg-btn:hover { color: var(--text-light); border-color: var(--accent-cyan); }
+        .tool-cfg-btn.active-cfg {
+            background: rgba(34, 211, 238, 0.18);
+            border-color: var(--accent-cyan);
+            color: #67e8f9;
+        }
+
+        /* Ability Scores Strip */
+        .ability-strip {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .ability-box {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 5px;
+            text-align: center;
+            padding: 6px 2px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .ability-box:hover { border-color: var(--accent-blue); background: rgba(56, 189, 248, 0.08); }
+        .ability-box.active-key {
+            border: 1.5px solid var(--accent-blue);
+            background: rgba(56, 189, 248, 0.12);
+        }
+
+        .ability-name { font-size: 0.65rem; font-weight: 700; color: var(--text-dim); }
+        .ability-score { font-size: 1.05rem; font-weight: 700; color: var(--text-light); font-family: 'JetBrains Mono', monospace; }
+        .ability-mod { font-size: 0.74rem; font-weight: 700; color: var(--text-dim); }
+        .ability-box.active-key .ability-mod { color: var(--accent-blue); }
+
+        /* Saves & Skills */
+        .stat-row-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .stat-row-item {
+            font-size: 0.76rem;
+            color: var(--text-light);
+            padding: 3px 8px;
+            background: var(--panel-sub);
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1px solid transparent;
+        }
+        .stat-row-item:hover {
+            background: #1e293b;
+            border-color: var(--accent-blue);
+        }
+        .stat-row-item.prof-item {
+            color: #7dd3fc;
+            font-weight: 600;
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        /* Action Cards Grid */
+        .action-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        @media (max-width: 640px) {
+            .action-grid-2col { grid-template-columns: 1fr; }
+        }
+
+        .action-card {
+            background-color: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: all 0.15s ease;
+        }
+        .action-card:hover { border-color: var(--card-border-hover); }
+        .action-card.highlight-card {
+            border-color: rgba(56, 189, 248, 0.6);
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .action-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            font-weight: 700;
+            gap: 4px;
+        }
+
+        .action-tag {
+            font-size: 0.64rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+        .tag-action { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .tag-bonus { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; }
+        .tag-reaction { background: rgba(244, 63, 94, 0.2); color: #fda4af; }
+        .tag-passive { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+
+        .action-desc {
+            font-size: 0.74rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        .action-btn-row {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        /* Power Tracker (2 Uses / Game) */
+        .power-tracker-box {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .pip-group {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .pip-slot {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            background: #0284c7;
+            border: 1px solid #38bdf8;
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .pip-slot.empty {
+            background: #1e293b;
+            border-color: #475569;
+            box-shadow: none;
+        }
+
+        /* Inventory */
+        .inv-list-compact {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .inv-row-item {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 4px;
+            padding: 4px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            gap: 6px;
+        }
+
+        .inv-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .inv-stepper {
+            display: inline-flex;
+            align-items: center;
+            background: #090e18;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            padding: 1px 4px;
+            gap: 3px;
+        }
+
+        .btn-step-qty {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.68rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 1px 3px;
+        }
+        .btn-step-qty:hover { color: var(--accent-blue); }
+
+        .inv-qty-val {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            min-width: 20px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Modal Overlay & Popups */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(3, 7, 18, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal-card {
+            background: #0f172a;
+            border: 1.5px solid var(--card-border-hover);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.9);
+            animation: modalPop 0.18s ease-out;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 8px;
+        }
+        .modal-header h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-blue);
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 2px 6px;
+        }
+        .modal-close-btn:hover { color: #f87171; }
+
+        .modal-body {
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sheet-container">
+        
+        <!-- HEADER BANNER -->
+        <header class="header-banner">
+            <div class="header-title">
+                <h1>💧 THE WATERBALL</h1>
+                <div class="subtitle">Level 2 Water Shifter • Sentient Living Water</div>
+                <div class="tagline">Fluid Brawler & Tactical Living Gear • Immune to Vacuum & Poison</div>
+            </div>
+            <div class="header-actions">
+                <a href="LELOUCH_PLAYER_SHEET.html" class="btn-act btn-act-pre" style="color:var(--accent-gold); border-color:rgba(245,158,11,0.4);" title="Switch to Lelouch's character card">👥 View Partner: Lelouch</a>
+                <button class="btn-act btn-act-pre" onclick="exportSheetState()" style="color:var(--accent-blue); border-color:rgba(56,189,248,0.4);" title="Copy live HP, form, slots, and inventory delta">📋 Export Data</button>
+                <span class="pill-badge pill-blue">SENTIENT OOZE</span>
+                <span class="pill-badge pill-cyan" id="header-form-badge">FORM 1: BRUTE</span>
+            </div>
+        </header>
+
+        <!-- TOP PROMINENT DICE ROLLER CONSOLE -->
+        <section class="top-dice-console">
+            <div class="dice-controls-bar">
+                <div class="dice-buttons-group">
+                    <span style="font-size:0.75rem; font-weight:700; color:var(--text-dim); margin-right:3px;">🎲 Roll:</span>
+                    <button class="dice-btn" onclick="rollCustomDie(20)">d20</button>
+                    <button class="dice-btn" onclick="rollCustomDie(12)">d12</button>
+                    <button class="dice-btn" onclick="rollCustomDie(10)">d10</button>
+                    <button class="dice-btn" onclick="rollCustomDie(8)">d8</button>
+                    <button class="dice-btn" onclick="rollCustomDie(6)">d6</button>
+                    <button class="dice-btn" onclick="rollCustomDie(4)">d4</button>
+                    <button class="dice-btn" onclick="rollCustomDie(100)">d100</button>
+                </div>
+
+                <div class="dice-mod-group">
+                    <span style="font-size:0.75rem; font-weight:600; color:var(--text-dim);">Mod:</span>
+                    <input type="number" id="dice-mod" class="hp-input-num" value="0" style="width:44px; padding:2px 4px;">
+                    <button class="btn-act btn-act-pre" onclick="modDiceMod(1)">+1</button>
+                    <button class="btn-act btn-act-pre" onclick="modDiceMod(-1)">-1</button>
+                    <button class="btn-act btn-act-pre" onclick="document.getElementById('dice-mod').value=0">0</button>
+                    <button class="btn-act btn-act-pre" id="btn-adv" onclick="toggleAdvantage('adv')">Adv</button>
+                    <button class="btn-act btn-act-pre" id="btn-dis" onclick="toggleAdvantage('dis')">Dis</button>
+                </div>
+            </div>
+
+            <!-- RESULT BANNER -->
+            <div class="roll-result-display" id="roll-res">
+                💧 Living Water matrix online. Click any attack, save, or check below to roll!
+            </div>
+        </section>
+
+        <!-- BEGINNER TURN CHEATSHEET -->
+        <div class="turn-cheatsheet-bar">
+            <span style="font-weight:700; color:var(--text-dim);">⚡ On Your Turn:</span>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <span class="turn-pill turn-action">🟢 1 Action (Slam / Shield Bash / Detach / Bomb)</span>
+                <span class="turn-pill turn-bonus">🔵 1 Bonus Action (Change Shape / Healing Surge / Swap Mode)</span>
+                <span class="turn-pill turn-move">🟡 Move 30 ft (Slide / Swim)</span>
+                <span class="turn-pill turn-reaction">🔴 1 Reaction (Opportunity Attack)</span>
+            </div>
+        </div>
+
+        <!-- MAIN 2-COLUMN LAYOUT -->
+        <div class="main-layout">
+            
+            <!-- LEFT COLUMN: VITALS, SHAPE SELECTOR, HP, STATS, SAVES & SKILLS -->
+            <div>
+                
+                <!-- 4-BOX VITALS -->
+                <div class="vitals-4box">
+                    <div class="vital-mini-box">
+                        <span class="vital-mini-lbl">HIT POINTS</span>
+                        <span class="vital-mini-val" id="hp-disp" style="color:var(--accent-green);">22/22</span>
+                    </div>
+                    <div class="vital-mini-box">
+                        <span class="vital-mini-lbl">ARMOR CLASS</span>
+                        <span class="vital-mini-val" id="ac-disp" style="color:var(--accent-blue);">15</span>
+                    </div>
+                    <div class="vital-mini-box" onclick="rollD20('Initiative Check (DEX +1)', 1)" style="cursor:pointer;" title="Click to roll Initiative (+1)">
+                        <span class="vital-mini-lbl">INIT 🎲</span>
+                        <span class="vital-mini-val" style="color:var(--accent-cyan);">+1</span>
+                    </div>
+                    <div class="vital-mini-box" title="Reach 5 ft, STR +5 to hit, DC 13 Save">
+                        <span class="vital-mini-lbl">STR DC / HIT</span>
+                        <span class="vital-mini-val" style="font-size:0.86rem; color:var(--accent-gold);">DC 13 | +5</span>
+                    </div>
+                </div>
+
+                <!-- INTEGRATED HP CONTROLLER -->
+                <div class="hp-ctrl-container">
+                    <div class="hp-health-bar-bg">
+                        <div class="hp-health-bar-fill" id="hp-bar" style="width: 100%;"></div>
+                        <div class="hp-health-bar-temp" id="hp-temp-bar" style="width: 0%;"></div>
+                    </div>
+                    
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <div style="display:flex; align-items:center; gap:6px; width:100%;">
+                            <input type="number" id="hp-input" class="hp-input-num" placeholder="Enter amount..." min="1" max="99" style="flex:1; height:34px; font-size:0.92rem; text-align:left; padding:4px 10px; font-weight:600;">
+                            <button class="btn-act btn-act-dmg" onclick="applyDamage()" style="padding:6px 14px; height:34px; font-weight:700;">💥 Take Damage</button>
+                            <button class="btn-act btn-act-heal" onclick="applyHeal()" style="padding:6px 14px; height:34px; font-weight:700;">💚 Heal HP</button>
+                        </div>
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; width:100%;">
+                            <div style="display:flex; gap:4px;">
+                                <button class="btn-act btn-act-dmg" style="padding:4px 9px; font-size:0.74rem; font-weight:700;" onclick="stepHP(-1)" title="Take 1 Damage">➖ -1</button>
+                                <button class="btn-act btn-act-heal" style="padding:4px 9px; font-size:0.74rem; font-weight:700;" onclick="stepHP(1)" title="Heal 1 HP">➕ +1</button>
+                            </div>
+                            <div style="display:flex; gap:4px;">
+                                <button class="btn-act btn-act-pre" onclick="clearTempHP()" style="padding:4px 7px; font-size:0.7rem; color:#94a3b8;">🛡️ Clear Temp</button>
+                                <button class="btn-act btn-act-pre" onclick="takeShortRest()" style="padding:4px 7px; font-size:0.7rem; color:var(--accent-blue);">☕ Short Rest</button>
+                                <button class="btn-act btn-act-pre" onclick="resetHP()" style="padding:4px 7px; font-size:0.7rem; color:var(--accent-green);">⛺ Long Rest</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACTIVE SHAPE SWITCHER (SHAPECHANGER ENGINE) -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>🌊 Active Shape (Bonus Action)</span>
+                        <span style="font-size:0.68rem; color:#7dd3fc;" id="active-shape-indicator">Brute Mode</span>
+                    </div>
+                    <div class="shape-selector-grid">
+                        <div class="shape-card-btn active-shape" id="btn-shape-1" onclick="setShape(1)">
+                            <span class="shape-icon">🥊</span>
+                            <span class="shape-name">Brute</span>
+                            <span class="shape-badge">15 AC • Slam</span>
+                        </div>
+                        <div class="shape-card-btn" id="btn-shape-2" onclick="setShape(2)">
+                            <span class="shape-icon">💧</span>
+                            <span class="shape-name">Puddle</span>
+                            <span class="shape-badge">Stealth • Squeeze</span>
+                        </div>
+                        <div class="shape-card-btn" id="btn-shape-3" onclick="setShape(3)">
+                            <span class="shape-icon">⚙️</span>
+                            <span class="shape-name">Tool / Yuumi</span>
+                            <span class="shape-badge">Attach to Ally</span>
+                        </div>
+                    </div>
+
+                    <!-- Tool / Tag-Team Configuration (Visible when Shape 3 Active) -->
+                    <div class="tool-config-bar" id="tool-config-section" style="display:none;">
+                        <div style="font-size:0.68rem; font-weight:700; color:#67e8f9; display:flex; justify-content:space-between;">
+                            <span>🤝 Yuumi Sub-Configuration:</span>
+                            <span id="yuumi-rule-badge" style="color:#fde047;">Cannot be targeted!</span>
+                        </div>
+                        <div class="tool-config-buttons">
+                            <button class="tool-cfg-btn" id="cfg-tool" onclick="setToolConfig('tool')">🔧 Tool (Crowbar)</button>
+                            <button class="tool-cfg-btn" id="cfg-weapon" onclick="setToolConfig('weapon')">🗡️ Ice Weapon</button>
+                            <button class="tool-cfg-btn active-cfg" id="cfg-shield" onclick="setToolConfig('shield')">🛡️ Ice Shield (+2 AC)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIMITED POWERS (2 USES / GAME) -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>🔮 Special Powers</span>
+                        <span style="font-size:0.68rem; color:#fde047;">2 Uses / Game</span>
+                    </div>
+                    <div class="power-tracker-box">
+                        <div style="display:flex; flex-direction:column; gap:2px;">
+                            <span style="font-size:0.75rem; font-weight:700; color:var(--text-light);">Remaining Charges:</span>
+                            <span style="font-size:0.68rem; color:var(--text-dim);" id="power-slots-label">2 / 2 Available</span>
+                        </div>
+                        <div class="pip-group">
+                            <div class="pip-slot" id="pip-1" onclick="togglePowerSlot(1)" title="Click to expend/restore charge"></div>
+                            <div class="pip-slot" id="pip-2" onclick="togglePowerSlot(2)" title="Click to expend/restore charge"></div>
+                            <button class="btn-act btn-act-pre" onclick="resetPowerSlots()" style="font-size:0.68rem; padding:2px 6px;">Reset</button>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn-act btn-act-blue" style="flex:1; justify-content:center;" onclick="castWaterballBomb()" title="Expend 1 charge to detonate bomb">💣 Detonate Bomb (2d8)</button>
+                        <button class="btn-act btn-act-heal" style="flex:1; justify-content:center;" onclick="castHealingSurge()" title="Expend 1 charge to heal 1d4+3">💚 Healing Surge (1d4+3)</button>
+                    </div>
+                </div>
+
+                <!-- 6 ABILITY SCORES STRIP -->
+                <div class="ability-strip">
+                    <div class="ability-box active-key" onclick="rollD20('STR Check (Punching/Lifting)', 3)" title="Click to roll Strength (+3)">
+                        <div class="ability-name">STR</div>
+                        <div class="ability-score">16</div>
+                        <div class="ability-mod">+3</div>
+                    </div>
+                    <div class="ability-box" onclick="rollD20('DEX Check (Balance/Reacting)', 1)" title="Click to roll Dexterity (+1)">
+                        <div class="ability-name">DEX</div>
+                        <div class="ability-score">12</div>
+                        <div class="ability-mod">+1</div>
+                    </div>
+                    <div class="ability-box active-key" onclick="rollD20('CON Check (Enduring hits/elements)', 3)" title="Click to roll Constitution (+3)">
+                        <div class="ability-name">CON</div>
+                        <div class="ability-score">16</div>
+                        <div class="ability-mod">+3</div>
+                    </div>
+                    <div class="ability-box" onclick="rollD20('INT Check', 0)" title="Click to roll Intelligence (+0)">
+                        <div class="ability-name">INT</div>
+                        <div class="ability-score">10</div>
+                        <div class="ability-mod">+0</div>
+                    </div>
+                    <div class="ability-box" onclick="rollD20('WIS Check', 0)" title="Click to roll Wisdom (+0)">
+                        <div class="ability-name">WIS</div>
+                        <div class="ability-score">10</div>
+                        <div class="ability-mod">+0</div>
+                    </div>
+                    <div class="ability-box" onclick="rollD20('CHA Check', 0)" title="Click to roll Charisma (+0)">
+                        <div class="ability-name">CHA</div>
+                        <div class="ability-score">10</div>
+                        <div class="ability-mod">+0</div>
+                    </div>
+                </div>
+
+                <!-- SAVING THROWS -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>🛡️ Saving Throws</span>
+                        <span style="font-size:0.68rem; color:#7dd3fc;">★ = Proficient</span>
+                    </div>
+                    <div class="stat-row-list">
+                        <div class="stat-row-item prof-item" onclick="rollD20('STR Saving Throw', 5)">
+                            <span>★ Strength Save</span>
+                            <span style="font-weight:700;">+5</span>
+                        </div>
+                        <div class="stat-row-item" onclick="rollD20('DEX Saving Throw', 1)">
+                            <span>Dexterity Save</span>
+                            <span style="font-weight:700;">+1</span>
+                        </div>
+                        <div class="stat-row-item prof-item" onclick="rollD20('CON Saving Throw', 5)">
+                            <span>★ Constitution Save</span>
+                            <span style="font-weight:700;">+5</span>
+                        </div>
+                        <div class="stat-row-item" onclick="rollD20('INT Saving Throw', 0)">
+                            <span>Intelligence Save</span>
+                            <span style="font-weight:700;">+0</span>
+                        </div>
+                        <div class="stat-row-item" onclick="rollD20('WIS Saving Throw', 0)">
+                            <span>Wisdom Save</span>
+                            <span style="font-weight:700;">+0</span>
+                        </div>
+                        <div class="stat-row-item" onclick="rollD20('CHA Saving Throw', 0)">
+                            <span>Charisma Save</span>
+                            <span style="font-weight:700;">+0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 18 SKILLS LIST -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>🎯 All 18 Skills</span>
+                        <span style="font-size:0.68rem; color:#7dd3fc;">★ = Proficient</span>
+                    </div>
+                    <div class="stat-row-list" style="max-height:220px; overflow-y:auto;">
+                        <div class="stat-row-item prof-item" onclick="rollD20('Athletics (STR)', 5)"><span>★ Athletics (STR)</span><span>+5</span></div>
+                        <div class="stat-row-item prof-item" onclick="rollD20('Acrobatics (DEX)', 3)"><span>★ Acrobatics (DEX)</span><span>+3</span></div>
+                        <div class="stat-row-item prof-item" onclick="rollD20('Stealth (DEX)', 3)"><span>★ Stealth (DEX)</span><span>+3</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Sleight of Hand (DEX)', 1)"><span>Sleight of Hand (DEX)</span><span>+1</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Arcana (INT)', 0)"><span>Arcana (INT)</span><span>+0</span></div>
+                        <div class="stat-row-item" onclick="rollD20('History (INT)', 0)"><span>History (INT)</span><span>+0</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Investigation (INT)', 0)"><span>Investigation (INT)</span><span>+0</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Nature (INT)', 0)"><span>Nature (INT)</span><span>+0</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Religion (INT)', 0)"><span>Religion (INT)</span><span>+0</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Animal Handling (WIS)', 0)"><span>Animal Handling (WIS)</span><span>+0</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Insight (WIS)', 0)"><span>Insight (WIS)</span><span>+0</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Medicine (WIS)', 0)"><span>Medicine (WIS)</span><span>+0</span></div>
+                        <div class="stat-row-item prof-item" onclick="rollD20('Perception (WIS)', 2)"><span>★ Perception (WIS)</span><span>+2</span></div>
+                        <div class="stat-row-item prof-item" onclick="rollD20('Survival (WIS)', 2)"><span>★ Survival (WIS)</span><span>+2</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Deception (CHA)', 0)"><span>Deception (CHA)</span><span>+0</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Intimidation (CHA)', 0)"><span>Intimidation (CHA)</span><span>+0</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Performance (CHA)', 0)"><span>Performance (CHA)</span><span>+0</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Persuasion (CHA)', 0)"><span>Persuasion (CHA)</span><span>+0</span></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: SHAPES, ACTIONS, ATTACHED MOVES, PASSIVES & INVENTORY -->
+            <div>
+                
+                <!-- ACTIVE SHAPE SHOWCASE CARD -->
+                <div class="panel" id="active-shape-panel" style="border-left: 4px solid var(--accent-blue);">
+                    <div class="panel-title">
+                        <span id="shape-showcase-title">🥊 Form 1: Waterball Brute (Brawler Mode)</span>
+                        <span style="font-size:0.68rem; color:var(--accent-gold);">Click ℹ️ for full compendium</span>
+                    </div>
+                    <div id="shape-showcase-desc" style="font-size:0.8rem; color:#cbd5e1; line-height:1.45;">
+                        Towering 10-foot water creature. Your AC increases to 15. You pummel enemies with heavy water blows and can knock them flat on their backs!
+                    </div>
+                </div>
+
+                <!-- ACTIONS & ATTACKS SECTION -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>⚔️ Active Actions & Attacks</span>
+                        <span style="font-size:0.68rem; color:var(--text-dim);">Form-Specific & Universal</span>
+                    </div>
+                    
+                    <div class="action-grid-2col">
+                        
+                        <!-- SLAM ATTACK (BRUTE MODE) -->
+                        <div class="action-card highlight-card" id="card-slam">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('slam')" title="Click for details">🥊 Slam Attack ℹ️</span>
+                                <span class="action-tag tag-action">Action • 5 ft</span>
+                            </div>
+                            <div class="action-desc">
+                                Heavy fluid punch. +5 to hit. <strong>2d6 + 3</strong> bludgeoning damage. Target must pass <strong>DC 13 STR Save</strong> or fall <strong>Prone</strong>.
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-blue" onclick="rollSlamAttack()">🎲 Attack (+5)</button>
+                                <button class="btn-act btn-act-dmg" onclick="rollSlamDamage()">💥 Dmg (2d6+3)</button>
+                                <button class="btn-act btn-act-pre" onclick="promptSave('DC 13 Strength Save or fall Prone!')">⚠️ DC 13 Save</button>
+                            </div>
+                        </div>
+
+                        <!-- WATERBALL BOMB -->
+                        <div class="action-card" id="card-bomb">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('bomb')" title="Click for details">💣 Waterball Bomb ℹ️</span>
+                                <span class="action-tag tag-action">Action • 15 ft</span>
+                            </div>
+                            <div class="action-desc">
+                                Detonate high-pressure blast (15-ft radius). Deals <strong>2d8</strong> damage and knocks targets <strong>10 ft away</strong> on failed DC 13 save. (Costs 1 Power Charge).
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-blue" onclick="castWaterballBomb()">💥 Cast Bomb (2d8)</button>
+                                <button class="btn-act btn-act-pre" onclick="promptSave('DC 13 Save or take 2d8 & pushed 10 ft!')">⚠️ DC 13 Save</button>
+                            </div>
+                        </div>
+
+                        <!-- SHIELD BASH (FORM 3 ATTACHED) -->
+                        <div class="action-card" id="card-shield-bash">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('shield-bash')" title="Click for details">🛡️ Shield Bash ℹ️</span>
+                                <span class="action-tag tag-action">Attached Action</span>
+                            </div>
+                            <div class="action-desc">
+                                Slam forward while frozen to Lelouch's arm. +5 to hit, deals <strong>1d6 + 3</strong> bludgeoning damage and pushes target 5 ft back.
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-blue" onclick="rollShieldBashAttack()">🎲 Attack (+5)</button>
+                                <button class="btn-act btn-act-dmg" onclick="rollShieldBashDamage()">💥 Dmg (1d6+3)</button>
+                            </div>
+                        </div>
+
+                        <!-- DETACH -->
+                        <div class="action-card" id="card-detach">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('detach')" title="Click for details">💨 Detach ℹ️</span>
+                                <span class="action-tag tag-action">Action</span>
+                            </div>
+                            <div class="action-desc">
+                                Release from teammate's arm, dropping onto the floor into Brute or Puddle mode in an adjacent space.
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-pre" onclick="detachFromAlly()">💧 Detach to Floor</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- BONUS ACTIONS & UTILITY -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>⚡ Bonus Actions</span>
+                        <span style="font-size:0.68rem; color:var(--text-dim);">Pick 1 Per Turn</span>
+                    </div>
+                    
+                    <div class="action-grid-2col">
+                        
+                        <!-- CHANGE SHAPE -->
+                        <div class="action-card">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('change-shape')" title="Click for details">🔄 Change Shape ℹ️</span>
+                                <span class="action-tag tag-bonus">Bonus Action</span>
+                            </div>
+                            <div class="action-desc">
+                                Instantly shift between Brute, Puddle, or Tag-Team Tool mode.
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-pre" onclick="setShape(1)">🥊 Brute</button>
+                                <button class="btn-act btn-act-pre" onclick="setShape(2)">💧 Puddle</button>
+                                <button class="btn-act btn-act-pre" onclick="setShape(3)">⚙️ Tool</button>
+                            </div>
+                        </div>
+
+                        <!-- HEALING SURGE -->
+                        <div class="action-card">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('healing-surge')" title="Click for details">💚 Healing Surge ℹ️</span>
+                                <span class="action-tag tag-bonus">Bonus Action</span>
+                            </div>
+                            <div class="action-desc">
+                                Spray soothing mist to restore <strong>1d4 + 3 HP</strong> to yourself or your partner Lelouch. (Costs 1 Power Charge).
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-heal" onclick="castHealingSurge()">💚 Spray Heal (1d4+3)</button>
+                            </div>
+                        </div>
+
+                        <!-- SWAP MODE (ATTACHED) -->
+                        <div class="action-card" id="card-swap-mode">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('swap-mode')" title="Click for details">🔁 Swap Mode ℹ️</span>
+                                <span class="action-tag tag-bonus">Attached Bonus</span>
+                            </div>
+                            <div class="action-desc">
+                                While attached to Lelouch, instantly toggle between Ice Weapon mode and Ice Shield mode.
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-pre" onclick="cycleAttachedMode()">🔄 Swap Weapon / Shield</button>
+                            </div>
+                        </div>
+
+                        <!-- ICE SPIKE OVERCHARGE -->
+                        <div class="action-card" id="card-ice-overcharge">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('ice-overcharge')" title="Click for details">❄️ Ice Spike Overcharge ℹ️</span>
+                                <span class="action-tag tag-bonus">Attached Bonus</span>
+                            </div>
+                            <div class="action-desc">
+                                In Weapon Mode: Flash-freeze jagged frost crystals. Adds <strong>+1d6 Cold Damage</strong> to Lelouch's next weapon strike.
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-blue" onclick="rollIceOvercharge()">🎲 Roll +1d6 Frost</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- PASSIVE POWERS & OOZE TRAITS -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>🧬 Passive Ooze Traits</span>
+                        <span style="font-size:0.68rem; color:#7dd3fc;">Always Active</span>
+                    </div>
+                    <div class="action-grid-2col">
+                        <div class="action-card">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('amorphous')">🌊 Amorphous Body ℹ️</span>
+                                <span class="action-tag tag-passive">Passive</span>
+                            </div>
+                            <div class="action-desc">
+                                Squeeze through any crack, vent, keyhole, or pipe gap down to 1 inch wide without rolling any dice.
+                            </div>
+                        </div>
+                        <div class="action-card">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('no-organs')">🫁 No Organs ℹ️</span>
+                                <span class="action-tag tag-passive">Immunity</span>
+                            </div>
+                            <div class="action-desc">
+                                Immune to breathing requirements, poison gas, vacuum space decompression, and drowning.
+                            </div>
+                        </div>
+                        <div class="action-card">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('yuumi-rule')">🤝 The Yuumi Rule ℹ️</span>
+                                <span class="action-tag tag-passive">Attached</span>
+                            </div>
+                            <div class="action-desc">
+                                While attached, you cannot be targeted by direct enemy attacks and you ride along on your partner for free!
+                            </div>
+                        </div>
+                        <div class="action-card">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('puddle-slip')">⛸️ Puddle Slippage ℹ️</span>
+                                <span class="action-tag tag-passive">Puddle Only</span>
+                            </div>
+                            <div class="action-desc">
+                                In Puddle form, enemies have Disadvantage on attack rolls made against you when you slide past them.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INVENTORY & COIN PURSE -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>🎒 Inventory & Gold</span>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span style="font-size:0.75rem; font-weight:700; color:var(--accent-gold);" id="gold-disp">10 GP</span>
+                            <button class="btn-act btn-act-pre" onclick="modGold(1)" style="font-size:0.65rem; padding:1px 5px;">+1</button>
+                            <button class="btn-act btn-act-pre" onclick="modGold(-1)" style="font-size:0.65rem; padding:1px 5px;">-1</button>
+                        </div>
+                    </div>
+
+                    <div class="inv-list-compact" id="inv-list">
+                        <!-- Dynamic items rendered via JS -->
+                    </div>
+
+                    <div style="display:flex; gap:6px; margin-top:4px;">
+                        <input type="text" id="new-item-name" class="hp-input-num" placeholder="Add item name..." style="flex:1; text-align:left; padding:4px 8px; font-size:0.75rem;">
+                        <button class="btn-act btn-act-pre" onclick="addItemFromInput()" style="font-size:0.72rem;">➕ Add Item</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- UNIVERSAL COMPENDIUM MODAL -->
+    <div class="modal-overlay" id="compendium-modal" onclick="closeModalOnBackdrop(event)">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-title">📖 Feature Details</h3>
+                <button class="modal-close-btn" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modal-body-content">
+                <!-- Injected via JavaScript -->
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;" id="modal-actions-footer">
+                <button class="btn-act btn-act-pre" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* -------------------------------------------------------------
+           THE WATERBALL MASTER CHARACTER STATE & CONTROLLER
+           ------------------------------------------------------------- */
+        const MAX_HP = 22;
+        let curHP = 22;
+        let tempHP = 0;
+        let activeShape = 1; // 1 = Brute, 2 = Puddle, 3 = Tool
+        let toolConfig = 'shield'; // 'tool', 'weapon', 'shield'
+        let powerCharges = 2; // 2 Uses / Game
+        let advantageMode = 'normal'; // 'normal', 'adv', 'dis'
+        let gold = 10;
+
+        let inventory = [
+            { name: "Frozen Core Trinket (Pulsing blue water orb)", qty: 1 },
+            { name: "Pouch of Polished River Stones", qty: 10 },
+            { name: "Flask of Mineral Spring Water", qty: 2 }
+        ];
+
+        const COMPENDIUM_DB = {
+            'slam': {
+                title: "🥊 Slam Attack (Brute Mode)",
+                desc: "<strong>Type:</strong> Melee Weapon Attack (Action)<br><strong>Reach:</strong> 5 ft.<br><strong>Attack Roll:</strong> 1d20 + 5 to hit.<br><strong>Hit Damage:</strong> 2d6 + 3 bludgeoning damage.<br><strong>Knockdown Special:</strong> On a hit, the target must succeed on a <strong>DC 13 Strength Saving Throw</strong> or be knocked flat on the floor (Prone condition). Attacks against prone enemies within 5 ft have Advantage!",
+                buttons: [
+                    { label: '🎲 Attack Roll (+5)', class: 'btn-act btn-act-blue', action: () => rollSlamAttack() },
+                    { label: '💥 Damage Roll (2d6+3)', class: 'btn-act btn-act-dmg', action: () => rollSlamDamage() },
+                    { label: '⚠️ DC 13 Save', class: 'btn-act btn-act-pre', action: () => promptSave('DC 13 Strength Save or fall Prone!') }
+                ]
+            },
+            'bomb': {
+                title: "💣 Waterball Bomb",
+                desc: "<strong>Type:</strong> Area of Effect Blast (Action)<br><strong>Radius:</strong> 15-foot sphere centered on you or launched up to 30 ft.<br><strong>Damage:</strong> 2d8 bludgeoning & cold damage.<br><strong>Knockback:</strong> Each target in the blast must make a <strong>DC 13 Saving Throw</strong>. On a failure, they take full damage and are shoved <strong>10 feet backwards</strong>.<br><strong>Resource:</strong> Consumes 1 of your 2 Game Charges.",
+                action: () => { castWaterballBomb(); }
+            },
+            'shield-bash': {
+                title: "🛡️ Shield Bash (Attached Form)",
+                desc: "<strong>Type:</strong> Attached Melee Attack (Action)<br><strong>Attack Roll:</strong> 1d20 + 5 to hit.<br><strong>Hit Damage:</strong> 1d6 + 3 bludgeoning damage.<br><strong>Reposition:</strong> Shoves the target 5 feet back without triggering opportunity attacks.",
+                buttons: [
+                    { label: '🎲 Attack Roll (+5)', class: 'btn-act btn-act-blue', action: () => rollShieldBashAttack() },
+                    { label: '💥 Damage Roll (1d6+3)', class: 'btn-act btn-act-dmg', action: () => rollShieldBashDamage() }
+                ]
+            },
+            'detach': {
+                title: "💨 Detach (Release Teammate)",
+                desc: "<strong>Type:</strong> Action<br>Release your frozen bond from Lelouch's arm and land on the floor in an unoccupied space within 5 feet. You instantly assume either Brute (AC 15) or Puddle form.",
+                action: () => { detachFromAlly(); }
+            },
+            'change-shape': {
+                title: "🔄 Change Shape (Shapechanger)",
+                desc: "<strong>Type:</strong> Bonus Action<br>You can reshape your sentient water form as a Bonus Action into:<br>• <strong>Brute Mode:</strong> AC 15, heavy punch attacks with knockdown.<br>• <strong>Puddle Mode:</strong> Squeeze under locked doors, enemies suffer Disadvantage on attacks against you as you slide past.<br>• <strong>Tool / Tag-Team Mode:</strong> Leap onto Lelouch's arm and freeze into gear (Tool, Weapon, or Shield).",
+                action: null
+            },
+            'healing-surge': {
+                title: "💚 Healing Surge",
+                desc: "<strong>Type:</strong> Bonus Action (Can be used in any form including attached)<br>You atomize warm, restorative mineral mist. Restores <strong>1d4 + 3 HP</strong> to yourself or to the partner you are attached to.<br><strong>Resource:</strong> Consumes 1 of your 2 Game Charges.",
+                action: () => { castHealingSurge(); }
+            },
+            'swap-mode': {
+                title: "🔁 Swap Mode (Attached Configuration)",
+                desc: "<strong>Type:</strong> Bonus Action<br>While attached to your partner in Form 3, you can instantly re-freeze from an Ice Weapon into an Ice Shield, or vice-versa.",
+                action: () => { cycleAttachedMode(); }
+            },
+            'ice-overcharge': {
+                title: "❄️ Ice Spike Overcharge",
+                desc: "<strong>Type:</strong> Bonus Action (Weapon Mode only)<br>Flash-freeze serrated ice spikes over the blade/cannon. Adds an additional <strong>+1d6 Cold Damage</strong> to Lelouch's next successful weapon strike!",
+                action: () => { rollIceOvercharge(); }
+            },
+            'amorphous': {
+                title: "🌊 Amorphous Body (Passive)",
+                desc: "You can slip and squeeze through any opening, crack, vent, keyhole, or pipe gap down to 1 inch wide without spending extra movement or rolling any checks.",
+                action: null
+            },
+            'no-organs': {
+                title: "🫁 No Organs (Immunity)",
+                desc: "You have no heart, lungs, or flesh. You are completely immune to poison damage, poisonous gas, suffocation, vacuum space decompression, and drowning.",
+                action: null
+            },
+            'yuumi-rule': {
+                title: "🤝 The Yuumi Rule (Tag-Team Invulnerability)",
+                desc: "While attached to your partner, you occupy their space and ride along for free. You <strong>cannot be targeted by direct enemy attacks or single-target spells</strong>. (If your partner takes damage, you do not take damage).",
+                action: null
+            },
+            'puddle-slip': {
+                title: "⛸️ Puddle Slippage (Stealth Mode)",
+                desc: "While in Puddle form, you are a flat, semi-clear layer of water. Any enemy that attempts an opportunity attack against you as you move past does so with <strong>Disadvantage</strong>.",
+                action: null
+            }
+        };
+
+        /* -------------------------------------------------------------
+           INITIALIZATION & LOCALSTORAGE
+           ------------------------------------------------------------- */
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedState();
+            updateHPUI();
+            updateShapeUI();
+            updatePowerSlotsUI();
+            renderInventory();
+        });
+
+        function saveState() {
+            const state = {
+                curHP,
+                tempHP,
+                activeShape,
+                toolConfig,
+                powerCharges,
+                gold,
+                inventory
+            };
+            localStorage.setItem('dnd_waterball_state', JSON.stringify(state));
+        }
+
+        function loadSavedState() {
+            try {
+                const raw = localStorage.getItem('dnd_waterball_state');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    curHP = (typeof parsed.curHP === 'number') ? parsed.curHP : 22;
+                    tempHP = (typeof parsed.tempHP === 'number') ? parsed.tempHP : 0;
+                    activeShape = parsed.activeShape || 1;
+                    toolConfig = parsed.toolConfig || 'shield';
+                    powerCharges = (typeof parsed.powerCharges === 'number') ? parsed.powerCharges : 2;
+                    gold = (typeof parsed.gold === 'number') ? parsed.gold : 10;
+                    if (Array.isArray(parsed.inventory)) inventory = parsed.inventory;
+                }
+            } catch (e) {
+                console.error("Failed to load local state", e);
+            }
+        }
+
+        /* -------------------------------------------------------------
+           DICE ENGINE & CONSOLE
+           ------------------------------------------------------------- */
+        function logRoll(msg, isCrit = false) {
+            const consoleEl = document.getElementById('roll-res');
+            consoleEl.innerHTML = msg;
+            consoleEl.classList.remove('highlight-roll');
+            void consoleEl.offsetWidth; // trigger reflow
+            consoleEl.classList.add('highlight-roll');
+        }
+
+        function toggleAdvantage(mode) {
+            const advBtn = document.getElementById('btn-adv');
+            const disBtn = document.getElementById('btn-dis');
+            if (advantageMode === mode) {
+                advantageMode = 'normal';
+                advBtn.classList.remove('btn-act-blue');
+                disBtn.classList.remove('btn-act-blue');
+            } else {
+                advantageMode = mode;
+                if (mode === 'adv') {
+                    advBtn.classList.add('btn-act-blue');
+                    disBtn.classList.remove('btn-act-blue');
+                } else {
+                    disBtn.classList.add('btn-act-blue');
+                    advBtn.classList.remove('btn-act-blue');
+                }
+            }
+        }
+
+        function modDiceMod(delta) {
+            const el = document.getElementById('dice-mod');
+            el.value = (parseInt(el.value) || 0) + delta;
+        }
+
+        function rollCustomDie(sides) {
+            const mod = parseInt(document.getElementById('dice-mod').value) || 0;
+            let d1 = Math.floor(Math.random() * sides) + 1;
+            let total = d1 + mod;
+            let note = "";
+
+            if (sides === 20 && advantageMode !== 'normal') {
+                let d2 = Math.floor(Math.random() * 20) + 1;
+                let kept = (advantageMode === 'adv') ? Math.max(d1, d2) : Math.min(d1, d2);
+                let dropped = (advantageMode === 'adv') ? Math.min(d1, d2) : Math.max(d1, d2);
+                total = kept + mod;
+                note = ` <span style="color:#94a3b8; font-size:0.78rem;">[Rolls: ${d1}, ${d2} (${advantageMode.toUpperCase()} kept ${kept})]</span>`;
+            }
+
+            let critNote = "";
+            if (sides === 20 && (d1 === 20 || total - mod === 20)) {
+                critNote = " <span style='color:#fde047; font-weight:700;'>🔥 CRITICAL HIT (NAT 20)!</span>";
+            } else if (sides === 20 && (d1 === 1 || total - mod === 1)) {
+                critNote = " <span style='color:#ef4444; font-weight:700;'>💀 CRITICAL MISS (NAT 1)!</span>";
+            }
+
+            logRoll(`🎲 <strong>d${sides} Roll:</strong> <span style="font-size:1.15rem; color:var(--accent-blue); font-weight:700;">${total}</span> (Roll: ${d1} + Mod: ${mod})${note}${critNote}`);
+        }
+
+        function rollD20(label, bonus) {
+            const customMod = parseInt(document.getElementById('dice-mod').value) || 0;
+            const netMod = bonus + customMod;
+            let r1 = Math.floor(Math.random() * 20) + 1;
+            let finalRoll = r1;
+            let detail = `(d20: ${r1}`;
+
+            if (advantageMode !== 'normal') {
+                let r2 = Math.floor(Math.random() * 20) + 1;
+                finalRoll = (advantageMode === 'adv') ? Math.max(r1, r2) : Math.min(r1, r2);
+                detail = `(${advantageMode.toUpperCase()} rolls: ${r1}, ${r2} ➔ ${finalRoll}`;
+            }
+
+            let total = finalRoll + netMod;
+            let critText = "";
+            if (finalRoll === 20) critText = " <span style='color:#fde047; font-weight:700;'>★ CRIT (NAT 20)!</span>";
+            if (finalRoll === 1) critText = " <span style='color:#ef4444; font-weight:700;'>💀 NAT 1!</span>";
+
+            logRoll(`🎯 <strong>${label}:</strong> <span style="font-size:1.15rem; color:var(--accent-blue); font-weight:700;">${total}</span> <span style="color:#94a3b8; font-size:0.8rem;">${detail} + Mod: ${netMod})</span>${critText}`);
+        }
+
+        /* -------------------------------------------------------------
+           HP MANAGEMENT & RESTS
+           ------------------------------------------------------------- */
+        function updateHPUI() {
+            const hpDisp = document.getElementById('hp-disp');
+            const hpBar = document.getElementById('hp-bar');
+            const tempBar = document.getElementById('hp-temp-bar');
+
+            let pct = Math.max(0, Math.min(100, (curHP / MAX_HP) * 100));
+            hpBar.style.width = pct + '%';
+
+            if (tempHP > 0) {
+                hpDisp.innerHTML = `${curHP}/${MAX_HP} <span style="color:#38bdf8; font-size:0.75rem;">(+${tempHP} Temp)</span>`;
+                let tempPct = Math.min(100, (tempHP / MAX_HP) * 100);
+                tempBar.style.width = tempPct + '%';
+            } else {
+                hpDisp.textContent = `${curHP}/${MAX_HP}`;
+                tempBar.style.width = '0%';
+            }
+
+            if (pct > 50) {
+                hpBar.style.backgroundColor = 'var(--accent-green)';
+                hpDisp.style.color = 'var(--accent-green)';
+            } else if (pct > 25) {
+                hpBar.style.backgroundColor = 'var(--accent-gold)';
+                hpDisp.style.color = 'var(--accent-gold)';
+            } else {
+                hpBar.style.backgroundColor = 'var(--accent-red)';
+                hpDisp.style.color = 'var(--accent-red)';
+            }
+
+            saveState();
+        }
+
+        function applyDamage() {
+            const input = document.getElementById('hp-input');
+            let val = parseInt(input.value);
+            if (isNaN(val) || val <= 0) return;
+
+            let dmgLeft = val;
+            if (tempHP > 0) {
+                if (tempHP >= dmgLeft) {
+                    tempHP -= dmgLeft;
+                    dmgLeft = 0;
+                } else {
+                    dmgLeft -= tempHP;
+                    tempHP = 0;
+                }
+            }
+
+            curHP = Math.max(0, curHP - dmgLeft);
+            logRoll(`💥 <strong>Damage Taken:</strong> Took ${val} damage. Current HP: ${curHP}/${MAX_HP}.`);
+            input.value = '';
+            updateHPUI();
+        }
+
+        function applyHeal() {
+            const input = document.getElementById('hp-input');
+            let val = parseInt(input.value);
+            if (isNaN(val) || val <= 0) return;
+
+            curHP = Math.min(MAX_HP, curHP + val);
+            logRoll(`💚 <strong>Healing Applied:</strong> Restored ${val} HP. Current HP: ${curHP}/${MAX_HP}.`);
+            input.value = '';
+            updateHPUI();
+        }
+
+        function stepHP(delta) {
+            if (delta < 0) {
+                curHP = Math.max(0, curHP - 1);
+                logRoll(`💥 Took 1 damage. HP: ${curHP}/${MAX_HP}`);
+            } else {
+                curHP = Math.min(MAX_HP, curHP + 1);
+                logRoll(`💚 Restored 1 HP. HP: ${curHP}/${MAX_HP}`);
+            }
+            updateHPUI();
+        }
+
+        function clearTempHP() {
+            tempHP = 0;
+            logRoll(`🛡️ Cleared Temporary HP.`);
+            updateHPUI();
+        }
+
+        function takeShortRest() {
+            let heal = Math.floor(MAX_HP * 0.25) + 3; // ~8 HP
+            curHP = Math.min(MAX_HP, curHP + heal);
+            logRoll(`☕ <strong>Short Rest Taken:</strong> Restored ${heal} HP. HP is now ${curHP}/${MAX_HP}.`);
+            updateHPUI();
+        }
+
+        function resetHP() {
+            curHP = MAX_HP;
+            tempHP = 0;
+            powerCharges = 2;
+            logRoll(`⛺ <strong>Full Long Rest Completed:</strong> HP fully restored (22/22), Power charges reset (2/2)!`);
+            updateHPUI();
+            updatePowerSlotsUI();
+        }
+
+        /* -------------------------------------------------------------
+           SHAPECHANGER FORM LOGIC & AC CALCULATION
+           ------------------------------------------------------------- */
+        function setShape(shapeNum) {
+            activeShape = shapeNum;
+            updateShapeUI();
+            saveState();
+        }
+
+        function updateShapeUI() {
+            document.querySelectorAll('.shape-card-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active-shape', (idx + 1) === activeShape);
+            });
+
+            const acDisp = document.getElementById('ac-disp');
+            const headerBadge = document.getElementById('header-form-badge');
+            const shapeTitle = document.getElementById('shape-showcase-title');
+            const shapeDesc = document.getElementById('shape-showcase-desc');
+            const toolSection = document.getElementById('tool-config-section');
+            const slamCard = document.getElementById('card-slam');
+            const shieldBashCard = document.getElementById('card-shield-bash');
+            const detachCard = document.getElementById('card-detach');
+            const swapModeCard = document.getElementById('card-swap-mode');
+            const iceOverchargeCard = document.getElementById('card-ice-overcharge');
+
+            if (activeShape === 1) {
+                // Brute
+                acDisp.textContent = "15";
+                headerBadge.textContent = "FORM 1: BRUTE";
+                headerBadge.className = "pill-badge pill-blue";
+                shapeTitle.textContent = "🥊 Form 1: Waterball Brute (Brawler Mode)";
+                shapeDesc.innerHTML = "Towering 10-foot water creature. <strong>AC increases to 15.</strong> Slam punch deals 2d6+3 bludgeoning and can knock targets <strong>Prone</strong> on failed DC 13 STR save.";
+                toolSection.style.display = "none";
+                slamCard.style.display = "flex";
+                shieldBashCard.style.display = "none";
+                detachCard.style.display = "none";
+                swapModeCard.style.display = "none";
+                iceOverchargeCard.style.display = "none";
+            } else if (activeShape === 2) {
+                // Puddle
+                acDisp.textContent = "14";
+                headerBadge.textContent = "FORM 2: PUDDLE";
+                headerBadge.className = "pill-badge pill-cyan";
+                shapeTitle.textContent = "💧 Form 2: Waterball Puddle (Stealth & Squeeze)";
+                shapeDesc.innerHTML = "Flat, semi-clear fluid puddle sliding silently on the floor. AC 14. <strong>Passive:</strong> Enemies have Disadvantage on attack rolls made against you when moving past. Squeeze under locked doors or into pipes!";
+                toolSection.style.display = "none";
+                slamCard.style.display = "none";
+                shieldBashCard.style.display = "none";
+                detachCard.style.display = "none";
+                swapModeCard.style.display = "none";
+                iceOverchargeCard.style.display = "none";
+            } else if (activeShape === 3) {
+                // Tool / Yuumi
+                toolSection.style.display = "flex";
+                detachCard.style.display = "flex";
+                swapModeCard.style.display = "flex";
+                slamCard.style.display = "none";
+
+                let acVal = (toolConfig === 'shield') ? 16 : 14;
+                acDisp.textContent = acVal;
+                headerBadge.textContent = "FORM 3: TAG-TEAM GEAR";
+                headerBadge.className = "pill-badge pill-gold";
+
+                if (toolConfig === 'tool') {
+                    shapeTitle.textContent = "🔧 Form 3: Tool Mode (Crowbar / Key)";
+                    shapeDesc.innerHTML = "Frozen onto Lelouch's gauntlet as an articulated tool. <strong>The Yuumi Rule:</strong> Cannot be targeted by direct enemy attacks! Grants Lelouch <strong>Advantage</strong> on checks to force open gates, vents, or lockpicks.";
+                    shieldBashCard.style.display = "none";
+                    iceOverchargeCard.style.display = "none";
+                } else if (toolConfig === 'weapon') {
+                    shapeTitle.textContent = "🗡️ Form 3: Ice Weapon (Blade / Cannon)";
+                    shapeDesc.innerHTML = "Crystallized into a deadly frost blade or arm-cannon. Lelouch attacks with INT (+5 to hit, <strong>1d8 + 3 Cold Damage</strong>). You can use your Bonus Action to Overcharge it with <strong>+1d6 Cold</strong>!";
+                    shieldBashCard.style.display = "none";
+                    iceOverchargeCard.style.display = "flex";
+                } else {
+                    // Shield
+                    shapeTitle.textContent = "🛡️ Form 3: Ice Shield (+2 AC)";
+                    shapeDesc.innerHTML = "Massive crystalline ice buckler wrapped around Lelouch's arm. <strong>Both characters gain +2 AC (AC 16)!</strong> Enables the <em>Shield Bash</em> action (1d6+3 dmg + 5ft push).";
+                    shieldBashCard.style.display = "flex";
+                    iceOverchargeCard.style.display = "none";
+                }
+            }
+
+            document.getElementById('active-shape-indicator').textContent = 
+                (activeShape === 1) ? "Brute (AC 15)" : 
+                (activeShape === 2) ? "Puddle (AC 14)" : `Tag-Team (${toolConfig.toUpperCase()})`;
+
+            updateToolConfigButtons();
+        }
+
+        function setToolConfig(mode) {
+            toolConfig = mode;
+            updateShapeUI();
+            logRoll(`⚙️ <strong>Form 3 Reconfigured:</strong> Switched to <strong>${mode.toUpperCase()} MODE</strong>.`);
+            saveState();
+        }
+
+        function updateToolConfigButtons() {
+            document.getElementById('cfg-tool').classList.toggle('active-cfg', toolConfig === 'tool');
+            document.getElementById('cfg-weapon').classList.toggle('active-cfg', toolConfig === 'weapon');
+            document.getElementById('cfg-shield').classList.toggle('active-cfg', toolConfig === 'shield');
+        }
+
+        function cycleAttachedMode() {
+            if (activeShape !== 3) {
+                setShape(3);
+                return;
+            }
+            if (toolConfig === 'shield') {
+                setToolConfig('weapon');
+            } else if (toolConfig === 'weapon') {
+                setToolConfig('tool');
+            } else {
+                setToolConfig('shield');
+            }
+        }
+
+        function detachFromAlly() {
+            setShape(1); // Detach into Brute
+            logRoll(`💨 <strong>Detached:</strong> Leaped off Lelouch's arm and landed on the floor as <strong>Waterball Brute (AC 15)</strong>!`);
+        }
+
+        /* -------------------------------------------------------------
+           LIMITED POWERS (2 USES / GAME)
+           ------------------------------------------------------------- */
+        function updatePowerSlotsUI() {
+            document.getElementById('pip-1').classList.toggle('empty', powerCharges < 1);
+            document.getElementById('pip-2').classList.toggle('empty', powerCharges < 2);
+            document.getElementById('power-slots-label').textContent = `${powerCharges} / 2 Available`;
+            saveState();
+        }
+
+        function togglePowerSlot(slotNum) {
+            if (slotNum === 1) {
+                powerCharges = (powerCharges >= 1) ? 0 : 1;
+            } else if (slotNum === 2) {
+                powerCharges = (powerCharges === 2) ? 1 : 2;
+            }
+            updatePowerSlotsUI();
+        }
+
+        function resetPowerSlots() {
+            powerCharges = 2;
+            logRoll(`🔮 Reset Power charges to 2 / 2.`);
+            updatePowerSlotsUI();
+        }
+
+        function spendPowerCharge() {
+            if (powerCharges <= 0) {
+                logRoll(`⚠️ <span style="color:#ef4444;">No power charges remaining! (0/2). Take a rest to restore charges.</span>`);
+                return false;
+            }
+            powerCharges--;
+            updatePowerSlotsUI();
+            return true;
+        }
+
+        function castWaterballBomb() {
+            if (!spendPowerCharge()) return;
+            let d1 = Math.floor(Math.random() * 8) + 1;
+            let d2 = Math.floor(Math.random() * 8) + 1;
+            let total = d1 + d2;
+            logRoll(`💣 <strong>Waterball Bomb Detonated!</strong> Deals <span style="font-size:1.15rem; color:#f87171; font-weight:700;">${total}</span> cold/bludgeoning damage (2d8: ${d1}, ${d2}) in 15-ft radius! Targets must make <strong>DC 13 Save</strong> or be knocked <strong>10 ft away</strong>! (Charges left: ${powerCharges}/2)`);
+        }
+
+        function castHealingSurge() {
+            if (!spendPowerCharge()) return;
+            let d = Math.floor(Math.random() * 4) + 1;
+            let heal = d + 3;
+            curHP = Math.min(MAX_HP, curHP + heal);
+            updateHPUI();
+            logRoll(`💚 <strong>Healing Surge!</strong> Sprayed restorative mist! Healed <span style="font-size:1.15rem; color:#4ade80; font-weight:700;">${heal} HP</span> (1d4: ${d} + 3) to self/Lelouch! HP is now ${curHP}/${MAX_HP}. (Charges left: ${powerCharges}/2)`);
+        }
+
+        /* -------------------------------------------------------------
+           ATTACK & DAMAGE ROLLS
+           ------------------------------------------------------------- */
+        function rollSlamAttack() {
+            rollD20("Slam Attack Roll (+5)", 5);
+        }
+
+        function rollSlamDamage() {
+            let d1 = Math.floor(Math.random() * 6) + 1;
+            let d2 = Math.floor(Math.random() * 6) + 1;
+            let total = d1 + d2 + 3;
+            logRoll(`💥 <strong>Slam Damage:</strong> <span style="font-size:1.15rem; color:#f87171; font-weight:700;">${total}</span> bludgeoning (2d6: ${d1}, ${d2} + 3). <em>Target must pass DC 13 STR Save or fall Prone!</em>`);
+        }
+
+        function rollShieldBashAttack() {
+            rollD20("Shield Bash Attack (+5)", 5);
+        }
+
+        function rollShieldBashDamage() {
+            let d = Math.floor(Math.random() * 6) + 1;
+            let total = d + 3;
+            logRoll(`🛡️ <strong>Shield Bash Damage:</strong> <span style="font-size:1.15rem; color:#f87171; font-weight:700;">${total}</span> bludgeoning (1d6: ${d} + 3) and target is <strong>pushed 5 ft back</strong>!`);
+        }
+
+        function rollIceOvercharge() {
+            let d = Math.floor(Math.random() * 6) + 1;
+            logRoll(`❄️ <strong>Ice Spike Overcharge:</strong> Adds <span style="font-size:1.15rem; color:#38bdf8; font-weight:700;">+${d} Cold Damage</span> (1d6) to Lelouch's next weapon hit!`);
+        }
+
+        function promptSave(text) {
+            logRoll(`⚠️ <strong>Save Prompt:</strong> ${text}`);
+        }
+
+        /* -------------------------------------------------------------
+           INVENTORY & GOLD MANAGEMENT
+           ------------------------------------------------------------- */
+        function renderInventory() {
+            const listEl = document.getElementById('inv-list');
+            listEl.innerHTML = '';
+
+            inventory.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = 'inv-row-item';
+                row.innerHTML = `
+                    <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${item.name}">${item.name}</span>
+                    <div class="inv-controls">
+                        <div class="inv-stepper">
+                            <button class="btn-step-qty" onclick="modItemQty(${index}, -1)">➖</button>
+                            <span class="inv-qty-val">${item.qty}x</span>
+                            <button class="btn-step-qty" onclick="modItemQty(${index}, 1)">➕</button>
+                        </div>
+                        <button class="btn-step-qty" onclick="deleteItem(${index})" style="color:#ef4444;" title="Discard item">✕</button>
+                    </div>
+                `;
+                listEl.appendChild(row);
+            });
+
+            document.getElementById('gold-disp').textContent = `${gold} GP`;
+            saveState();
+        }
+
+        function modItemQty(index, delta) {
+            inventory[index].qty += delta;
+            if (inventory[index].qty <= 0) {
+                inventory.splice(index, 1);
+            }
+            renderInventory();
+        }
+
+        function deleteItem(index) {
+            inventory.splice(index, 1);
+            renderInventory();
+        }
+
+        function addItemFromInput() {
+            const input = document.getElementById('new-item-name');
+            const name = input.value.trim();
+            if (!name) return;
+
+            const existing = inventory.find(i => i.name.toLowerCase() === name.toLowerCase());
+            if (existing) {
+                existing.qty++;
+            } else {
+                inventory.push({ name: name, qty: 1 });
+            }
+            input.value = '';
+            renderInventory();
+        }
+
+        function modGold(delta) {
+            gold = Math.max(0, gold + delta);
+            renderInventory();
+        }
+
+        /* -------------------------------------------------------------
+           COMPENDIUM MODALS
+           ------------------------------------------------------------- */
+        function openModal(key) {
+            const data = COMPENDIUM_DB[key];
+            if (!data) return;
+
+            document.getElementById('modal-title').innerHTML = data.title;
+            document.getElementById('modal-body-content').innerHTML = data.desc;
+
+            const footer = document.getElementById('modal-actions-footer');
+            footer.innerHTML = '';
+            if (data.buttons && Array.isArray(data.buttons)) {
+                data.buttons.forEach(b => {
+                    const btn = document.createElement('button');
+                    btn.className = b.class || 'btn-act btn-act-blue';
+                    btn.innerHTML = b.label;
+                    btn.onclick = () => {
+                        b.action();
+                    };
+                    footer.appendChild(btn);
+                });
+            } else if (data.action) {
+                const actBtn = document.createElement('button');
+                actBtn.className = 'btn-act btn-act-blue';
+                actBtn.textContent = '🎲 Execute Action';
+                actBtn.onclick = () => {
+                    data.action();
+                    closeModal();
+                };
+                footer.appendChild(actBtn);
+            }
+
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'btn-act btn-act-pre';
+            closeBtn.textContent = 'Close';
+            closeBtn.onclick = closeModal;
+            footer.appendChild(closeBtn);
+
+            document.getElementById('compendium-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('compendium-modal').classList.remove('active');
+        }
+
+        function closeModalOnBackdrop(e) {
+            if (e.target.id === 'compendium-modal') closeModal();
+        }
+
+        /* -------------------------------------------------------------
+           1-CLICK SESSION STATE EXPORT PROTOCOL
+           ------------------------------------------------------------- */
+        function exportSheetState() {
+            const shapeName = (activeShape === 1) ? "Form 1: Brute (15 AC)" :
+                              (activeShape === 2) ? "Form 2: Puddle (14 AC)" :
+                              `Form 3: Tool (${toolConfig.toUpperCase()})`;
+            const str = `💧 [THE WATERBALL EXPORT] HP: ${curHP}/${MAX_HP} (Temp: ${tempHP}) | Active Shape: ${shapeName} | Power Charges: ${powerCharges}/2 | Gold: ${gold} GP | Inventory: ${inventory.map(i => i.name + ' x' + i.qty).join(', ')}`;
+            navigator.clipboard.writeText(str).then(() => {
+                logRoll(`📋 <strong>State Copied to Clipboard!</strong> Ready to paste into chat or Discord.`);
+            }).catch(() => {
+                prompt("Copy your character state below:", str);
+            });
+        }
+    </script>
+</body>
+</html>

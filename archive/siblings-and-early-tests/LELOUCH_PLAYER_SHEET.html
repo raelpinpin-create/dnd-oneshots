@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lelouch — Interactive Player Sheet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #0b0f19;
+            --bg-sheet: #0e1626;
+            --panel-bg: #141f36;
+            --panel-sub: #10192d;
+            --card-border: #22324f;
+            --card-border-hover: #f59e0b;
+            --accent-gold: #f59e0b;
+            --accent-blue: #38bdf8;
+            --accent-cyan: #22d3ee;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-purple: #c084fc;
+            --text-light: #f8fafc;
+            --text-dim: #94a3b8;
+            --text-muted: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-light);
+            line-height: 1.5;
+            padding: 16px 12px;
+            display: flex;
+            justify-content: center;
+            font-size: 0.88rem;
+        }
+
+        .sheet-container {
+            width: 100%;
+            max-width: 1180px;
+            background-color: var(--bg-sheet);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.85);
+            overflow: hidden;
+        }
+
+        /* Top Header Banner */
+        .header-banner {
+            background: linear-gradient(180deg, #1b263e 0%, #0e172a 100%);
+            border-bottom: 1px solid var(--card-border);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .header-title h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-gold);
+            font-size: 1.65rem;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            text-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+        }
+
+        .header-title .subtitle {
+            font-size: 0.82rem;
+            color: #fde68a;
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        .header-title .tagline {
+            font-size: 0.74rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pill-badge {
+            padding: 4px 11px;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .pill-gold { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .pill-purple { background: rgba(192, 132, 252, 0.15); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.4); }
+        .pill-blue { background: #0369a1; color: #f0f9ff; border: 1px solid #0284c7; }
+
+        /* Top Prominent Dice Roller Console */
+        .top-dice-console {
+            background: #090e1b;
+            border-bottom: 1px solid var(--card-border);
+            padding: 10px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .dice-controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .dice-buttons-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .dice-btn {
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-light);
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .dice-btn:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            background: rgba(245, 158, 11, 0.12);
+        }
+
+        .dice-mod-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .roll-result-display {
+            background: linear-gradient(135deg, #0f182c 0%, #090f1e 100%);
+            border: 1.5px solid var(--card-border);
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.92rem;
+            color: #f8fafc;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        .roll-result-display.highlight-roll {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 16px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Beginner Turn Cheatsheet Bar */
+        .turn-cheatsheet-bar {
+            background: linear-gradient(90deg, #131c30 0%, #1a253e 100%);
+            border-bottom: 1px solid var(--card-border);
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 0.76rem;
+        }
+
+        .turn-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .turn-action { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .turn-bonus { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .turn-reaction { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.3); }
+        .turn-move { background: rgba(245, 158, 11, 0.15); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        /* Main 2-Column Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 16px;
+            padding: 16px 20px;
+        }
+
+        @media (max-width: 960px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+
+        /* Panel Base */
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .panel-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            padding-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        /* Vitals 4-Box Row */
+        .vitals-4box {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .vital-mini-box {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 8px 4px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.15s ease;
+        }
+        .vital-mini-box:hover {
+            border-color: var(--card-border-hover);
+        }
+
+        .vital-mini-lbl {
+            font-size: 0.64rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .vital-mini-val {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-top: 1px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* HP Controller */
+        .hp-ctrl-container {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 9px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .hp-health-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: #090e18;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            position: relative;
+        }
+
+        .hp-health-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: var(--accent-green);
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .hp-health-bar-temp {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            background: rgba(56, 189, 248, 0.7);
+            transition: width 0.3s ease;
+        }
+
+        .hp-btn-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .hp-input-num {
+            background: #090e18;
+            border: 1px solid var(--card-border);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.84rem;
+            font-weight: 600;
+            padding: 4px 6px;
+            border-radius: 4px;
+            width: 55px;
+            text-align: center;
+            outline: none;
+        }
+        .hp-input-num:focus { border-color: var(--accent-gold); }
+
+        .btn-act {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-act:active { transform: scale(0.97); }
+        .btn-act-dmg { background: #991b1b; color: #fee2e2; }
+        .btn-act-dmg:hover { background: #b91c1c; }
+        .btn-act-heal { background: #065f46; color: #d1fae5; }
+        .btn-act-heal:hover { background: #047857; }
+        .btn-act-gold { background: #b45309; color: #fef3c7; }
+        .btn-act-gold:hover { background: #d97706; }
+        .btn-act-blue { background: #0284c7; color: #f0f9ff; }
+        .btn-act-blue:hover { background: #0369a1; }
+        .btn-act-purple { background: #7e22ce; color: #f3e8ff; }
+        .btn-act-purple:hover { background: #9333ea; }
+        .btn-act-pre { background: #1e293b; color: var(--text-light); border: 1px solid var(--card-border); }
+        .btn-act-pre:hover { background: #334155; }
+
+        /* Synergy Toggle Cards */
+        .synergy-toggle-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .toggle-btn-card {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 6px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .toggle-btn-card:hover { border-color: var(--accent-gold); }
+        .toggle-btn-card.active-buff {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.12);
+        }
+        .toggle-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .toggle-badge.off { background: #334155; color: #94a3b8; }
+        .toggle-badge.on { background: #0284c7; color: #f0f9ff; }
+
+        /* Ability Scores Strip */
+        .ability-strip {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .ability-box {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 5px;
+            text-align: center;
+            padding: 6px 2px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .ability-box:hover { border-color: var(--accent-gold); background: rgba(245, 158, 11, 0.08); }
+        .ability-box.active-key {
+            border: 1.5px solid var(--accent-gold);
+            background: rgba(245, 158, 11, 0.12);
+        }
+
+        .ability-name { font-size: 0.65rem; font-weight: 700; color: var(--text-dim); }
+        .ability-score { font-size: 1.05rem; font-weight: 700; color: var(--text-light); font-family: 'JetBrains Mono', monospace; }
+        .ability-mod { font-size: 0.74rem; font-weight: 700; color: var(--text-dim); }
+        .ability-box.active-key .ability-mod { color: var(--accent-gold); }
+
+        /* Saves & Skills */
+        .stat-row-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .stat-row-item {
+            font-size: 0.76rem;
+            color: var(--text-light);
+            padding: 3px 8px;
+            background: var(--panel-sub);
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1px solid transparent;
+        }
+        .stat-row-item:hover {
+            background: #1e293b;
+            border-color: var(--accent-gold);
+        }
+        .stat-row-item.prof-item {
+            color: var(--accent-gold);
+            font-weight: 600;
+            background: rgba(245, 158, 11, 0.08);
+            border-left: 3px solid var(--accent-gold);
+        }
+
+        /* Action Cards Grid */
+        .action-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        @media (max-width: 640px) {
+            .action-grid-2col { grid-template-columns: 1fr; }
+        }
+
+        .action-card {
+            background-color: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: all 0.15s ease;
+        }
+        .action-card:hover { border-color: var(--card-border-hover); }
+        .action-card.highlight-card {
+            border-color: rgba(245, 158, 11, 0.6);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .action-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            font-weight: 700;
+            gap: 4px;
+        }
+
+        .action-tag {
+            font-size: 0.64rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+        .tag-action { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .tag-bonus { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; }
+        .tag-reaction { background: rgba(244, 63, 94, 0.2); color: #fda4af; }
+        .tag-directive { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .tag-gambit { background: rgba(192, 132, 252, 0.2); color: #d8b4fe; }
+
+        .action-desc {
+            font-size: 0.74rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        .action-btn-row {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        /* Pips & Resource Trackers */
+        .pip-group {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .pip-slot {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .pip-gold {
+            background: #d97706;
+            border: 1px solid #fbbf24;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+        }
+        .pip-purple {
+            background: #7e22ce;
+            border: 1px solid #c084fc;
+            box-shadow: 0 0 8px rgba(192, 132, 252, 0.4);
+        }
+        .pip-slot.empty {
+            background: #1e293b;
+            border-color: #475569;
+            box-shadow: none;
+        }
+
+        /* Inventory */
+        .inv-list-compact {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .inv-row-item {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 4px;
+            padding: 4px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            gap: 6px;
+        }
+
+        .inv-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .inv-stepper {
+            display: inline-flex;
+            align-items: center;
+            background: #090e18;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            padding: 1px 4px;
+            gap: 3px;
+        }
+
+        .btn-step-qty {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.68rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 1px 3px;
+        }
+        .btn-step-qty:hover { color: var(--accent-gold); }
+
+        .inv-qty-val {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            min-width: 20px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Modal Overlay & Popups */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(3, 7, 18, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal-card {
+            background: #0f172a;
+            border: 1.5px solid var(--accent-gold);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.9);
+            animation: modalPop 0.18s ease-out;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 8px;
+        }
+        .modal-header h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-gold);
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 2px 6px;
+        }
+        .modal-close-btn:hover { color: #f87171; }
+
+        .modal-body {
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sheet-container">
+        
+        <!-- HEADER BANNER -->
+        <header class="header-banner">
+            <div class="header-title">
+                <h1>♟️ LELOUCH</h1>
+                <div class="subtitle">Level 2 Tactician • Mastermind Strategist</div>
+                <div class="tagline">Battlefield Director • Absolute Commands & Tactical Directives</div>
+            </div>
+            <div class="header-actions">
+                <a href="WATERBALL_PLAYER_SHEET.html" class="btn-act btn-act-pre" style="color:var(--accent-blue); border-color:rgba(56,189,248,0.4);" title="Switch to The Waterball's character card">💧 View Partner: The Waterball</a>
+                <button class="btn-act btn-act-pre" onclick="exportSheetState()" style="color:var(--accent-gold); border-color:rgba(245,158,11,0.4);" title="Copy live HP, directives, gambits, and inventory delta">📋 Export Data</button>
+                <span class="pill-badge pill-gold">TACTICIAN</span>
+                <span class="pill-badge pill-purple">ABSOLUTE COMMAND</span>
+            </div>
+        </header>
+
+        <!-- TOP PROMINENT DICE ROLLER CONSOLE -->
+        <section class="top-dice-console">
+            <div class="dice-controls-bar">
+                <div class="dice-buttons-group">
+                    <span style="font-size:0.75rem; font-weight:700; color:var(--text-dim); margin-right:3px;">🎲 Roll:</span>
+                    <button class="dice-btn" onclick="rollCustomDie(20)">d20</button>
+                    <button class="dice-btn" onclick="rollCustomDie(12)">d12</button>
+                    <button class="dice-btn" onclick="rollCustomDie(10)">d10</button>
+                    <button class="dice-btn" onclick="rollCustomDie(8)">d8</button>
+                    <button class="dice-btn" onclick="rollCustomDie(6)">d6</button>
+                    <button class="dice-btn" onclick="rollCustomDie(4)">d4</button>
+                    <button class="dice-btn" onclick="rollCustomDie(100)">d100</button>
+                </div>
+
+                <div class="dice-mod-group">
+                    <span style="font-size:0.75rem; font-weight:600; color:var(--text-dim);">Mod:</span>
+                    <input type="number" id="dice-mod" class="hp-input-num" value="0" style="width:44px; padding:2px 4px;">
+                    <button class="btn-act btn-act-pre" onclick="modDiceMod(1)">+1</button>
+                    <button class="btn-act btn-act-pre" onclick="modDiceMod(-1)">-1</button>
+                    <button class="btn-act btn-act-pre" onclick="document.getElementById('dice-mod').value=0">0</button>
+                    <button class="btn-act btn-act-pre" id="btn-adv" onclick="toggleAdvantage('adv')">Adv</button>
+                    <button class="btn-act btn-act-pre" id="btn-dis" onclick="toggleAdvantage('dis')">Dis</button>
+                </div>
+            </div>
+
+            <!-- RESULT BANNER -->
+            <div class="roll-result-display" id="roll-res">
+                ♟️ Tactical calculation engine active. Select a directive, attack, or gambit to command the field!
+            </div>
+        </section>
+
+        <!-- BEGINNER TURN CHEATSHEET -->
+        <div class="turn-cheatsheet-bar">
+            <span style="font-weight:700; color:var(--text-dim);">⚡ On Your Turn:</span>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <span class="turn-pill turn-action">🟢 1 Action (Vermilion Sidearm / Spring Blade / Absolute Command)</span>
+                <span class="turn-pill turn-bonus">🔵 1 Bonus Action (Tactical Directive: Strike / Fall Back / Brace)</span>
+                <span class="turn-pill turn-move">🟡 Move 30 ft</span>
+                <span class="turn-pill turn-reaction">🔴 1 Reaction (Checkmate Counter / Opportunity Attack)</span>
+            </div>
+        </div>
+
+        <!-- MAIN 2-COLUMN LAYOUT -->
+        <div class="main-layout">
+            
+            <!-- LEFT COLUMN: VITALS, HP, TAG-TEAM TOGGLES, STATS, SAVES & SKILLS -->
+            <div>
+                
+                <!-- 4-BOX VITALS -->
+                <div class="vitals-4box">
+                    <div class="vital-mini-box">
+                        <span class="vital-mini-lbl">HIT POINTS</span>
+                        <span class="vital-mini-val" id="hp-disp" style="color:var(--accent-green);">16/16</span>
+                    </div>
+                    <div class="vital-mini-box">
+                        <span class="vital-mini-lbl">ARMOR CLASS</span>
+                        <span class="vital-mini-val" id="ac-disp" style="color:var(--accent-gold);">14</span>
+                    </div>
+                    <div class="vital-mini-box" onclick="rollD20('Initiative Check (DEX +1)', 1)" style="cursor:pointer;" title="Click to roll Initiative (+1)">
+                        <span class="vital-mini-lbl">INIT 🎲</span>
+                        <span class="vital-mini-val" style="color:var(--accent-blue);">+1</span>
+                    </div>
+                    <div class="vital-mini-box" title="Keyed to INT: DC 13 Save, +5 to hit">
+                        <span class="vital-mini-lbl">INT DC / HIT</span>
+                        <span class="vital-mini-val" style="font-size:0.86rem; color:var(--accent-gold);">DC 13 | +5</span>
+                    </div>
+                </div>
+
+                <!-- INTEGRATED HP CONTROLLER -->
+                <div class="hp-ctrl-container">
+                    <div class="hp-health-bar-bg">
+                        <div class="hp-health-bar-fill" id="hp-bar" style="width: 100%;"></div>
+                        <div class="hp-health-bar-temp" id="hp-temp-bar" style="width: 0%;"></div>
+                    </div>
+                    
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <div style="display:flex; align-items:center; gap:6px; width:100%;">
+                            <input type="number" id="hp-input" class="hp-input-num" placeholder="Enter amount..." min="1" max="99" style="flex:1; height:34px; font-size:0.92rem; text-align:left; padding:4px 10px; font-weight:600;">
+                            <button class="btn-act btn-act-dmg" onclick="applyDamage()" style="padding:6px 14px; height:34px; font-weight:700;">💥 Take Damage</button>
+                            <button class="btn-act btn-act-heal" onclick="applyHeal()" style="padding:6px 14px; height:34px; font-weight:700;">💚 Heal HP</button>
+                        </div>
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; width:100%;">
+                            <div style="display:flex; gap:4px;">
+                                <button class="btn-act btn-act-dmg" style="padding:4px 9px; font-size:0.74rem; font-weight:700;" onclick="stepHP(-1)" title="Take 1 Damage">➖ -1</button>
+                                <button class="btn-act btn-act-heal" style="padding:4px 9px; font-size:0.74rem; font-weight:700;" onclick="stepHP(1)" title="Heal 1 HP">➕ +1</button>
+                            </div>
+                            <div style="display:flex; gap:4px;">
+                                <button class="btn-act btn-act-pre" onclick="clearTempHP()" style="padding:4px 7px; font-size:0.7rem; color:#94a3b8;">🛡️ Clear Temp</button>
+                                <button class="btn-act btn-act-pre" onclick="takeShortRest()" style="padding:4px 7px; font-size:0.7rem; color:var(--accent-blue);">☕ Short Rest</button>
+                                <button class="btn-act btn-act-pre" onclick="resetHP()" style="padding:4px 7px; font-size:0.7rem; color:var(--accent-green);">⛺ Long Rest</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAG-TEAM SYNERGY TOGGLES (WATERBALL ATTACHED) -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>🤝 Waterball Tag-Team Gear</span>
+                        <span style="font-size:0.68rem; color:#38bdf8;">Auto-Sync AC & Weapons</span>
+                    </div>
+                    <div class="synergy-toggle-grid">
+                        <div class="toggle-btn-card" id="card-shield-toggle" onclick="toggleWaterballShield()">
+                            <div>
+                                <div style="font-size:0.74rem; font-weight:700;">🛡️ Ice Shield</div>
+                                <div style="font-size:0.66rem; color:var(--text-dim);">+2 AC (16 AC)</div>
+                            </div>
+                            <span class="toggle-badge off" id="badge-shield">OFF (14)</span>
+                        </div>
+                        <div class="toggle-btn-card" id="card-weapon-toggle" onclick="toggleWaterballWeapon()">
+                            <div>
+                                <div style="font-size:0.74rem; font-weight:700;">🗡️ Ice Weapon</div>
+                                <div style="font-size:0.66rem; color:var(--text-dim);">1d8+3 Cold (INT)</div>
+                            </div>
+                            <span class="toggle-badge off" id="badge-weapon">INACTIVE</span>
+                        </div>
+                    </div>
+                    <div style="font-size:0.72rem; color:#94a3b8; line-height:1.35; padding:2px 4px;">
+                        💡 When The Waterball attaches to you, toggle Shield mode to boost your AC to 16, or Weapon mode to unleash the frost blade!
+                    </div>
+                </div>
+
+                <!-- 6 ABILITY SCORES STRIP -->
+                <div class="ability-strip">
+                    <div class="ability-box" onclick="rollD20('STR Check', -1)" title="Click to roll Strength (-1)">
+                        <div class="ability-name">STR</div>
+                        <div class="ability-score">8</div>
+                        <div class="ability-mod">-1</div>
+                    </div>
+                    <div class="ability-box" onclick="rollD20('DEX Check', 1)" title="Click to roll Dexterity (+1)">
+                        <div class="ability-name">DEX</div>
+                        <div class="ability-score">12</div>
+                        <div class="ability-mod">+1</div>
+                    </div>
+                    <div class="ability-box" onclick="rollD20('CON Check', 2)" title="Click to roll Constitution (+2)">
+                        <div class="ability-name">CON</div>
+                        <div class="ability-score">14</div>
+                        <div class="ability-mod">+2</div>
+                    </div>
+                    <div class="ability-box active-key" onclick="rollD20('INT Check (Tactics/Calculation)', 3)" title="Click to roll Intelligence (+3)">
+                        <div class="ability-name">INT</div>
+                        <div class="ability-score">16</div>
+                        <div class="ability-mod">+3</div>
+                    </div>
+                    <div class="ability-box" onclick="rollD20('WIS Check (Perception/Awareness)', 1)" title="Click to roll Wisdom (+1)">
+                        <div class="ability-name">WIS</div>
+                        <div class="ability-score">12</div>
+                        <div class="ability-mod">+1</div>
+                    </div>
+                    <div class="ability-box" onclick="rollD20('CHA Check (Command/Presence)', 1)" title="Click to roll Charisma (+1)">
+                        <div class="ability-name">CHA</div>
+                        <div class="ability-score">12</div>
+                        <div class="ability-mod">+1</div>
+                    </div>
+                </div>
+
+                <!-- SAVING THROWS -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>🛡️ Saving Throws</span>
+                        <span style="font-size:0.68rem; color:var(--accent-gold);">★ = Proficient</span>
+                    </div>
+                    <div class="stat-row-list">
+                        <div class="stat-row-item" onclick="rollD20('STR Saving Throw', -1)">
+                            <span>Strength Save</span>
+                            <span style="font-weight:700;">-1</span>
+                        </div>
+                        <div class="stat-row-item" onclick="rollD20('DEX Saving Throw', 1)">
+                            <span>Dexterity Save</span>
+                            <span style="font-weight:700;">+1</span>
+                        </div>
+                        <div class="stat-row-item" onclick="rollD20('CON Saving Throw', 2)">
+                            <span>Constitution Save</span>
+                            <span style="font-weight:700;">+2</span>
+                        </div>
+                        <div class="stat-row-item prof-item" onclick="rollD20('INT Saving Throw', 5)">
+                            <span>★ Intelligence Save</span>
+                            <span style="font-weight:700;">+5</span>
+                        </div>
+                        <div class="stat-row-item prof-item" onclick="rollD20('WIS Saving Throw', 3)">
+                            <span>★ Wisdom Save</span>
+                            <span style="font-weight:700;">+3</span>
+                        </div>
+                        <div class="stat-row-item" onclick="rollD20('CHA Saving Throw', 1)">
+                            <span>Charisma Save</span>
+                            <span style="font-weight:700;">+1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 18 SKILLS LIST -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>🎯 All 18 Skills</span>
+                        <span style="font-size:0.68rem; color:var(--accent-gold);">★ = Proficient</span>
+                    </div>
+                    <div class="stat-row-list" style="max-height:220px; overflow-y:auto;">
+                        <div class="stat-row-item prof-item" onclick="rollD20('Arcana (INT)', 5)"><span>★ Arcana (INT)</span><span>+5</span></div>
+                        <div class="stat-row-item prof-item" onclick="rollD20('History (INT)', 5)"><span>★ History (INT)</span><span>+5</span></div>
+                        <div class="stat-row-item prof-item" onclick="rollD20('Investigation (INT)', 5)"><span>★ Investigation (INT)</span><span>+5</span></div>
+                        <div class="stat-row-item prof-item" onclick="rollD20('Insight (WIS)', 3)"><span>★ Insight (WIS)</span><span>+3</span></div>
+                        <div class="stat-row-item prof-item" onclick="rollD20('Perception (WIS)', 3)"><span>★ Perception (WIS)</span><span>+3</span></div>
+                        <div class="stat-row-item prof-item" onclick="rollD20('Persuasion (CHA)', 3)"><span>★ Persuasion (CHA)</span><span>+3</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Acrobatics (DEX)', 1)"><span>Acrobatics (DEX)</span><span>+1</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Animal Handling (WIS)', 1)"><span>Animal Handling (WIS)</span><span>+1</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Athletics (STR)', -1)"><span>Athletics (STR)</span><span>-1</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Deception (CHA)', 1)"><span>Deception (CHA)</span><span>+1</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Intimidation (CHA)', 1)"><span>Intimidation (CHA)</span><span>+1</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Medicine (WIS)', 1)"><span>Medicine (WIS)</span><span>+1</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Nature (INT)', 3)"><span>Nature (INT)</span><span>+3</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Performance (CHA)', 1)"><span>Performance (CHA)</span><span>+1</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Religion (INT)', 3)"><span>Religion (INT)</span><span>+3</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Sleight of Hand (DEX)', 1)"><span>Sleight of Hand (DEX)</span><span>+1</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Stealth (DEX)', 1)"><span>Stealth (DEX)</span><span>+1</span></div>
+                        <div class="stat-row-item" onclick="rollD20('Survival (WIS)', 1)"><span>Survival (WIS)</span><span>+1</span></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: ATTACKS, TACTICAL DIRECTIVES, GAMBITS & INVENTORY -->
+            <div>
+                
+                <!-- ATTACKS SECTION (KEYED TO INT) -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>🎯 Attacks (Keyed to Intelligence)</span>
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <button class="btn-act btn-act-pre" id="btn-vex-toggle" onclick="toggleVexMastery()" style="font-size:0.68rem; padding:2px 6px;" title="Vex gives Advantage on next attack after hitting">✨ Vex: Ready</button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-grid-2col">
+                        
+                        <!-- VERMILION SIDEARM -->
+                        <div class="action-card highlight-card">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#fde68a;" onclick="openModal('sidearm')" title="Click for details">🔫 Vermilion Sidearm ℹ️</span>
+                                <span class="action-tag tag-action">Ranged • 80 ft</span>
+                            </div>
+                            <div class="action-desc">
+                                Arcane sidearm keyed to INT (+5 to hit). Deals <strong>1d6 + 3 radiant damage</strong>. <em>Mastery (Vex):</em> Hitting grants Advantage on your next attack!
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-gold" onclick="rollSidearmAttack()">🎲 Attack (+5)</button>
+                                <button class="btn-act btn-act-dmg" onclick="rollSidearmDamage()">💥 Dmg (1d6+3)</button>
+                                <button class="btn-act btn-act-pre" onclick="triggerVex()" style="color:#fbbf24;">✨ Trigger Vex</button>
+                            </div>
+                        </div>
+
+                        <!-- SPRING BLADE -->
+                        <div class="action-card">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#fde68a;" onclick="openModal('blade')" title="Click for details">🗡️ Spring Blade ℹ️</span>
+                                <span class="action-tag tag-action">Melee • 5 ft</span>
+                            </div>
+                            <div class="action-desc">
+                                Concealed wrist blade. +5 to hit. Deals <strong>1d4 + 3 piercing damage</strong>. Reliable backup in close quarters.
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-gold" onclick="rollBladeAttack()">🎲 Attack (+5)</button>
+                                <button class="btn-act btn-act-dmg" onclick="rollBladeDamage()">💥 Dmg (1d4+3)</button>
+                            </div>
+                        </div>
+
+                        <!-- WATERBALL WEAPON ATTACK (DYNAMIC CARD) -->
+                        <div class="action-card" id="card-waterball-ice-weapon" style="display:none; border-color:#38bdf8; background:rgba(56,189,248,0.06);">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#7dd3fc;" onclick="openModal('ice-weapon')" title="Click for details">❄️ Waterball Ice Blade / Cannon ℹ️</span>
+                                <span class="action-tag tag-action">Tag-Team Action</span>
+                            </div>
+                            <div class="action-desc">
+                                You attack using your INT (+5 to hit). Deals <strong>1d8 + 3 Cold Damage</strong>. (Waterball can use Bonus Action for +1d6 overcharge!).
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-blue" onclick="rollIceWeaponAttack()">🎲 Attack (+5)</button>
+                                <button class="btn-act btn-act-dmg" onclick="rollIceWeaponDamage()">💥 Dmg (1d8+3)</button>
+                                <button class="btn-act btn-act-blue" onclick="rollOverchargedDamage()">❄️ Overcharged (1d8+1d6+3)</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- TACTICAL DIRECTIVES (3 USES / REST | DIE: 1d6) -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>♟️ Tactical Directives (Bonus Action)</span>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span style="font-size:0.68rem; color:#fde68a;" id="directives-count-lbl">3 / 3 Available</span>
+                            <div class="pip-group">
+                                <div class="pip-slot pip-gold" id="pip-dir-1" onclick="toggleDirectiveSlot(1)"></div>
+                                <div class="pip-slot pip-gold" id="pip-dir-2" onclick="toggleDirectiveSlot(2)"></div>
+                                <div class="pip-slot pip-gold" id="pip-dir-3" onclick="toggleDirectiveSlot(3)"></div>
+                            </div>
+                            <button class="btn-act btn-act-pre" onclick="resetDirectives()" style="font-size:0.65rem; padding:1px 5px;">Reset</button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-grid-2col">
+                        
+                        <!-- STRIKE THE OPENING -->
+                        <div class="action-card">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#fde68a;" onclick="openModal('strike')" title="Click for details">🎯 "Strike the Opening!" ℹ️</span>
+                                <span class="action-tag tag-directive">Bonus Action</span>
+                            </div>
+                            <div class="action-desc">
+                                Direct target ally's focus. Ally adds <strong>+1d6 to their attack roll</strong>, and adds <strong>+1d6 to their damage</strong> if the attack hits!
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-gold" onclick="useStrikeOpening()">🎲 Command (+1d6 Roll)</button>
+                            </div>
+                        </div>
+
+                        <!-- FALL BACK -->
+                        <div class="action-card">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#fde68a;" onclick="openModal('fallback')" title="Click for details">🏃 "Fall Back!" ℹ️</span>
+                                <span class="action-tag tag-directive">Bonus Action</span>
+                            </div>
+                            <div class="action-desc">
+                                Tactical withdrawal command. Target ally uses their <strong>Reaction</strong> to move up to half their speed <strong>without provoking opportunity attacks</strong>.
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-gold" onclick="useFallBack()">📢 Order Withdrawal</button>
+                            </div>
+                        </div>
+
+                        <!-- BRACE -->
+                        <div class="action-card">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#fde68a;" onclick="openModal('brace')" title="Click for details">🛡️ "Brace!" ℹ️</span>
+                                <span class="action-tag tag-directive">Bonus Action</span>
+                            </div>
+                            <div class="action-desc">
+                                Defensive positioning callout. Target ally uses their <strong>Reaction</strong> to add <strong>+1d6 to their AC</strong> against an incoming enemy attack.
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-gold" onclick="useBrace()">🛡️ Command (+1d6 AC)</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- THE ABSOLUTE GAMBITS (2 POINTS / REST) -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>👁️ The Absolute Gambits</span>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span style="font-size:0.68rem; color:#d8b4fe;" id="gambits-count-lbl">2 / 2 Points</span>
+                            <div class="pip-group">
+                                <div class="pip-slot pip-purple" id="pip-gam-1" onclick="toggleGambitSlot(1)"></div>
+                                <div class="pip-slot pip-purple" id="pip-gam-2" onclick="toggleGambitSlot(2)"></div>
+                            </div>
+                            <button class="btn-act btn-act-pre" onclick="resetGambits()" style="font-size:0.65rem; padding:1px 5px;">Reset</button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-grid-2col">
+                        
+                        <!-- ABSOLUTE COMMAND -->
+                        <div class="action-card highlight-card" style="border-color:rgba(192,132,252,0.5);">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#d8b4fe;" onclick="openModal('absolute-command')" title="Click for details">👁️ Absolute Command ℹ️</span>
+                                <span class="action-tag tag-gambit">1 Pt • Action</span>
+                            </div>
+                            <div class="action-desc">
+                                Issue an irresistible 1-word command (<em>"Kneel," "Drop," "Halt"</em>). Target must make a <strong>DC 13 Wisdom Save</strong>. On failure, it <strong>wastes its entire turn obeying</strong>!
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-purple" onclick="useAbsoluteCommand()">👁️ Issue Command (DC 13)</button>
+                            </div>
+                        </div>
+
+                        <!-- CHECKMATE COUNTER -->
+                        <div class="action-card" style="border-color:rgba(192,132,252,0.4);">
+                            <div class="action-header">
+                                <span style="cursor:pointer; color:#d8b4fe;" onclick="openModal('checkmate-counter')" title="Click for details">⚡ Checkmate Counter ℹ️</span>
+                                <span class="action-tag tag-reaction">1 Pt • Reaction</span>
+                            </div>
+                            <div class="action-desc">
+                                Predict and disrupt enemy lines. When an enemy within 30 ft makes an attack roll, you immediately impose <strong>Disadvantage</strong> on that attack.
+                            </div>
+                            <div class="action-btn-row">
+                                <button class="btn-act btn-act-purple" onclick="useCheckmateCounter()">⚠️ Impose Disadvantage</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- INVENTORY & COIN PURSE -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>🎒 Inventory & Gold</span>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span style="font-size:0.75rem; font-weight:700; color:var(--accent-gold);" id="gold-disp">15 GP</span>
+                            <button class="btn-act btn-act-pre" onclick="modGold(1)" style="font-size:0.65rem; padding:1px 5px;">+1</button>
+                            <button class="btn-act btn-act-pre" onclick="modGold(-1)" style="font-size:0.65rem; padding:1px 5px;">-1</button>
+                        </div>
+                    </div>
+
+                    <div class="inv-list-compact" id="inv-list">
+                        <!-- Dynamic items rendered via JS -->
+                    </div>
+
+                    <div style="display:flex; gap:6px; margin-top:4px;">
+                        <input type="text" id="new-item-name" class="hp-input-num" placeholder="Add item name..." style="flex:1; text-align:left; padding:4px 8px; font-size:0.75rem;">
+                        <button class="btn-act btn-act-pre" onclick="addItemFromInput()" style="font-size:0.72rem;">➕ Add Item</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- UNIVERSAL COMPENDIUM MODAL -->
+    <div class="modal-overlay" id="compendium-modal" onclick="closeModalOnBackdrop(event)">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-title">📖 Feature Details</h3>
+                <button class="modal-close-btn" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modal-body-content">
+                <!-- Injected via JavaScript -->
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;" id="modal-actions-footer">
+                <button class="btn-act btn-act-pre" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* -------------------------------------------------------------
+           LELOUCH MASTER CHARACTER STATE & CONTROLLER
+           ------------------------------------------------------------- */
+        const MAX_HP = 16;
+        let curHP = 16;
+        let tempHP = 0;
+        let baseAC = 14;
+        let waterballShieldActive = false;
+        let waterballWeaponActive = false;
+        let directiveSlots = 3; // 3 Uses / Rest
+        let gambitPoints = 2;   // 2 Points / Rest
+        let vexReady = true;
+        let advantageMode = 'normal';
+        let gold = 15;
+
+        let inventory = [
+            { name: "Vermilion Sidearm & Holster", qty: 1 },
+            { name: "Concealed Spring Blade", qty: 1 },
+            { name: "Tactical Holo-Compass & Map", qty: 1 },
+            { name: "Set of Finely Carved Chess Pieces", qty: 1 },
+            { name: "Rations (Field Pack)", qty: 3 }
+        ];
+
+        const COMPENDIUM_DB = {
+            'sidearm': {
+                title: "🔫 Vermilion Sidearm",
+                desc: "<strong>Type:</strong> Ranged Weapon Attack (Action)<br><strong>Range:</strong> 80 ft.<br><strong>Attack Roll:</strong> 1d20 + 5 to hit (Keyed to Intelligence!).<br><strong>Hit Damage:</strong> 1d6 + 3 radiant damage.<br><strong>Weapon Mastery (Vex):</strong> Landing a hit throws the enemy off-balance, giving you <strong>Advantage on your next attack roll</strong> against that target!",
+                buttons: [
+                    { label: '🎲 Attack Roll (+5)', class: 'btn-act btn-act-gold', action: () => rollSidearmAttack() },
+                    { label: '💥 Damage Roll (1d6+3)', class: 'btn-act btn-act-dmg', action: () => rollSidearmDamage() }
+                ]
+            },
+            'blade': {
+                title: "🗡️ Spring Blade",
+                desc: "<strong>Type:</strong> Melee Weapon Attack (Action)<br><strong>Reach:</strong> 5 ft.<br><strong>Attack Roll:</strong> 1d20 + 5 to hit.<br><strong>Hit Damage:</strong> 1d4 + 3 piercing damage.<br>A concealed quick-draw blade built into the gauntlet.",
+                buttons: [
+                    { label: '🎲 Attack Roll (+5)', class: 'btn-act btn-act-gold', action: () => rollBladeAttack() },
+                    { label: '💥 Damage Roll (1d4+3)', class: 'btn-act btn-act-dmg', action: () => rollBladeDamage() }
+                ]
+            },
+            'ice-weapon': {
+                title: "❄️ Waterball Ice Weapon (Blade / Cannon)",
+                desc: "<strong>Type:</strong> Tag-Team Melee/Ranged Attack (Action)<br><strong>Attack Roll:</strong> 1d20 + 5 to hit (Keyed to Intelligence!).<br><strong>Hit Damage:</strong> 1d8 + 3 Cold damage.<br><strong>Overcharge Synergy:</strong> If The Waterball uses its Bonus Action to Overcharge the weapon, add an additional <strong>+1d6 Cold Damage</strong> on your next hit!",
+                buttons: [
+                    { label: '🎲 Attack Roll (+5)', class: 'btn-act btn-act-blue', action: () => rollIceWeaponAttack() },
+                    { label: '💥 Damage Roll (1d8+3)', class: 'btn-act btn-act-dmg', action: () => rollIceWeaponDamage() },
+                    { label: '❄️ Overcharge (1d8+1d6+3)', class: 'btn-act btn-act-blue', action: () => rollOverchargedDamage() }
+                ]
+            },
+            'strike': {
+                title: "🎯 Tactical Directive: 'Strike the Opening!'",
+                desc: "<strong>Type:</strong> Bonus Action<br><strong>Target:</strong> 1 Ally within 60 ft who can see or hear you.<br><strong>Effect:</strong> You spot a critical flaw in the enemy's guard. The ally adds <strong>+1d6 to their attack roll</strong>, and if the attack hits, they also add <strong>+1d6 to their damage</strong>!<br><strong>Resource:</strong> Consumes 1 Tactical Directive slot.",
+                action: () => { useStrikeOpening(); }
+            },
+            'fallback': {
+                title: "🏃 Tactical Directive: 'Fall Back!'",
+                desc: "<strong>Type:</strong> Bonus Action<br><strong>Target:</strong> 1 Ally within 60 ft.<br><strong>Effect:</strong> Target ally uses their <strong>Reaction</strong> to move up to half their movement speed immediately. This movement <strong>does NOT provoke opportunity attacks</strong>!<br><strong>Resource:</strong> Consumes 1 Tactical Directive slot.",
+                action: () => { useFallBack(); }
+            },
+            'brace': {
+                title: "🛡️ Tactical Directive: 'Brace!'",
+                desc: "<strong>Type:</strong> Bonus Action<br><strong>Target:</strong> 1 Ally within 60 ft.<br><strong>Effect:</strong> When an ally is attacked, you shout a defensive posture. The ally uses their <strong>Reaction</strong> to roll 1d6 and add that number to their <strong>Armor Class (AC)</strong> against that attack!<br><strong>Resource:</strong> Consumes 1 Tactical Directive slot.",
+                action: () => { useBrace(); }
+            },
+            'absolute-command': {
+                title: "👁️ Absolute Command",
+                desc: "<strong>Type:</strong> Action (1 Gambit Point)<br><strong>Range:</strong> 60 ft.<br><strong>Saving Throw:</strong> Target must succeed on a <strong>DC 13 Wisdom Save</strong>.<br><strong>Effect:</strong> You speak a single undeniable command word (<em>'Kneel', 'Drop', 'Halt', 'Flee'</em>). On a failed save, the creature is overwhelmed by your authority and <strong>wastes its entire next turn obeying your command</strong>!",
+                action: () => { useAbsoluteCommand(); }
+            },
+            'checkmate-counter': {
+                title: "⚡ Checkmate Counter",
+                desc: "<strong>Type:</strong> Reaction (1 Gambit Point)<br><strong>Trigger:</strong> An enemy within 30 ft makes an attack roll.<br><strong>Effect:</strong> You anticipate the trajectory of the enemy strike and shout a split-second countermeasure, immediately imposing <strong>Disadvantage</strong> on that enemy's attack roll!",
+                action: () => { useCheckmateCounter(); }
+            }
+        };
+
+        /* -------------------------------------------------------------
+           INITIALIZATION & LOCALSTORAGE
+           ------------------------------------------------------------- */
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedState();
+            updateHPUI();
+            updateACUI();
+            updateDirectivesUI();
+            updateGambitsUI();
+            renderInventory();
+        });
+
+        function saveState() {
+            const state = {
+                curHP,
+                tempHP,
+                waterballShieldActive,
+                waterballWeaponActive,
+                directiveSlots,
+                gambitPoints,
+                gold,
+                inventory
+            };
+            localStorage.setItem('dnd_lelouch_state', JSON.stringify(state));
+        }
+
+        function loadSavedState() {
+            try {
+                const raw = localStorage.getItem('dnd_lelouch_state');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    curHP = (typeof parsed.curHP === 'number') ? parsed.curHP : 16;
+                    tempHP = (typeof parsed.tempHP === 'number') ? parsed.tempHP : 0;
+                    waterballShieldActive = !!parsed.waterballShieldActive;
+                    waterballWeaponActive = !!parsed.waterballWeaponActive;
+                    directiveSlots = (typeof parsed.directiveSlots === 'number') ? parsed.directiveSlots : 3;
+                    gambitPoints = (typeof parsed.gambitPoints === 'number') ? parsed.gambitPoints : 2;
+                    gold = (typeof parsed.gold === 'number') ? parsed.gold : 15;
+                    if (Array.isArray(parsed.inventory)) inventory = parsed.inventory;
+                }
+            } catch (e) {
+                console.error("Failed to load local state", e);
+            }
+        }
+
+        /* -------------------------------------------------------------
+           DICE ENGINE & CONSOLE
+           ------------------------------------------------------------- */
+        function logRoll(msg, isCrit = false) {
+            const consoleEl = document.getElementById('roll-res');
+            consoleEl.innerHTML = msg;
+            consoleEl.classList.remove('highlight-roll');
+            void consoleEl.offsetWidth; // trigger reflow
+            consoleEl.classList.add('highlight-roll');
+        }
+
+        function toggleAdvantage(mode) {
+            const advBtn = document.getElementById('btn-adv');
+            const disBtn = document.getElementById('btn-dis');
+            if (advantageMode === mode) {
+                advantageMode = 'normal';
+                advBtn.classList.remove('btn-act-blue');
+                disBtn.classList.remove('btn-act-blue');
+            } else {
+                advantageMode = mode;
+                if (mode === 'adv') {
+                    advBtn.classList.add('btn-act-blue');
+                    disBtn.classList.remove('btn-act-blue');
+                } else {
+                    disBtn.classList.add('btn-act-blue');
+                    advBtn.classList.remove('btn-act-blue');
+                }
+            }
+        }
+
+        function modDiceMod(delta) {
+            const el = document.getElementById('dice-mod');
+            el.value = (parseInt(el.value) || 0) + delta;
+        }
+
+        function rollCustomDie(sides) {
+            const mod = parseInt(document.getElementById('dice-mod').value) || 0;
+            let d1 = Math.floor(Math.random() * sides) + 1;
+            let total = d1 + mod;
+            let note = "";
+
+            if (sides === 20 && advantageMode !== 'normal') {
+                let d2 = Math.floor(Math.random() * 20) + 1;
+                let kept = (advantageMode === 'adv') ? Math.max(d1, d2) : Math.min(d1, d2);
+                let dropped = (advantageMode === 'adv') ? Math.min(d1, d2) : Math.max(d1, d2);
+                total = kept + mod;
+                note = ` <span style="color:#94a3b8; font-size:0.78rem;">[Rolls: ${d1}, ${d2} (${advantageMode.toUpperCase()} kept ${kept})]</span>`;
+            }
+
+            let critNote = "";
+            if (sides === 20 && (d1 === 20 || total - mod === 20)) {
+                critNote = " <span style='color:#fde047; font-weight:700;'>🔥 CRITICAL HIT (NAT 20)!</span>";
+            } else if (sides === 20 && (d1 === 1 || total - mod === 1)) {
+                critNote = " <span style='color:#ef4444; font-weight:700;'>💀 CRITICAL MISS (NAT 1)!</span>";
+            }
+
+            logRoll(`🎲 <strong>d${sides} Roll:</strong> <span style="font-size:1.15rem; color:var(--accent-gold); font-weight:700;">${total}</span> (Roll: ${d1} + Mod: ${mod})${note}${critNote}`);
+        }
+
+        function rollD20(label, bonus) {
+            const customMod = parseInt(document.getElementById('dice-mod').value) || 0;
+            const netMod = bonus + customMod;
+            let r1 = Math.floor(Math.random() * 20) + 1;
+            let finalRoll = r1;
+            let detail = `(d20: ${r1}`;
+
+            if (advantageMode !== 'normal') {
+                let r2 = Math.floor(Math.random() * 20) + 1;
+                finalRoll = (advantageMode === 'adv') ? Math.max(r1, r2) : Math.min(r1, r2);
+                detail = `(${advantageMode.toUpperCase()} rolls: ${r1}, ${r2} ➔ ${finalRoll}`;
+            }
+
+            let total = finalRoll + netMod;
+            let critText = "";
+            if (finalRoll === 20) critText = " <span style='color:#fde047; font-weight:700;'>★ CRIT (NAT 20)!</span>";
+            if (finalRoll === 1) critText = " <span style='color:#ef4444; font-weight:700;'>💀 NAT 1!</span>";
+
+            logRoll(`🎯 <strong>${label}:</strong> <span style="font-size:1.15rem; color:var(--accent-gold); font-weight:700;">${total}</span> <span style="color:#94a3b8; font-size:0.8rem;">${detail} + Mod: ${netMod})</span>${critText}`);
+        }
+
+        /* -------------------------------------------------------------
+           HP MANAGEMENT & RESTS
+           ------------------------------------------------------------- */
+        function updateHPUI() {
+            const hpDisp = document.getElementById('hp-disp');
+            const hpBar = document.getElementById('hp-bar');
+            const tempBar = document.getElementById('hp-temp-bar');
+
+            let pct = Math.max(0, Math.min(100, (curHP / MAX_HP) * 100));
+            hpBar.style.width = pct + '%';
+
+            if (tempHP > 0) {
+                hpDisp.innerHTML = `${curHP}/${MAX_HP} <span style="color:#38bdf8; font-size:0.75rem;">(+${tempHP} Temp)</span>`;
+                let tempPct = Math.min(100, (tempHP / MAX_HP) * 100);
+                tempBar.style.width = tempPct + '%';
+            } else {
+                hpDisp.textContent = `${curHP}/${MAX_HP}`;
+                tempBar.style.width = '0%';
+            }
+
+            if (pct > 50) {
+                hpBar.style.backgroundColor = 'var(--accent-green)';
+                hpDisp.style.color = 'var(--accent-green)';
+            } else if (pct > 25) {
+                hpBar.style.backgroundColor = 'var(--accent-gold)';
+                hpDisp.style.color = 'var(--accent-gold)';
+            } else {
+                hpBar.style.backgroundColor = 'var(--accent-red)';
+                hpDisp.style.color = 'var(--accent-red)';
+            }
+
+            saveState();
+        }
+
+        function applyDamage() {
+            const input = document.getElementById('hp-input');
+            let val = parseInt(input.value);
+            if (isNaN(val) || val <= 0) return;
+
+            let dmgLeft = val;
+            if (tempHP > 0) {
+                if (tempHP >= dmgLeft) {
+                    tempHP -= dmgLeft;
+                    dmgLeft = 0;
+                } else {
+                    dmgLeft -= tempHP;
+                    tempHP = 0;
+                }
+            }
+
+            curHP = Math.max(0, curHP - dmgLeft);
+            logRoll(`💥 <strong>Damage Taken:</strong> Took ${val} damage. Current HP: ${curHP}/${MAX_HP}.`);
+            input.value = '';
+            updateHPUI();
+        }
+
+        function applyHeal() {
+            const input = document.getElementById('hp-input');
+            let val = parseInt(input.value);
+            if (isNaN(val) || val <= 0) return;
+
+            curHP = Math.min(MAX_HP, curHP + val);
+            logRoll(`💚 <strong>Healing Applied:</strong> Restored ${val} HP. Current HP: ${curHP}/${MAX_HP}.`);
+            input.value = '';
+            updateHPUI();
+        }
+
+        function stepHP(delta) {
+            if (delta < 0) {
+                curHP = Math.max(0, curHP - 1);
+                logRoll(`💥 Took 1 damage. HP: ${curHP}/${MAX_HP}`);
+            } else {
+                curHP = Math.min(MAX_HP, curHP + 1);
+                logRoll(`💚 Restored 1 HP. HP: ${curHP}/${MAX_HP}`);
+            }
+            updateHPUI();
+        }
+
+        function clearTempHP() {
+            tempHP = 0;
+            logRoll(`🛡️ Cleared Temporary HP.`);
+            updateHPUI();
+        }
+
+        function takeShortRest() {
+            let heal = Math.floor(MAX_HP * 0.25) + 2; // ~6 HP
+            curHP = Math.min(MAX_HP, curHP + heal);
+            directiveSlots = 3;
+            gambitPoints = 2;
+            logRoll(`☕ <strong>Short Rest:</strong> Restored ${heal} HP (${curHP}/${MAX_HP}), Directives reset (3/3), Gambits reset (2/2)!`);
+            updateHPUI();
+            updateDirectivesUI();
+            updateGambitsUI();
+        }
+
+        function resetHP() {
+            curHP = MAX_HP;
+            tempHP = 0;
+            directiveSlots = 3;
+            gambitPoints = 2;
+            logRoll(`⛺ <strong>Long Rest Completed:</strong> HP full (16/16), Directives (3/3) and Gambits (2/2) fully restored!`);
+            updateHPUI();
+            updateDirectivesUI();
+            updateGambitsUI();
+        }
+
+        /* -------------------------------------------------------------
+           WATERBALL TAG-TEAM SYNERGY & AC
+           ------------------------------------------------------------- */
+        function toggleWaterballShield() {
+            waterballShieldActive = !waterballShieldActive;
+            updateACUI();
+            logRoll(waterballShieldActive ? 
+                `🛡️ <strong>Waterball Shield Attached!</strong> AC increased to <strong>16</strong> (+2 AC)!` : 
+                `🛡️ Waterball Shield unequipped. AC returned to <strong>14</strong>.`);
+            saveState();
+        }
+
+        function toggleWaterballWeapon() {
+            waterballWeaponActive = !waterballWeaponActive;
+            const weaponCard = document.getElementById('card-waterball-ice-weapon');
+            const cardToggle = document.getElementById('card-weapon-toggle');
+            const badge = document.getElementById('badge-weapon');
+
+            if (waterballWeaponActive) {
+                weaponCard.style.display = 'flex';
+                cardToggle.classList.add('active-buff');
+                badge.textContent = 'ACTIVE';
+                badge.className = 'toggle-badge on';
+                logRoll(`🗡️ <strong>Waterball Ice Weapon Ready:</strong> 1d8 + 3 Cold Damage attack enabled!`);
+            } else {
+                weaponCard.style.display = 'none';
+                cardToggle.classList.remove('active-buff');
+                badge.textContent = 'INACTIVE';
+                badge.className = 'toggle-badge off';
+                logRoll(`🗡️ Waterball Ice Weapon detached.`);
+            }
+            saveState();
+        }
+
+        function updateACUI() {
+            const acDisp = document.getElementById('ac-disp');
+            const cardToggle = document.getElementById('card-shield-toggle');
+            const badge = document.getElementById('badge-shield');
+
+            if (waterballShieldActive) {
+                acDisp.textContent = "16";
+                acDisp.style.color = "var(--accent-blue)";
+                cardToggle.classList.add('active-buff');
+                badge.textContent = "+2 AC (16)";
+                badge.className = 'toggle-badge on';
+            } else {
+                acDisp.textContent = "14";
+                acDisp.style.color = "var(--accent-gold)";
+                cardToggle.classList.remove('active-buff');
+                badge.textContent = "OFF (14)";
+                badge.className = 'toggle-badge off';
+            }
+        }
+
+        /* -------------------------------------------------------------
+           TACTICAL DIRECTIVES (3 USES / REST)
+           ------------------------------------------------------------- */
+        function updateDirectivesUI() {
+            document.getElementById('pip-dir-1').classList.toggle('empty', directiveSlots < 1);
+            document.getElementById('pip-dir-2').classList.toggle('empty', directiveSlots < 2);
+            document.getElementById('pip-dir-3').classList.toggle('empty', directiveSlots < 3);
+            document.getElementById('directives-count-lbl').textContent = `${directiveSlots} / 3 Available`;
+            saveState();
+        }
+
+        function toggleDirectiveSlot(idx) {
+            if (idx === 1) directiveSlots = (directiveSlots >= 1) ? 0 : 1;
+            else if (idx === 2) directiveSlots = (directiveSlots >= 2) ? 1 : 2;
+            else if (idx === 3) directiveSlots = (directiveSlots === 3) ? 2 : 3;
+            updateDirectivesUI();
+        }
+
+        function resetDirectives() {
+            directiveSlots = 3;
+            logRoll(`♟️ Tactical Directives reset to 3 / 3.`);
+            updateDirectivesUI();
+        }
+
+        function spendDirective() {
+            if (directiveSlots <= 0) {
+                logRoll(`⚠️ <span style="color:#ef4444;">No Tactical Directives left! (0/3). Take a rest to replenish.</span>`);
+                return false;
+            }
+            directiveSlots--;
+            updateDirectivesUI();
+            return true;
+        }
+
+        function useStrikeOpening() {
+            if (!spendDirective()) return;
+            let d = Math.floor(Math.random() * 6) + 1;
+            logRoll(`🎯 <strong>Directive: "Strike the Opening!"</strong> Target ally adds <span style="font-size:1.15rem; color:#fde047; font-weight:700;">+${d}</span> (1d6) to their attack roll, and <span style="font-size:1.15rem; color:#f87171; font-weight:700;">+${d}</span> to their damage if it hits! (Directives left: ${directiveSlots}/3)`);
+        }
+
+        function useFallBack() {
+            if (!spendDirective()) return;
+            logRoll(`🏃 <strong>Directive: "Fall Back!"</strong> Target ally can spend their <strong>Reaction</strong> to move up to half their speed immediately without provoking opportunity attacks! (Directives left: ${directiveSlots}/3)`);
+        }
+
+        function useBrace() {
+            if (!spendDirective()) return;
+            let d = Math.floor(Math.random() * 6) + 1;
+            logRoll(`🛡️ <strong>Directive: "Brace!"</strong> Target ally uses their <strong>Reaction</strong> to add <span style="font-size:1.15rem; color:#38bdf8; font-weight:700;">+${d} AC</span> (1d6) against this attack! (Directives left: ${directiveSlots}/3)`);
+        }
+
+        /* -------------------------------------------------------------
+           THE ABSOLUTE GAMBITS (2 POINTS / REST)
+           ------------------------------------------------------------- */
+        function updateGambitsUI() {
+            document.getElementById('pip-gam-1').classList.toggle('empty', gambitPoints < 1);
+            document.getElementById('pip-gam-2').classList.toggle('empty', gambitPoints < 2);
+            document.getElementById('gambits-count-lbl').textContent = `${gambitPoints} / 2 Points`;
+            saveState();
+        }
+
+        function toggleGambitSlot(idx) {
+            if (idx === 1) gambitPoints = (gambitPoints >= 1) ? 0 : 1;
+            else if (idx === 2) gambitPoints = (gambitPoints === 2) ? 1 : 2;
+            updateGambitsUI();
+        }
+
+        function resetGambits() {
+            gambitPoints = 2;
+            logRoll(`👁️ Absolute Gambits reset to 2 / 2 points.`);
+            updateGambitsUI();
+        }
+
+        function spendGambit() {
+            if (gambitPoints <= 0) {
+                logRoll(`⚠️ <span style="color:#ef4444;">No Gambit Points left! (0/2). Take a rest to replenish.</span>`);
+                return false;
+            }
+            gambitPoints--;
+            updateGambitsUI();
+            return true;
+        }
+
+        function useAbsoluteCommand() {
+            if (!spendGambit()) return;
+            logRoll(`👁️ <strong>Absolute Command Issued!</strong> Target must make a <strong>DC 13 Wisdom Save</strong>. On failure, it is completely compelled by your word (<em>"Kneel," "Drop," "Halt"</em>) and <strong>wastes its entire turn obeying</strong>! (Gambits left: ${gambitPoints}/2)`);
+        }
+
+        function useCheckmateCounter() {
+            if (!spendGambit()) return;
+            logRoll(`⚡ <strong>Checkmate Counter Triggered!</strong> Imposed <strong>Disadvantage</strong> on enemy attack roll within 30 ft! (Gambits left: ${gambitPoints}/2)`);
+        }
+
+        /* -------------------------------------------------------------
+           ATTACK & DAMAGE ROLLS
+           ------------------------------------------------------------- */
+        function rollSidearmAttack() {
+            rollD20("Vermilion Sidearm Attack (+5)", 5);
+        }
+
+        function rollSidearmDamage() {
+            let d = Math.floor(Math.random() * 6) + 1;
+            let total = d + 3;
+            // Activate Vex advantage for next attack
+            toggleAdvantage('adv');
+            logRoll(`💥 <strong>Sidearm Damage:</strong> <span style="font-size:1.15rem; color:#fde047; font-weight:700;">${total}</span> radiant damage (1d6: ${d} + 3). <span style="color:#fbbf24; font-weight:600; margin-left:6px;">✨ Vex Active: Next attack has ADVANTAGE!</span>`);
+        }
+
+        function triggerVex() {
+            toggleAdvantage('adv');
+            logRoll(`✨ <strong>Vex Mastery Active:</strong> Gained <strong>Advantage</strong> on your next attack! (Adv button turned ON)`);
+        }
+
+        function toggleVexMastery() {
+            toggleAdvantage('adv');
+            if (advantageMode === 'adv') {
+                logRoll(`✨ <strong>Vex Primed:</strong> Advantage enabled for next attack.`);
+            } else {
+                logRoll(`Vex Advantage turned off.`);
+            }
+        }
+
+        function rollBladeAttack() {
+            rollD20("Spring Blade Attack (+5)", 5);
+        }
+
+        function rollBladeDamage() {
+            let d = Math.floor(Math.random() * 4) + 1;
+            let total = d + 3;
+            logRoll(`💥 <strong>Spring Blade Damage:</strong> <span style="font-size:1.15rem; color:#f87171; font-weight:700;">${total}</span> piercing damage (1d4: ${d} + 3).`);
+        }
+
+        function rollIceWeaponAttack() {
+            rollD20("Waterball Ice Weapon Attack (+5)", 5);
+        }
+
+        function rollIceWeaponDamage() {
+            let d = Math.floor(Math.random() * 8) + 1;
+            let total = d + 3;
+            logRoll(`❄️ <strong>Ice Weapon Damage:</strong> <span style="font-size:1.15rem; color:#38bdf8; font-weight:700;">${total}</span> Cold damage (1d8: ${d} + 3).`);
+        }
+
+        function rollOverchargedDamage() {
+            let d1 = Math.floor(Math.random() * 8) + 1;
+            let d2 = Math.floor(Math.random() * 6) + 1;
+            let total = d1 + d2 + 3;
+            logRoll(`❄️🔥 <strong>Overcharged Ice Strike:</strong> <span style="font-size:1.15rem; color:#38bdf8; font-weight:700;">${total}</span> Cold damage (1d8: ${d1} + 1d6 overcharge: ${d2} + 3)!`);
+        }
+
+        /* -------------------------------------------------------------
+           INVENTORY & GOLD MANAGEMENT
+           ------------------------------------------------------------- */
+        function renderInventory() {
+            const listEl = document.getElementById('inv-list');
+            listEl.innerHTML = '';
+
+            inventory.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = 'inv-row-item';
+                row.innerHTML = `
+                    <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${item.name}">${item.name}</span>
+                    <div class="inv-controls">
+                        <div class="inv-stepper">
+                            <button class="btn-step-qty" onclick="modItemQty(${index}, -1)">➖</button>
+                            <span class="inv-qty-val">${item.qty}x</span>
+                            <button class="btn-step-qty" onclick="modItemQty(${index}, 1)">➕</button>
+                        </div>
+                        <button class="btn-step-qty" onclick="deleteItem(${index})" style="color:#ef4444;" title="Discard item">✕</button>
+                    </div>
+                `;
+                listEl.appendChild(row);
+            });
+
+            document.getElementById('gold-disp').textContent = `${gold} GP`;
+            saveState();
+        }
+
+        function modItemQty(index, delta) {
+            inventory[index].qty += delta;
+            if (inventory[index].qty <= 0) {
+                inventory.splice(index, 1);
+            }
+            renderInventory();
+        }
+
+        function deleteItem(index) {
+            inventory.splice(index, 1);
+            renderInventory();
+        }
+
+        function addItemFromInput() {
+            const input = document.getElementById('new-item-name');
+            const name = input.value.trim();
+            if (!name) return;
+
+            const existing = inventory.find(i => i.name.toLowerCase() === name.toLowerCase());
+            if (existing) {
+                existing.qty++;
+            } else {
+                inventory.push({ name: name, qty: 1 });
+            }
+            input.value = '';
+            renderInventory();
+        }
+
+        function modGold(delta) {
+            gold = Math.max(0, gold + delta);
+            renderInventory();
+        }
+
+        /* -------------------------------------------------------------
+           COMPENDIUM MODALS
+           ------------------------------------------------------------- */
+        function openModal(key) {
+            const data = COMPENDIUM_DB[key];
+            if (!data) return;
+
+            document.getElementById('modal-title').innerHTML = data.title;
+            document.getElementById('modal-body-content').innerHTML = data.desc;
+
+            const footer = document.getElementById('modal-actions-footer');
+            footer.innerHTML = '';
+            if (data.buttons && Array.isArray(data.buttons)) {
+                data.buttons.forEach(b => {
+                    const btn = document.createElement('button');
+                    btn.className = b.class || 'btn-act btn-act-gold';
+                    btn.innerHTML = b.label;
+                    btn.onclick = () => {
+                        b.action();
+                    };
+                    footer.appendChild(btn);
+                });
+            } else if (data.action) {
+                const actBtn = document.createElement('button');
+                actBtn.className = 'btn-act btn-act-gold';
+                actBtn.textContent = '🎲 Execute Action';
+                actBtn.onclick = () => {
+                    data.action();
+                    closeModal();
+                };
+                footer.appendChild(actBtn);
+            }
+
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'btn-act btn-act-pre';
+            closeBtn.textContent = 'Close';
+            closeBtn.onclick = closeModal;
+            footer.appendChild(closeBtn);
+
+            document.getElementById('compendium-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('compendium-modal').classList.remove('active');
+        }
+
+        function closeModalOnBackdrop(e) {
+            if (e.target.id === 'compendium-modal') closeModal();
+        }
+
+        /* -------------------------------------------------------------
+           1-CLICK SESSION STATE EXPORT PROTOCOL
+           ------------------------------------------------------------- */
+        function exportSheetState() {
+            const shieldState = waterballShieldActive ? "Equipped (16 AC)" : "Unequipped (14 AC)";
+            const str = `♟️ [LELOUCH EXPORT] HP: ${curHP}/${MAX_HP} (Temp: ${tempHP}) | AC: ${waterballShieldActive ? 16 : 14} (Waterball Shield: ${shieldState}) | Tactical Directives: ${directiveSlots}/3 | Absolute Gambits: ${gambitPoints}/2 | Gold: ${gold} GP | Inventory: ${inventory.map(i => i.name + ' x' + i.qty).join(', ')}`;
+            navigator.clipboard.writeText(str).then(() => {
+                logRoll(`📋 <strong>State Copied to Clipboard!</strong> Ready to paste into chat or Discord.`);
+            }).catch(() => {
+                prompt("Copy your character state below:", str);
+            });
+        }
+    </script>
+</body>
+</html>

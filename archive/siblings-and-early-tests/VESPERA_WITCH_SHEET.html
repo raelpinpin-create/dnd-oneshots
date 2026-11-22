@@ -1,0 +1,2910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lady Vespera — Master Player Sheet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #0d1117;
+            --bg-sheet: #161b22;
+            --panel-bg: #1c2128;
+            --panel-sub: #141820;
+            --card-border: #2d333b;
+            --card-border-hover: #444c56;
+            --accent-char: #9fc490;
+            --accent-char-soft: rgba(159, 196, 144, 0.15);
+            --accent-gold: #d4a359;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-blue: #7da0c9;
+            --accent-purple: #b4a0d9;
+            --text-light: #e6edf3;
+            --text-dim: #8b949e;
+            --text-muted: #6e7681;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-light);
+            line-height: 1.5;
+            padding: 16px 12px;
+            display: flex;
+            justify-content: center;
+            font-size: 0.88rem;
+        }
+
+        .sheet-container {
+            width: 100%;
+            max-width: 1160px;
+            background-color: var(--bg-sheet);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        /* Top Header Banner */
+        .header-banner {
+            background: linear-gradient(180deg, #1d2522 0%, #161b22 100%);
+            border-bottom: 1px solid var(--card-border);
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header-title h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-char);
+            font-size: 1.5rem;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+        }
+
+        .header-title p {
+            color: var(--text-dim);
+            font-size: 0.82rem;
+            font-weight: 500;
+            margin-top: 1px;
+        }
+
+        .pill-badge-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pill-badge {
+            padding: 3px 9px;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: var(--panel-sub);
+            color: var(--text-dim);
+            border: 1px solid var(--card-border);
+        }
+        .pill-char {
+            background: var(--accent-char-soft);
+            color: var(--accent-char);
+            border-color: rgba(159, 196, 144, 0.4);
+        }
+
+        .btn-export {
+            background: #1b2e23;
+            color: #86efac;
+            border: 1px solid #284433;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-export:hover { background: #233b2c; border-color: #3b634b; }
+
+        /* TOP PROMINENT DICE ROLLER CONSOLE */
+        .top-dice-console {
+            background: #111620;
+            border-bottom: 1px solid var(--card-border);
+            padding: 10px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dice-controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .dice-buttons-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .dice-btn {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            color: var(--text-light);
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .dice-btn:hover {
+            border-color: var(--accent-char);
+            color: var(--accent-char);
+            background: var(--accent-char-soft);
+        }
+
+        .dice-mod-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .roll-result-display {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        .roll-result-display.highlight-roll {
+            border-color: var(--accent-char);
+            background: #171d28;
+        }
+
+        .crit-badge {
+            color: #4ade80;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+        .fail-badge {
+            color: #f87171;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        /* Main 2-Column Grid Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 330px 1fr;
+            gap: 14px;
+            padding: 14px 18px;
+        }
+
+        @media (max-width: 960px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+
+        /* Generic Panel */
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .panel-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--accent-char);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Vitals 4-Box Row */
+        .vitals-4box {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .vital-mini-box {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 6px 3px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .vital-mini-lbl {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .vital-mini-val {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-top: 1px;
+            transition: color 0.3s ease;
+        }
+
+        /* ==================================================== */
+        /* PRESERVED FORMAT: HEALTH CONTROLLER 2-COLUMN STEPPERS */
+        /* ==================================================== */
+        .hp-ctrl-container {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            margin-bottom: 8px;
+        }
+
+        .hp-bar-bg {
+            background: #0d1117;
+            border: 1px solid var(--card-border);
+            border-radius: 999px;
+            height: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hp-bar-fill {
+            background: #238636;
+            height: 100%;
+            width: 100%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .hp-steppers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stepper-col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stepper-label {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .stepper-btns {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-hp-dmg {
+            flex: 1;
+            background: #2b1d24;
+            border: 1px solid #4a2835;
+            color: #fca5a5;
+            padding: 5px 0;
+            border-radius: 4px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-hp-dmg:hover { background: #3a2530; border-color: #633647; }
+
+        .btn-hp-heal {
+            flex: 1;
+            background: #18261e;
+            border: 1px solid #294232;
+            color: #86efac;
+            padding: 5px 0;
+            border-radius: 4px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-hp-heal:hover { background: #22372a; border-color: #3b6149; }
+
+        .input-hp-val {
+            width: 44px;
+            background: #0d1117;
+            border: 1px solid var(--card-border);
+            border-radius: 4px;
+            color: var(--text-light);
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 4px 0;
+            outline: none;
+        }
+        .input-hp-val:focus { border-color: var(--accent-char); }
+
+        .btn-temp-hp {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            color: var(--text-light);
+            padding: 4px 6px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+        .btn-temp-hp:hover { border-color: var(--accent-char); color: var(--accent-char); }
+
+        .rest-actions-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .btn-rest {
+            flex: 1;
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            color: var(--text-dim);
+            padding: 4px 0;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-rest:hover { color: var(--text-light); border-color: var(--card-border-hover); }
+
+        /* Dynamic Buffs Bar & Toggles */
+        .buffs-toggle-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .toggle-btn-card {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 5px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .toggle-btn-card:hover { border-color: var(--card-border-hover); }
+        .toggle-btn-card.active-buff {
+            border-color: rgba(159, 196, 144, 0.5);
+            background: var(--accent-char-soft);
+        }
+        .toggle-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .toggle-badge.off { background: var(--panel-bg); color: var(--text-muted); border: 1px solid var(--card-border); }
+        .toggle-badge.on { background: #233828; color: #86efac; border: 1px solid #37593e; }
+
+        /* ==================================================== */
+        /* PRESERVED FORMAT: 6 ABILITY SCORES STRIP (STATS GRID) */
+        /* ==================================================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-box {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 6px 2px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .stat-box:hover {
+            border-color: var(--accent-char);
+            background: var(--accent-char-soft);
+        }
+        .stat-box.active-key {
+            border: 1.5px solid var(--accent-char);
+            background: var(--accent-char-soft);
+        }
+
+        .stat-name { font-size: 0.65rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
+        .stat-mod { font-size: 1.15rem; font-weight: 800; color: var(--text-light); font-family: 'Cinzel', serif; }
+        .stat-box.active-key .stat-mod { color: var(--accent-char); }
+        .stat-score { font-size: 0.62rem; color: var(--text-muted); }
+
+        /* ==================================================== */
+        /* PRESERVED FORMAT: SAVING THROWS (SAVES GRID 3x2) */
+        /* ==================================================== */
+        .saves-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .save-box {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 5px;
+            padding: 5px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .save-box:hover { border-color: var(--card-border-hover); }
+        .save-box.prof-save { border-color: rgba(159, 196, 144, 0.4); background: var(--accent-char-soft); }
+        .save-name { font-size: 0.72rem; color: var(--text-dim); font-weight: 600; }
+        .save-box.prof-save .save-name { color: var(--accent-char); font-weight: 700; }
+        .save-val { font-size: 0.85rem; font-weight: 700; color: var(--text-light); }
+
+        /* All 18 Skills List Matrix */
+        .stat-row-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            max-height: 270px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .stat-row-item {
+            font-size: 0.76rem;
+            color: var(--text-light);
+            padding: 3px 7px;
+            background: var(--panel-sub);
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1px solid transparent;
+        }
+        .stat-row-item:hover {
+            background: #21262d;
+            border-color: var(--card-border-hover);
+        }
+        .stat-row-item.prof-item {
+            color: var(--accent-char);
+            font-weight: 600;
+            background: var(--accent-char-soft);
+            border-left: 3px solid var(--accent-char);
+        }
+
+        /* Action & Spell Cards (2-Column Grid) */
+        .action-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 7px;
+        }
+
+        @media (max-width: 600px) {
+            .action-grid-2col { grid-template-columns: 1fr; }
+        }
+
+        .action-card {
+            background-color: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 7px 9px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: all 0.15s ease;
+        }
+        .action-card:hover { border-color: var(--card-border-hover); }
+        .action-card.unprepared-card {
+            opacity: 0.6;
+            background-color: rgba(20, 24, 32, 0.4);
+            border-style: dashed;
+        }
+
+        .action-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            gap: 4px;
+        }
+
+        .action-card-title {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .action-desc {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            line-height: 1.35;
+        }
+
+        .action-btn-row {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 2px;
+        }
+
+        /* Dropdown for Spell Levels */
+        .lvl-dropdown {
+            background: #0d1117;
+            border: 1px solid var(--card-border);
+            color: var(--accent-char);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-roll-action {
+            background: #21262d;
+            color: var(--text-light);
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-roll-action:hover { background: #30363d; border-color: #8b949e; }
+        .btn-roll-dmg { background: #2b1d24; border-color: #4a2835; color: #fca5a5; }
+        .btn-roll-dmg:hover { background: #3a2530; }
+        .btn-roll-heal { background: #18261e; border-color: #294232; color: #86efac; }
+        .btn-roll-heal:hover { background: #22372a; }
+
+        .btn-act {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--card-border);
+            transition: all 0.15s ease;
+            font-family: 'Inter', sans-serif;
+            background: var(--panel-sub);
+            color: var(--text-light);
+        }
+        .btn-act:hover { background: #21262d; border-color: var(--card-border-hover); }
+        .btn-act-dmg { background: #2b1d24; border-color: #4a2835; color: #fca5a5; }
+        .btn-act-dmg:hover { background: #3a2530; }
+        .btn-act-heal { background: #18261e; border-color: #294232; color: #86efac; }
+        .btn-act-heal:hover { background: #22372a; }
+        .btn-act-temp { background: #1c2738; border-color: #2e415e; color: #93c5fd; }
+        .btn-act-temp:hover { background: #24334a; }
+        .btn-act-pre { background: #21262d; border-color: #30363d; color: var(--text-dim); }
+        .btn-act-pre:hover { color: var(--text-light); border-color: #8b949e; }
+
+        /* Inventory List */
+        .inv-list-compact {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            max-height: 165px;
+            overflow-y: auto;
+        }
+
+        .inv-row-item {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 4px;
+            padding: 3px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.74rem;
+            gap: 6px;
+            transition: border-color 0.15s;
+        }
+        .inv-row-item:hover { border-color: var(--card-border-hover); }
+
+        .inv-item-info {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .inv-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .inv-stepper {
+            display: inline-flex;
+            align-items: center;
+            background: #0d1117;
+            border: 1px solid var(--card-border);
+            border-radius: 4px;
+            padding: 1px 3px;
+            gap: 2px;
+        }
+
+        .btn-step-qty {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-size: 0.68rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 1px 4px;
+            border-radius: 2px;
+            transition: all 0.15s;
+            line-height: 1;
+        }
+        .btn-step-qty:hover { background: #21262d; color: var(--accent-char); }
+
+        .inv-qty-val {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent-char);
+            min-width: 22px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn-del-item {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 700;
+            cursor: pointer;
+            padding: 1px 5px;
+            font-size: 0.85rem;
+            border-radius: 3px;
+            transition: all 0.15s;
+        }
+        .btn-del-item:hover { background: #2b1d24; color: #f87171; }
+
+        /* Modals Common */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(13, 17, 23, 0.85);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: #161b22;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            animation: modalPop 0.15s ease-out;
+        }
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-header {
+            background: linear-gradient(180deg, #1f2522 0%, #161b22 100%);
+            border-bottom: 1px solid var(--card-border);
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            color: var(--accent-char);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.15s;
+        }
+        .modal-close-btn:hover { color: #fff; background: #21262d; }
+        .modal-body {
+            padding: 12px 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .tx-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .tx-item {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 5px;
+            padding: 6px 9px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.76rem;
+            transition: all 0.15s;
+        }
+        .tx-gain { border-left: 3px solid var(--accent-green); }
+        .tx-spend { border-left: 3px solid var(--accent-red); }
+        .tx-reset { border-left: 3px solid var(--accent-char); }
+        .tx-silver { border-left: 3px solid var(--accent-blue); }
+    </style>
+</head>
+<body>
+
+<div class="sheet-container">
+
+    <!-- Top Header Banner -->
+    <header class="header-banner">
+        <div class="header-title">
+            <h1>🧪 Lady Vespera Blackthorne</h1>
+            <p>The Belladonna Sovereign • Necromancy Witch & Noble Herbalist</p>
+        </div>
+        <div class="pill-badge-group">
+            <span class="pill-badge pill-char">WIZARD 1 (NECRO)</span>
+            <span class="pill-badge">HUMAN</span>
+            <span class="pill-badge">LAWFUL EVIL</span>
+            <button class="btn-export" onclick="exportSheetState()">📋 Export Data</button>
+        </div>
+    </header>
+
+    <!-- Top Prominent Dice Roller Console -->
+    <section class="top-dice-console">
+        <div class="dice-controls-bar">
+            <div class="dice-buttons-group">
+                <span style="font-size:0.75rem; font-weight:700; color:var(--text-dim); margin-right:2px;">DICE:</span>
+                <button class="dice-btn" onclick="rollCustomDie(20)">d20</button>
+                <button class="dice-btn" onclick="rollCustomDie(12)">d12</button>
+                <button class="dice-btn" onclick="rollCustomDie(10)">d10</button>
+                <button class="dice-btn" onclick="rollCustomDie(8)">d8</button>
+                <button class="dice-btn" onclick="rollCustomDie(6)">d6</button>
+                <button class="dice-btn" onclick="rollCustomDie(4)">d4</button>
+                <button class="dice-btn" onclick="rollCustomDie(100)">d100</button>
+            </div>
+            <div class="dice-mod-group">
+                <span style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">MOD:</span>
+                <div style="display:inline-flex; align-items:center; background:var(--panel-sub); border:1px solid var(--card-border); border-radius:4px; padding:1px 3px;">
+                    <button class="btn-step-qty" onclick="modDiceMod(-1)">-</button>
+                    <input type="number" id="dice-mod" value="0" style="width:28px; background:transparent; border:none; color:var(--text-light); font-size:0.75rem; text-align:center; font-weight:700; outline:none;">
+                    <button class="btn-step-qty" onclick="modDiceMod(1)">+</button>
+                </div>
+                <div style="display:flex; gap:3px; margin-left:6px;">
+                    <button id="btn-adv" class="btn-act btn-act-pre" style="padding:3px 8px; font-size:0.7rem; font-weight:700;" onclick="toggleAdvantage('adv')">ADV</button>
+                    <button id="btn-dis" class="btn-act btn-act-pre" style="padding:3px 8px; font-size:0.7rem; font-weight:700;" onclick="toggleAdvantage('dis')">DIS</button>
+                </div>
+            </div>
+        </div>
+        <div id="roll-res" class="roll-result-display">
+            <span>Ready for combat. Click any weapon, spell, skill, save, or die to roll.</span>
+        </div>
+    </section>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+        
+        <!-- LEFT COLUMN: Vitals, Stats, Saves, Skills, Gold -->
+        <aside class="left-col">
+            
+            <!-- Vitals 4-Box Row -->
+            <div class="vitals-4box">
+                <div class="vital-mini-box">
+                    <span class="vital-mini-lbl">Hit Points</span>
+                    <span class="vital-mini-val" id="dispHP" style="color:var(--accent-green);">8/8</span>
+                    <span style="font-size:0.62rem; color:var(--text-muted);" id="dispTempHP">+0 Temp</span>
+                </div>
+                <div class="vital-mini-box">
+                    <span class="vital-mini-lbl">Armor Class</span>
+                    <span class="vital-mini-val" id="dispAC">12</span>
+                    <span style="font-size:0.62rem; color:var(--text-muted);" id="dispACSub">Base (10+2 DEX)</span>
+                </div>
+                <div class="vital-mini-box" style="cursor:pointer;" onclick="rollD20('Initiative Check', 2)" title="Click to Roll Initiative (+2)">
+                    <span class="vital-mini-lbl">INIT 🎲</span>
+                    <span class="vital-mini-val">+2</span>
+                    <span style="font-size:0.62rem; color:var(--text-muted);">DEX Mod</span>
+                </div>
+                <div class="vital-mini-box" style="cursor:pointer;" onclick="rollD20('Spell Attack Roll', 5)" title="Click to Roll Spell Attack (+5) / DC 13">
+                    <span class="vital-mini-lbl">SPELL DC / HIT</span>
+                    <span class="vital-mini-val">13 / +5</span>
+                    <span style="font-size:0.62rem; color:var(--text-muted);">INT Spellcasting</span>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- PRESERVED FORMAT: HEALTH CONTROLLER 2-COLUMN STEPPERS -->
+            <!-- ==================================================== -->
+            <div class="hp-ctrl-container">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.72rem; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Health Controller</span>
+                    <span style="font-size:0.72rem; font-weight:700; color:var(--accent-green);" id="dispHealthPct">100%</span>
+                </div>
+                <div class="hp-bar-bg">
+                    <div class="hp-bar-fill" id="hpBarFill" style="width: 100%;"></div>
+                </div>
+                <div class="hp-steppers-grid">
+                    <div class="stepper-col">
+                        <span class="stepper-label">Damage / Heal</span>
+                        <div class="stepper-btns">
+                            <button class="btn-hp-dmg" onclick="applyDamage()">💥 Take</button>
+                            <input type="number" class="input-hp-val" id="hpDeltaInput" value="4" min="1">
+                            <button class="btn-hp-heal" onclick="applyHeal()">💚 Heal</button>
+                        </div>
+                    </div>
+                    <div class="stepper-col">
+                        <span class="stepper-label">Temp HP</span>
+                        <div class="stepper-btns">
+                            <input type="number" class="input-hp-val" id="tempHpInput" value="5" min="1">
+                            <button class="btn-temp-hp" onclick="setTempHP()">🛡️ Set</button>
+                            <button class="btn-temp-hp" onclick="clearTempHP()">✕</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="rest-actions-row">
+                    <button class="btn-rest" onclick="takeShortRest()">☕ Short Rest (1d6+2)</button>
+                    <button class="btn-rest" onclick="takeLongRest()">🛌 Long Rest</button>
+                </div>
+            </div>
+
+            <!-- Dynamic Buffs Bar & Toggles -->
+            <div class="buffs-toggle-bar">
+                <div class="toggle-btn-card" id="card-mage-armor" onclick="toggleMageArmorBuff()">
+                    <div>
+                        <div style="font-size:0.75rem; font-weight:700; color:var(--text-light);">🔮 Ward of Thorns</div>
+                        <div style="font-size:0.65rem; color:var(--text-dim);" id="sub-mage-armor">15 Base AC</div>
+                    </div>
+                    <span class="toggle-badge off" id="badge-mage-armor">OFF (12)</span>
+                </div>
+                <div class="toggle-btn-card" id="card-shield" onclick="toggleShieldReactionBuff()">
+                    <div>
+                        <div style="font-size:0.75rem; font-weight:700; color:var(--text-light);">🛡️ Hex Ward</div>
+                        <div style="font-size:0.65rem; color:var(--text-dim);">+5 AC Reaction</div>
+                    </div>
+                    <span class="toggle-badge off" id="badge-shield">+5 AC</span>
+                </div>
+            </div>
+
+            <!-- Witch's Hex Tokens Bar -->
+            <div class="panel" style="padding: 7px 10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-size:0.75rem; font-weight:700; color:var(--accent-char);">🤝 Witch's Hex Tokens (+1d6)</div>
+                        <div style="font-size:0.62rem; color:var(--text-dim);" id="help-tokens-disp">2 / 2 Available</div>
+                    </div>
+                    <div style="display:flex; gap:3px;">
+                        <button class="btn-act btn-act-heal" style="font-size:0.68rem; padding:2px 7px;" onclick="rollHelpToken()">Roll +1d6</button>
+                        <button class="btn-act btn-act-pre" style="font-size:0.65rem; padding:2px 6px;" onclick="resetHelpTokens()">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- PRESERVED FORMAT: 6 ABILITY SCORES STRIP (STATS GRID) -->
+            <!-- ==================================================== -->
+            <div class="panel">
+                <div class="panel-title">Ability Scores</div>
+                <div class="stats-grid">
+                    <div class="stat-box" onclick="rollD20('Strength Check', -1)" title="Click to Roll Strength Check (-1)">
+                        <div class="stat-name">STR</div>
+                        <div class="stat-mod">-1</div>
+                        <div class="stat-score">8</div>
+                    </div>
+                    <div class="stat-box" onclick="rollD20('Dexterity Check', 2)" title="Click to Roll Dexterity Check (+2)">
+                        <div class="stat-name">DEX</div>
+                        <div class="stat-mod">+2</div>
+                        <div class="stat-score">14</div>
+                    </div>
+                    <div class="stat-box" onclick="rollD20('Constitution Check', 2)" title="Click to Roll Constitution Check (+2)">
+                        <div class="stat-name">CON</div>
+                        <div class="stat-mod">+2</div>
+                        <div class="stat-score">14</div>
+                    </div>
+                    <div class="stat-box active-key" onclick="rollD20('Intelligence Check (Key)', 3)" title="Click to Roll Intelligence Check (+3)">
+                        <div class="stat-name">INT ★</div>
+                        <div class="stat-mod">+3</div>
+                        <div class="stat-score">16</div>
+                    </div>
+                    <div class="stat-box" onclick="rollD20('Wisdom Check', 1)" title="Click to Roll Wisdom Check (+1)">
+                        <div class="stat-name">WIS</div>
+                        <div class="stat-mod">+1</div>
+                        <div class="stat-score">12</div>
+                    </div>
+                    <div class="stat-box" onclick="rollD20('Charisma Check', 0)" title="Click to Roll Charisma Check (+0)">
+                        <div class="stat-name">CHA</div>
+                        <div class="stat-mod">+0</div>
+                        <div class="stat-score">10</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- PRESERVED FORMAT: SAVING THROWS (SAVES GRID 3x2) -->
+            <!-- ==================================================== -->
+            <div class="panel">
+                <div class="panel-title">Saving Throws</div>
+                <div class="saves-grid">
+                    <div class="save-box" onclick="rollD20('Strength Save', -1)" title="Click to Roll Strength Save (-1)">
+                        <div class="save-name">STR</div>
+                        <div class="save-val">-1</div>
+                    </div>
+                    <div class="save-box" onclick="rollD20('Dexterity Save', 2)" title="Click to Roll Dexterity Save (+2)">
+                        <div class="save-name">DEX</div>
+                        <div class="save-val">+2</div>
+                    </div>
+                    <div class="save-box" onclick="rollD20('Constitution Save', 2)" title="Click to Roll Constitution Save (+2)">
+                        <div class="save-name">CON</div>
+                        <div class="save-val">+2</div>
+                    </div>
+                    <div class="save-box prof-save" onclick="rollD20('Intelligence Save (Proficient)', 5)" title="Click to Roll Intelligence Save (+5, Proficient)">
+                        <div class="save-name">★ INT</div>
+                        <div class="save-val">+5</div>
+                    </div>
+                    <div class="save-box prof-save" onclick="rollD20('Wisdom Save (Proficient)', 3)" title="Click to Roll Wisdom Save (+3, Proficient)">
+                        <div class="save-name">★ WIS</div>
+                        <div class="save-val">+3</div>
+                    </div>
+                    <div class="save-box" onclick="rollD20('Charisma Save', 0)" title="Click to Roll Charisma Save (+0)">
+                        <div class="save-name">CHA</div>
+                        <div class="save-val">+0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All 18 Skills List Matrix -->
+            <div class="panel">
+                <div class="panel-title">
+                    <span>Skills & Proficiencies</span>
+                    <span style="font-size:0.68rem; color:var(--text-muted); font-weight:normal;">5 Proficiencies</span>
+                </div>
+                <ul class="stat-row-list">
+                    <li class="stat-row-item" onclick="rollD20('Acrobatics (DEX)', 2)"><span>Acrobatics <small style="color:var(--text-muted);">(DEX)</small></span><strong>+2</strong></li>
+                    <li class="stat-row-item" onclick="rollD20('Animal Handling (WIS)', 1)"><span>Animal Handling <small style="color:var(--text-muted);">(WIS)</small></span><strong>+1</strong></li>
+                    <li class="stat-row-item prof-item" onclick="rollD20('★ Arcana (INT)', 5)"><span>★ Arcana <small style="color:var(--text-muted);">(INT)</small></span><strong>+5</strong></li>
+                    <li class="stat-row-item" onclick="rollD20('Athletics (STR)', -1)"><span>Athletics <small style="color:var(--text-muted);">(STR)</small></span><strong>-1</strong></li>
+                    <li class="stat-row-item prof-item" onclick="rollD20('★ Deception (CHA)', 2)"><span>★ Deception <small style="color:var(--text-muted);">(CHA)</small></span><strong>+2</strong></li>
+                    <li class="stat-row-item prof-item" onclick="rollD20('★ History (INT)', 5)"><span>★ History <small style="color:var(--text-muted);">(INT)</small></span><strong>+5</strong></li>
+                    <li class="stat-row-item" onclick="rollD20('Insight (WIS)', 1)"><span>Insight <small style="color:var(--text-muted);">(WIS)</small></span><strong>+1</strong></li>
+                    <li class="stat-row-item" onclick="rollD20('Intimidation (CHA)', 0)"><span>Intimidation <small style="color:var(--text-muted);">(CHA)</small></span><strong>+0</strong></li>
+                    <li class="stat-row-item prof-item" onclick="rollD20('★ Investigation (INT)', 5)"><span>★ Investigation <small style="color:var(--text-muted);">(INT)</small></span><strong>+5</strong></li>
+                    <li class="stat-row-item" onclick="rollD20('Medicine (WIS)', 1)"><span>Medicine <small style="color:var(--text-muted);">(WIS)</small></span><strong>+1</strong></li>
+                    <li class="stat-row-item" onclick="rollD20('Nature (INT)', 3)"><span>Nature <small style="color:var(--text-muted);">(INT)</small></span><strong>+3</strong></li>
+                    <li class="stat-row-item" onclick="rollD20('Perception (WIS)', 1)"><span>Perception <small style="color:var(--text-muted);">(WIS)</small></span><strong>+1</strong></li>
+                    <li class="stat-row-item" onclick="rollD20('Performance (CHA)', 0)"><span>Performance <small style="color:var(--text-muted);">(CHA)</small></span><strong>+0</strong></li>
+                    <li class="stat-row-item" onclick="rollD20('Persuasion (CHA)', 0)"><span>Persuasion <small style="color:var(--text-muted);">(CHA)</small></span><strong>+0</strong></li>
+                    <li class="stat-row-item prof-item" onclick="rollD20('★ Religion (INT)', 5)"><span>★ Religion <small style="color:var(--text-muted);">(INT)</small></span><strong>+5</strong></li>
+                    <li class="stat-row-item" onclick="rollD20('Sleight of Hand (DEX)', 2)"><span>Sleight of Hand <small style="color:var(--text-muted);">(DEX)</small></span><strong>+2</strong></li>
+                    <li class="stat-row-item" onclick="rollD20('Stealth (DEX)', 2)"><span>Stealth <small style="color:var(--text-muted);">(DEX)</small></span><strong>+2</strong></li>
+                    <li class="stat-row-item" onclick="rollD20('Survival (WIS)', 1)"><span>Survival <small style="color:var(--text-muted);">(WIS)</small></span><strong>+1</strong></li>
+                </ul>
+            </div>
+
+            <!-- Interactive Gold Purse -->
+            <div class="panel">
+                <div class="panel-title">
+                    <span>Gold Purse <small style="font-size:0.65rem; color:var(--text-muted); text-transform:none;">(10 SP = 1 GP)</small></span>
+                    <button class="btn-act btn-act-pre" onclick="openGoldHistoryModal()" style="font-size:0.65rem; padding:2px 6px;">📜 Ledger</button>
+                </div>
+                <div style="background:var(--panel-sub); border:1px solid var(--card-border); border-radius:6px; padding:7px 9px; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.1rem;">💰</span>
+                        <div>
+                            <div style="font-family:'Cinzel', serif; font-size:1.05rem; font-weight:700; color:var(--accent-char); line-height:1.1;">
+                                <span id="gold-disp">18</span> <small style="font-size:0.75rem; color:var(--text-dim);">GP</small>, 
+                                <span id="silver-disp" style="color:var(--text-light);">6</span> <small style="font-size:0.75rem; color:var(--text-muted);">SP</small>
+                            </div>
+                            <div style="font-size:0.62rem; color:var(--text-muted);">Treasury Loadout</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:3px;">
+                        <button class="btn-act btn-act-pre" onclick="stepGold(-1)" style="font-size:0.7rem; padding:2px 5px; color:#f87171;">-1 GP</button>
+                        <button class="btn-act btn-act-pre" onclick="stepGold(1)" style="font-size:0.7rem; padding:2px 5px; color:#86efac;">+1 GP</button>
+                        <button class="btn-act btn-act-pre" onclick="stepSilver(-1)" style="font-size:0.7rem; padding:2px 5px;">-1 SP</button>
+                        <button class="btn-act btn-act-pre" onclick="stepSilver(1)" style="font-size:0.7rem; padding:2px 5px;">+1 SP</button>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- RIGHT COLUMN: Spell Slots / Resources, Features, Actions, Equipment -->
+        <main class="right-col">
+            
+            <!-- Actions & Combat Loadout (2-Column Grid) -->
+            <section class="panel">
+                <div class="panel-title">
+                    <span>Actions & At-Will Cantrips</span>
+                    <span style="font-size:0.68rem; color:var(--text-muted); font-weight:normal;">Unlimited Uses</span>
+                </div>
+                <div class="action-grid-2col">
+                    
+                    <!-- Poison Spray -->
+                    <div class="action-card">
+                        <div class="action-header">
+                            <span class="action-card-title" onclick="openSpellDetailsModal('poisonspray')" style="cursor:pointer;" onmouseover="this.style.color='var(--accent-char)'" onmouseout="this.style.color='var(--text-light)'">
+                                🤢 Poison Spray <small style="font-size:0.65rem; color:var(--text-muted);">ℹ️</small>
+                            </span>
+                            <span class="pill-badge" style="font-size:0.62rem; padding:1px 6px;">10 ft</span>
+                        </div>
+                        <div class="action-desc">10ft Range. Target makes DC 13 CON Save or takes 1d12 Poison Damage.</div>
+                        <div class="action-btn-row">
+                            <button class="btn-roll-action btn-roll-dmg" onclick="rollFormulaDamage('Poison Spray Damage', 12, 0, 'Poison')">💥 1d12 Poison</button>
+                        </div>
+                    </div>
+
+                    <!-- Toll the Dead -->
+                    <div class="action-card">
+                        <div class="action-header">
+                            <span class="action-card-title" onclick="openSpellDetailsModal('tollthedead')" style="cursor:pointer;" onmouseover="this.style.color='var(--accent-char)'" onmouseout="this.style.color='var(--text-light)'">
+                                🔔 Toll the Dead <small style="font-size:0.65rem; color:var(--text-muted);">ℹ️</small>
+                            </span>
+                            <span class="pill-badge" style="font-size:0.62rem; padding:1px 6px;">60 ft</span>
+                        </div>
+                        <div class="action-desc">60ft. DC 13 Wis Save: 1d8 Necrotic (or 1d12 if missing HP!).</div>
+                        <div class="action-btn-row">
+                            <button class="btn-roll-action" onclick="rollFormulaDamage('Toll the Dead (Full HP)', 8, 0, 'Necrotic')">1d8 (Full)</button>
+                            <button class="btn-roll-action btn-roll-dmg" onclick="rollFormulaDamage('Toll the Dead (Injured)', 12, 0, 'Necrotic')">💥 1d12 (Injured)</button>
+                        </div>
+                    </div>
+
+                    <!-- Chill Touch -->
+                    <div class="action-card">
+                        <div class="action-header">
+                            <span class="action-card-title" onclick="openSpellDetailsModal('chilltouch')" style="cursor:pointer;" onmouseover="this.style.color='var(--accent-char)'" onmouseout="this.style.color='var(--text-light)'">
+                                💀 Chill Touch <small style="font-size:0.65rem; color:var(--text-muted);">ℹ️</small>
+                            </span>
+                            <span class="pill-badge" style="font-size:0.62rem; padding:1px 6px;">120 ft</span>
+                        </div>
+                        <div class="action-desc">120ft. +5 to Hit, 1d8 Necrotic & target cannot heal for 1 round!</div>
+                        <div class="action-btn-row">
+                            <button class="btn-roll-action" onclick="rollD20('Chill Touch Attack', 5)">🎯 Attack (+5)</button>
+                            <button class="btn-roll-action btn-roll-dmg" onclick="rollFormulaDamage('Chill Touch Dmg', 8, 0, 'Necrotic')">💥 1d8 Necro</button>
+                        </div>
+                    </div>
+
+                    <!-- Obsidian Ritual Dagger -->
+                    <div class="action-card">
+                        <div class="action-header">
+                            <span class="action-card-title" onclick="openSpellDetailsModal('dagger')" style="cursor:pointer;" onmouseover="this.style.color='var(--accent-char)'" onmouseout="this.style.color='var(--text-light)'">
+                                🗡️ Obsidian Dagger <small style="font-size:0.65rem; color:var(--text-muted);">ℹ️</small>
+                            </span>
+                            <span class="pill-badge" style="font-size:0.62rem; padding:1px 6px;">Finesse</span>
+                        </div>
+                        <div class="action-desc">Melee 5ft / Thrown 20/60ft. +4 to Hit, 1d4+2 Piercing.</div>
+                        <div class="action-btn-row">
+                            <button class="btn-roll-action" onclick="rollD20('Dagger Attack', 4)">🗡️ Attack (+4)</button>
+                            <button class="btn-roll-action btn-roll-dmg" onclick="rollFormulaDamage('Dagger Damage', 4, 2, 'Piercing')">💥 1d4+2</button>
+                        </div>
+                    </div>
+
+                    <!-- Spectral Claw (Mage Hand) -->
+                    <div class="action-card">
+                        <div class="action-header">
+                            <span class="action-card-title" onclick="openSpellDetailsModal('magehand')" style="cursor:pointer;" onmouseover="this.style.color='var(--accent-char)'" onmouseout="this.style.color='var(--text-light)'">
+                                ✨ Spectral Claw <small style="font-size:0.65rem; color:var(--text-muted);">ℹ️</small>
+                            </span>
+                            <span class="pill-badge" style="font-size:0.62rem; padding:1px 6px;">30 ft</span>
+                        </div>
+                        <div class="action-desc">30ft range. Spectral raven claw manipulates objects up to 10 lbs.</div>
+                        <div class="action-btn-row">
+                            <button class="btn-roll-action" onclick="castUtility('✨ Cast Spectral Claw (Mage Hand 30ft range)')">✨ Cast</button>
+                        </div>
+                    </div>
+
+                    <!-- Prestidigitation -->
+                    <div class="action-card">
+                        <div class="action-header">
+                            <span class="action-card-title" onclick="openSpellDetailsModal('prestidigitation')" style="cursor:pointer;" onmouseover="this.style.color='var(--accent-char)'" onmouseout="this.style.color='var(--text-light)'">
+                                🖐️ Witch's Tricks <small style="font-size:0.65rem; color:var(--text-muted);">ℹ️</small>
+                            </span>
+                            <span class="pill-badge" style="font-size:0.62rem; padding:1px 6px;">Utility</span>
+                        </div>
+                        <div class="action-desc">Minor sensory tricks, sparks, lighting candles, cleaning/flavoring poisons.</div>
+                        <div class="action-btn-row">
+                            <button class="btn-roll-action" onclick="castUtility('🖐️ Cast Prestidigitation (Sensory Effects / Witch Tricks)')">🖐️ Cast</button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Grimoire & Scalable Spells (Multi-Tier Engine) -->
+            <section class="panel">
+                <div class="panel-title">
+                    <span>Grimoire & Scalable Spells</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span id="prep-counter" style="font-size:0.72rem; color:var(--text-dim);">4/4 Prepared</span>
+                        <button class="btn-act btn-act-pre" onclick="refillAllSlots()" style="font-size:0.65rem; padding:2px 6px; color:var(--accent-char);">⛺ Refill Slots</button>
+                    </div>
+                </div>
+
+                <!-- Spell Slot Tracker -->
+                <div style="background:var(--panel-sub); border:1px solid var(--card-border); border-radius:6px; padding:6px 8px; display:flex; flex-direction:column; gap:4px; margin-bottom:5px;">
+                    <div style="font-size:0.68rem; font-weight:700; color:var(--text-dim); text-transform:uppercase; display:flex; justify-content:space-between;">
+                        <span>Spell Slots by Level</span>
+                        <span style="font-size:0.64rem; color:var(--text-muted); font-weight:normal;">Auto-deducts on cast</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:5px;">
+                        <!-- Level 1 Slots -->
+                        <div style="background:#0d1117; border:1px solid var(--card-border); border-radius:4px; padding:3px 6px; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <span style="font-size:0.68rem; font-weight:700; color:var(--accent-char);">1st:</span>
+                                <span id="slot-pips-1" style="font-size:0.74rem; cursor:pointer; margin-left:2px;" onclick="toggleSlotTier(1)">🟦 🟦 (2/2)</span>
+                            </div>
+                            <div style="display:flex; gap:2px;">
+                                <button class="btn-step-qty" onclick="modSlotTier(1, -1)">-</button>
+                                <button class="btn-step-qty" onclick="modSlotTier(1, 1)">+</button>
+                            </div>
+                        </div>
+                        <!-- Level 2 Slots -->
+                        <div style="background:#0d1117; border:1px solid var(--card-border); border-radius:4px; padding:3px 6px; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <span style="font-size:0.68rem; font-weight:700; color:var(--accent-purple);">2nd:</span>
+                                <span id="slot-pips-2" style="font-size:0.74rem; cursor:pointer; margin-left:2px;" onclick="toggleSlotTier(2)"><span style="color:#f87171; font-size:0.68rem; font-weight:700;">🔒 Lvl 3 Req</span></span>
+                            </div>
+                            <div style="display:flex; gap:2px;">
+                                <button class="btn-step-qty" onclick="modSlotTier(2, -1)">-</button>
+                                <button class="btn-step-qty" onclick="modSlotTier(2, 1)">+</button>
+                            </div>
+                        </div>
+                        <!-- Level 3 Slots -->
+                        <div style="background:#0d1117; border:1px solid var(--card-border); border-radius:4px; padding:3px 6px; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <span style="font-size:0.68rem; font-weight:700; color:var(--accent-gold);">3rd:</span>
+                                <span id="slot-pips-3" style="font-size:0.74rem; cursor:pointer; margin-left:2px;" onclick="toggleSlotTier(3)"><span style="color:#f87171; font-size:0.68rem; font-weight:700;">🔒 Lvl 5 Req</span></span>
+                            </div>
+                            <div style="display:flex; gap:2px;">
+                                <button class="btn-step-qty" onclick="modSlotTier(3, -1)">-</button>
+                                <button class="btn-step-qty" onclick="modSlotTier(3, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-grid-2col" id="spellbook-grid">
+                    <!-- Rendered dynamically by JS with level dropdowns -->
+                </div>
+            </section>
+
+            <!-- Witchcraft Powers & Features -->
+            <section class="panel">
+                <div class="panel-title">Witchcraft Powers & Class Features</div>
+                <div style="display:flex; flex-direction:column; gap:5px;">
+                    <div style="background:var(--panel-sub); border:1px solid var(--card-border); border-radius:6px; padding:6px 9px; display:flex; justify-content:space-between; align-items:center; font-size:0.76rem;">
+                        <span>💀 <strong>Grim Harvest (Necromancy Savant):</strong> Regain 2x Spell Lvl HP (3x for Necro spells) when you kill a foe!</span>
+                        <span class="pill-badge" style="font-size:0.62rem; color:var(--accent-char);">Passive</span>
+                    </div>
+                    <div style="background:var(--panel-sub); border:1px solid var(--card-border); border-radius:6px; padding:6px 9px; display:flex; justify-content:space-between; align-items:center; font-size:0.76rem;">
+                        <span>📖 <strong>Arcane Recovery (1/Day on Short Rest):</strong> Regain 1 expended 1st-level spell slot.</span>
+                        <button class="btn-roll-action" onclick="useArcaneRecovery()">☕ Recover Slot</button>
+                    </div>
+                    <div style="background:var(--panel-sub); border:1px solid var(--card-border); border-radius:6px; padding:6px 9px; display:flex; justify-content:space-between; align-items:center; font-size:0.76rem;">
+                        <span>🐍 <strong>Emerald Viper Familiar:</strong> Take the Help action in combat to grant an ally Advantage!</span>
+                        <button class="btn-roll-action" onclick="logRoll('🐍 <strong>Emerald Viper Help Action:</strong> Familiar slithers behind enemy, granting ADVANTAGE to ally\'s next strike!')">🐍 Viper Help</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tracked Inventory & Consumables -->
+            <section class="panel">
+                <div class="panel-title">Tracked Inventory & Equipment</div>
+                <div class="inv-list-compact" id="inventory-list">
+                    <!-- Rendered dynamically -->
+                </div>
+                <div style="display:flex; gap:6px; margin-top:5px;">
+                    <input type="text" id="new-item-input" class="input-hp-val" style="flex:1; width:auto; text-align:left; padding:4px 8px; font-size:0.78rem;" placeholder="Add new loot or item...">
+                    <button class="btn-act btn-act-heal" onclick="addItem()">+ Add</button>
+                    <button class="btn-act btn-act-pre" onclick="resetInventory()" title="Reset to official campaign loadout">🔄 Reset</button>
+                </div>
+            </section>
+
+            <!-- Active Campaign Quests -->
+            <section class="panel">
+                <div class="panel-title">Active Campaign Quests</div>
+                <div style="font-size:0.76rem; color:var(--text-dim); line-height:1.4; display:flex; flex-direction:column; gap:3px;">
+                    <p>• <strong>The Siblings' Pact:</strong> Bind the trio to the ancient blood covenant and establish our sovereign authority.</p>
+                    <p>• <strong>Harvest Rare Venoms:</strong> Collect nightshade and fungal extract to brew lethal combat toxins.</p>
+                    <p>• <strong>Unearth the Sealed Tombs:</strong> Decipher the lost necromantic seals buried beneath the crypts.</p>
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+
+</div>
+
+<!-- 💰 Coin Purse Ledger Modal -->
+<div class="modal-overlay" id="gold-modal" onclick="closeGoldHistoryOnBackdrop(event)">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>💰 Coin Purse Ledger & History</h3>
+            <button class="modal-close-btn" onclick="closeGoldHistoryModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div style="background:var(--panel-sub); border:1px solid var(--card-border); border-radius:6px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-size:0.68rem; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Current Balance</div>
+                    <div style="font-size:1.15rem; font-weight:800; color:var(--accent-gold); font-family:'Cinzel', serif;">
+                        <span id="modal-gold-disp">18</span> GP • <span id="modal-silver-disp" style="color:var(--text-light);">6</span> SP
+                    </div>
+                </div>
+                <button class="btn-act btn-act-pre" onclick="resetGoldPurse()" style="font-size:0.7rem;">🔄 Reset Balance</button>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                <span style="font-size:0.74rem; font-weight:700; color:var(--accent-char); text-transform:uppercase;">Transaction History:</span>
+                <button class="btn-act btn-act-pre" onclick="clearGoldHistory()" style="padding:2px 6px; font-size:0.66rem; color:#f87171;">🗑️ Clear Log</button>
+            </div>
+
+            <div class="tx-list" id="modal-tx-list">
+                <!-- Rendered dynamically -->
+            </div>
+        </div>
+        <div style="background:var(--panel-sub); border-top:1px solid var(--card-border); padding:8px 14px; display:flex; justify-content:flex-end;">
+            <button class="btn-act btn-act-pre" onclick="closeGoldHistoryModal()" style="padding:4px 12px; font-size:0.76rem; font-weight:600;">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- 📦 Item Details Modal (World Loot Vault) -->
+<div class="modal-overlay" id="item-modal" onclick="closeItemModalOnBackdrop(event)">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 id="item-modal-title" style="display:flex; align-items:center; gap:6px;">📦 Item Details</h3>
+            <button class="modal-close-btn" onclick="closeItemModal()">✕</button>
+        </div>
+        <div class="modal-body" id="item-modal-body">
+            <!-- Rendered dynamically -->
+        </div>
+        <div style="background:var(--panel-sub); border-top:1px solid var(--card-border); padding:8px 14px; display:flex; justify-content:space-between; align-items:center;">
+            <div id="item-modal-actions"></div>
+            <button class="btn-act btn-act-pre" onclick="closeItemModal()" style="padding:4px 12px; font-size:0.76rem; font-weight:600;">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- 🔮 Spell & Action Details Modal (Compendium) -->
+<div class="modal-overlay" id="spell-modal" onclick="closeSpellModalOnBackdrop(event)">
+    <div class="modal-card" style="max-width: 530px;">
+        <div class="modal-header">
+            <h3 id="spell-modal-title" style="display:flex; align-items:center; gap:6px;">🔮 Spell Details</h3>
+            <button class="modal-close-btn" onclick="closeSpellModal()">✕</button>
+        </div>
+        <div class="modal-body" id="spell-modal-body">
+            <!-- Rendered dynamically -->
+        </div>
+        <div style="background:var(--panel-sub); border-top:1px solid var(--card-border); padding:8px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+            <div id="spell-modal-actions" style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;"></div>
+            <button class="btn-act btn-act-pre" onclick="closeSpellModal()" style="padding:4px 12px; font-size:0.76rem; font-weight:600;">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // State Variables
+    let curHP = 8;
+    let maxHP = 8;
+    let tempHP = 0;
+    let baseAC = 12;
+    let isMageArmorActive = false;
+    let isShieldActive = false;
+    let helpTokens = 2;
+    let maxHelpTokens = 2;
+    let shortRestsRemaining = 2;
+    const maxShortRests = 2;
+    let rollMode = 'norm';
+
+    // Full Witch Spellbook with Complete D&D 5e Compendium Data
+    const fullSpellbook = [
+        {
+            id: "rayofsickness",
+            name: "🤢 Ray of Sickness",
+            tag: "1st Lvl • 1 Action",
+            school: "Necromancy",
+            castingTime: "1 Action",
+            range: "60 feet",
+            components: "V, S",
+            duration: "Instantaneous",
+            attackMod: "+5 Spell Attack / DC 13 Con Save",
+            damage: "2d8 Poison Damage + Poisoned Condition",
+            desc: "+5 to Hit. 2d8 Poison + DC 13 Con save or Poisoned (Disadvantage).",
+            fullRules: "A ray of sickening greenish energy lashes out toward a creature within range. Make a ranged spell attack (<strong>+5 to hit</strong>). On a hit, the target takes <strong>2d8 poison damage</strong> and must make a <strong>DC 13 Constitution saving throw</strong>. On a failed save, it is also <strong>Poisoned</strong> until the end of your next turn.<br><br>⚡ <strong>Poisoned Condition:</strong> The creature has Disadvantage on all attack rolls and ability checks!",
+            upcastNotes: "When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d8 for each slot level above 1st (3d8 at 2nd lvl, 4d8 at 3rd lvl).",
+            flavor: "Vespera channels concentrated hemlock miasma through her fingertips, corrupting the target's bloodstream and shattering their combat precision.",
+            prepared: true,
+            hasLevelSelect: true,
+            buttons: [
+                { label: "🎯 Attack", class: "btn-roll-action", costSlot: false, onClick: () => rollD20('Ray of Sickness Attack', 5) },
+                { label: "💥 Damage", class: "btn-roll-action btn-roll-dmg", costSlot: true, onClick: (lvl) => rollRayOfSicknessScaled(lvl) }
+            ]
+        },
+        {
+            id: "falselife",
+            name: "🩸 False Life",
+            tag: "1st Lvl • 1 Action",
+            school: "Necromancy",
+            castingTime: "1 Action",
+            range: "Self",
+            components: "V, S, M (a drop of alcohol or distilled spirit)",
+            duration: "1 hour",
+            attackMod: "Bolsters Personal Health",
+            damage: "Grants 1d4 + 4 Temporary HP (+5 per slot lvl)",
+            desc: "Grants 1d4 + 4 Temporary HP for 1 hour. Scales +5 Temp HP per slot.",
+            fullRules: "Bolstering yourself with a necromantic facsimile of life, you gain <strong>1d4 + 4 temporary hit points</strong> for the duration.<br><br>Damage you receive will deplete these temporary hit points first before harming your actual base health pool.",
+            upcastNotes: "When you cast this spell using a spell slot of 2nd level or higher, you gain 5 additional temporary hit points for each slot level above 1st (1d4 + 9 at 2nd lvl, 1d4 + 14 at 3rd lvl).",
+            flavor: "Vespera draws upon residual spectral vitality, weaving a pale violet barrier of unlife around her vital organs.",
+            prepared: true,
+            hasLevelSelect: true,
+            buttons: [
+                { label: "🩸 Cast & Shield", class: "btn-roll-action btn-roll-heal", costSlot: true, onClick: (lvl) => castFalseLifeScaled(lvl) }
+            ]
+        },
+        {
+            id: "causefear",
+            name: "👁️ Cause Fear",
+            tag: "1st Lvl • 1 Action • Conc",
+            school: "Necromancy",
+            castingTime: "1 Action",
+            range: "60 feet",
+            components: "V, S",
+            duration: "Concentration, up to 1 minute",
+            attackMod: "DC 13 Wisdom Saving Throw",
+            damage: "Frightened Condition (Cannot move closer, Disadvantage)",
+            desc: "60ft. DC 13 Wis: Frightened for 1 min (conc). Repeat save each turn.",
+            fullRules: "You awaken the sense of mortality in one creature you can see within range. A construct or undead is immune. The target must succeed on a <strong>DC 13 Wisdom saving throw</strong> or become <strong>Frightened</strong> of you until the spell ends.<br><br>A frightened creature cannot willingly move closer to you and has Disadvantage on ability checks and attack rolls while it can see you. The target can repeat the save at the end of each of its turns.",
+            upcastNotes: "When you cast this spell using a spell slot of 2nd level or higher, you can target one additional creature for each slot level above 1st.",
+            flavor: "Vespera whispers an ancient abyssal death rite, projecting a terrifying vision of rot into the target's mind.",
+            prepared: true,
+            hasLevelSelect: false,
+            buttons: [
+                { label: "👁️ Cast Fear (-1 Slot)", class: "btn-roll-action btn-roll-dmg", costSlot: true, onClick: () => castUtility('👁️ <strong>Cause Fear Cast:</strong> Target must make a DC 13 Wisdom Saving Throw or become Frightened!') }
+            ]
+        },
+        {
+            id: "magearmor",
+            name: "🧙‍♀️ Mage Armor (Ward of Thorns)",
+            tag: "1st Lvl • 1 Action",
+            school: "Abjuration",
+            castingTime: "1 Action",
+            range: "Touch",
+            components: "V, S, M (a piece of cured leather)",
+            duration: "8 hours",
+            attackMod: "Base AC becomes 13 + DEX (15 AC for Vespera)",
+            damage: "Protective ward (No armor required)",
+            desc: "Sets Base AC to 13 + DEX (15 AC) for 8 hours without armor.",
+            fullRules: "You touch a willing creature who isn't wearing armor, and a protective magical force surrounds it until the spell ends. The target's base AC becomes <strong>13 + its Dexterity modifier (giving Vespera 15 AC)</strong>. The spell ends if the target dons armor or if you dismiss the spell as an action.",
+            upcastNotes: "Casting with higher-level slots grants no additional benefits.",
+            flavor: "Vespera traces thorn runes along her silken bodice, encasing herself in an invisible mesh of hardened poison briars.",
+            prepared: true,
+            hasLevelSelect: false,
+            buttons: [
+                { label: "🧙‍♀️ Cast Ward", class: "btn-roll-action", costSlot: false, onClick: () => activateMageArmorSpell() }
+            ]
+        },
+        {
+            id: "shield",
+            name: "🛡️ Shield (Hex Ward)",
+            tag: "1st Lvl • 1 Reaction",
+            school: "Abjuration",
+            castingTime: "1 Reaction (when hit by an attack or Magic Missile)",
+            range: "Self",
+            components: "V, S",
+            duration: "1 round (until start of next turn)",
+            attackMod: "+5 AC Bonus (Immediate Reaction)",
+            damage: "Negates Magic Missile & deflects attacks",
+            desc: "+5 AC reaction & blocks Magic Missile until start of next turn.",
+            fullRules: "An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a <strong>+5 bonus to AC</strong>, including against the triggering attack, and you take no damage from <em>Magic Missile</em>.",
+            upcastNotes: "Casting with higher-level slots grants no additional benefits.",
+            flavor: "Vespera throws up a crackling aegis of dark runes that deflects blades and arrows into harmless sparks.",
+            prepared: false,
+            hasLevelSelect: false,
+            buttons: [
+                { label: "🛡️ Cast Shield", class: "btn-roll-action", costSlot: false, onClick: () => castShieldSpell() }
+            ]
+        },
+        {
+            id: "familiar",
+            name: "🐍 Find Familiar (Emerald Viper)",
+            tag: "1st Lvl • Ritual",
+            school: "Conjuration (Ritual)",
+            castingTime: "10 min (Ritual) or 1 Action",
+            range: "10 feet",
+            components: "V, S, M (10 gp of incense)",
+            duration: "Instantaneous",
+            attackMod: "Telepathic Scout & Help Action (+Advantage)",
+            damage: "Utility / Touch Delivery",
+            desc: "Ritual (No slot): Summons an Emerald Viper familiar for scouting and combat Help.",
+            fullRules: "You gain the service of a familiar, an emerald viper spirit. It acts independently, but always obeys your commands. In combat, it rolls its own initiative and acts on its turn.<br><br>While your familiar is within 100 feet of you, you can communicate with it telepathically. A familiar can take the <strong>Help Action</strong> in combat to grant an ally Advantage on their attack roll, or deliver Touch spells on your behalf!",
+            upcastNotes: "Casting with higher-level slots grants no additional benefits.",
+            flavor: "An emerald viper coiled around Vespera's forearm, flicking its tongue and slithering across the battlefield to deliver touch spells.",
+            prepared: false,
+            hasLevelSelect: false,
+            buttons: [
+                { label: "📜 Cast Ritual", class: "btn-roll-action", costSlot: false, onClick: () => castUtility('🐍 <strong>Find Familiar cast as Ritual (10 min):</strong> Emerald Viper manifests!') }
+            ]
+        },
+        {
+            id: "detmag",
+            name: "🔍 Detect Magic",
+            tag: "1st Lvl • Ritual",
+            school: "Divination (Ritual)",
+            castingTime: "1 Action (or 10 min Ritual)",
+            range: "Self (30-foot aura)",
+            components: "V, S",
+            duration: "Concentration, up to 10 minutes",
+            attackMod: "Sense Magic Auras (30ft)",
+            damage: "Reveals magic school & auras",
+            desc: "Ritual (No slot): Sense magical auras within 30ft for 10 min.",
+            fullRules: "For the duration, you sense the presence of magic within 30 feet of you. If you sense magic in this way, you can use your action to see a faint aura around any visible creature or object in the area that bears magic, and you learn its school of magic, if any.<br><br>📜 <strong>Ritual Casting:</strong> Vespera can cast this without expending a spell slot by ritual casting for 10 minutes!",
+            upcastNotes: "Casting at higher levels provides no additional mechanical benefit.",
+            flavor: "Vespera's eyes glow with virulent green light as arcane leylines and hidden enchantments reveal themselves.",
+            prepared: false,
+            hasLevelSelect: false,
+            buttons: [
+                { label: "🔍 Cast Ritual", class: "btn-roll-action", costSlot: false, onClick: () => castUtility('🔍 Detect Magic cast (Ritual / 30ft aura detection for 10 min)') }
+            ]
+        },
+        {
+            id: "servant",
+            name: "📜 Unseen Servant",
+            tag: "1st Lvl • Ritual",
+            school: "Conjuration (Ritual)",
+            castingTime: "1 Action (or 10 min Ritual)",
+            range: "60 feet",
+            components: "V, S, M (a piece of string and a bit of wood)",
+            duration: "1 hour",
+            attackMod: "Invisible Mindless Force (STR 2)",
+            damage: "Utility / Chore Service",
+            desc: "Ritual: Invisible mindless servant that cleans, fetches, and pours drinks.",
+            fullRules: "This spell creates an invisible, mindless, shapeless, medium force that performs simple tasks at your command until the spell ends. The servant springs into existence in an unoccupied space on the ground within range. It has an AC of 10, 1 hit point, and a Strength of 2, and it can't attack.",
+            upcastNotes: "Casting at higher levels provides no additional mechanical benefit.",
+            flavor: "An unseen phantom force obeys Vespera's gestures—pouring tea, carrying her grimoire, or retrieving keys.",
+            prepared: false,
+            hasLevelSelect: false,
+            buttons: [
+                { label: "📜 Cast Ritual", class: "btn-roll-action", costSlot: false, onClick: () => castUtility('📜 Unseen Servant summoned (Ritual / 1 hour duration)') }
+            ]
+        }
+    ];
+
+    // Database for Actions & Weapons Details Modal
+    const spellActionDatabase = {
+        "poisonspray": {
+            id: "poisonspray",
+            name: "🤢 Poison Spray",
+            school: "Conjuration Cantrip",
+            castingTime: "1 Action",
+            range: "10 feet",
+            components: "V, S",
+            duration: "Instantaneous",
+            attackMod: "DC 13 Constitution Saving Throw",
+            damage: "1d12 Poison Damage",
+            desc: "10ft Range. Target makes DC 13 CON Save or takes 1d12 Poison Damage.",
+            fullRules: "You extend your hand toward a creature you can see within range and project a puff of noxious toxic gas from your palm. The creature must succeed on a <strong>DC 13 Constitution saving throw</strong> or take <strong>1d12 poison damage</strong>.<br><br>The spell's damage increases by 1d12 when you reach 5th level (2d12), 11th level (3d12), and 17th level (4d12).",
+            flavor: "Vespera releases an emerald haze of concentrated hemlock mist that burns through armor and suffocates airways.",
+            modalButtons: [
+                { label: "💥 Roll 1d12 Poison", class: "btn-roll-action btn-roll-dmg", onClick: () => rollFormulaDamage('Poison Spray Damage', 12, 0, 'Poison') }
+            ]
+        },
+        "tollthedead": {
+            id: "tollthedead",
+            name: "🔔 Toll the Dead",
+            school: "Necromancy Cantrip",
+            castingTime: "1 Action",
+            range: "60 feet",
+            components: "V, S",
+            duration: "Instantaneous",
+            attackMod: "DC 13 Wisdom Saving Throw",
+            damage: "1d8 Necrotic (Full HP) / 1d12 Necrotic (if injured)",
+            desc: "60ft. DC 13 WIS Save. 1d8 Necrotic (or 1d12 if target missing HP!).",
+            fullRules: "You point at one creature within range, and the sound of a mournful bell resonates around it. The target must succeed on a <strong>DC 13 Wisdom saving throw</strong> or take <strong>1d8 necrotic damage</strong>. If the target is missing any of its hit points, it takes <strong>1d12 necrotic damage</strong> instead.",
+            flavor: "A somber, spectral death toll echoes through the target's skull, drawing upon existing wounds to accelerate cellular decay.",
+            modalButtons: [
+                { label: "1d8 (Full HP)", class: "btn-roll-action", onClick: () => rollFormulaDamage('Toll the Dead (Full HP)', 8, 0, 'Necrotic') },
+                { label: "💥 1d12 (Injured)", class: "btn-roll-action btn-roll-dmg", onClick: () => rollFormulaDamage('Toll the Dead (Injured)', 12, 0, 'Necrotic') }
+            ]
+        },
+        "chilltouch": {
+            id: "chilltouch",
+            name: "💀 Chill Touch",
+            school: "Necromancy Cantrip",
+            castingTime: "1 Action",
+            range: "120 feet",
+            components: "V, S",
+            duration: "1 round",
+            attackMod: "+5 Spell Attack Roll",
+            damage: "1d8 Necrotic Damage & Healing Blocked",
+            desc: "120ft. +5 to Hit, 1d8 Necrotic & target cannot regain HP for 1 round!",
+            fullRules: "You create a ghostly, skeletal hand in the space of a creature within range. Make a ranged spell attack (<strong>+5 to hit</strong>). On a hit, the target takes <strong>1d8 necrotic damage</strong>, and it cannot regain hit points until the start of your next turn.<br><br>If you hit an undead target, it also has disadvantage on attack rolls against you until the end of your next turn.",
+            flavor: "An icy, translucent hand of the grave clamps onto the target's chest, freezing their blood and smothering regenerative vitality.",
+            modalButtons: [
+                { label: "🎯 Attack Roll", class: "btn-roll-action", onClick: () => rollD20('Chill Touch Attack', 5) },
+                { label: "💥 Damage Roll", class: "btn-roll-action btn-roll-dmg", onClick: () => rollFormulaDamage('Chill Touch Dmg', 8, 0, 'Necrotic') }
+            ]
+        },
+        "dagger": {
+            id: "dagger",
+            name: "🗡️ Obsidian Ritual Dagger",
+            school: "Martial Weapon • Finesse & Light",
+            castingTime: "1 Action (Melee or Thrown)",
+            range: "Melee 5 feet / Thrown 20/60 feet",
+            components: "Finesse, Light, Thrown",
+            duration: "Instantaneous",
+            attackMod: "+4 to Hit (DEX +2, Prof +2)",
+            damage: "1d4 + 2 Piercing Damage",
+            desc: "Melee 5ft / Thrown 20/60ft. +4 to Hit, 1d4+2 Piercing.",
+            fullRules: "A masterwork volcanic obsidian blade etched with venom channels. Uses Dexterity modifier for attack and damage rolls.",
+            flavor: "A razor-sharp dagger tempered in nightshade and grave dirt, designed for precise ritual sacrifice.",
+            modalButtons: [
+                { label: "🗡️ Attack Roll", class: "btn-roll-action", onClick: () => rollD20('Dagger Attack', 4) },
+                { label: "💥 Damage Roll", class: "btn-roll-action btn-roll-dmg", onClick: () => rollFormulaDamage('Dagger Damage', 4, 2, 'Piercing') }
+            ]
+        },
+        "magehand": {
+            id: "magehand",
+            name: "✨ Spectral Claw (Mage Hand)",
+            school: "Conjuration Cantrip",
+            castingTime: "1 Action",
+            range: "30 feet",
+            components: "V, S",
+            duration: "1 minute",
+            attackMod: "Spectral Manipulation (Up to 10 lbs)",
+            damage: "Utility / Manipulation",
+            desc: "30ft range. Spectral raven claw manipulates objects up to 10 lbs.",
+            fullRules: "A spectral, floating raven-talon appears at a point you choose within range. You can use your action to control the hand to manipulate an object, open an unlocked door or container, stow or retrieve an item, or pour poison out of a vial.",
+            flavor: "A phantom raven claw manifests to handle toxic vials and retrieve stolen goods safely.",
+            modalButtons: [
+                { label: "✨ Cast Spectral Claw", class: "btn-roll-action", onClick: () => castUtility('✨ Cast Spectral Claw (Mage Hand 30ft range)') }
+            ]
+        },
+        "prestidigitation": {
+            id: "prestidigitation",
+            name: "🖐️ Witch's Tricks (Prestidigitation)",
+            school: "Transmutation Cantrip",
+            castingTime: "1 Action",
+            range: "10 feet",
+            components: "V, S",
+            duration: "Up to 1 hour",
+            attackMod: "Minor Magic Tricks",
+            damage: "Sensory effects, sparks, lighting fires, cleaning/flavoring",
+            desc: "Minor sensory tricks, sparks, lighting fires, cleaning/flavoring poisons.",
+            fullRules: "You create minor magical effects: instantaneous harmless sensory sparks or scents, lighting candles, cleaning or flavoring items, or placing an arcane sigil on a surface.",
+            flavor: "Vespera performs casual dark parlor magic—flavoring bitter poisons like sweet wine or lighting candles with green sparks.",
+            modalButtons: [
+                { label: "🖐️ Cast Prestidigitation", class: "btn-roll-action", onClick: () => castUtility('🖐️ Cast Prestidigitation (Sensory Effects / Witch Tricks)') }
+            ]
+        }
+    };
+
+    const defaultItems = [
+        "🧪 Nightshade Poison Vials (x2)",
+        "🧪 Potion of Healing",
+        "🗡️ Obsidian Ritual Dagger",
+        "📖 Serpent-Skin Grimoire",
+        "🕯️ Alchemical Skull Focus",
+        "📜 Component Pouch",
+        "👗 Fine Velvet Robes",
+        "💍 Signet Ring of House Blackthorne",
+        "🕯️ Black Tallow Candles (x3)",
+        "📜 Contract of Dark Fellowship"
+    ];
+
+    // ==========================================
+    // ❤️ UNIFIED HP & TEMPORARY HP ENGINE
+    // ==========================================
+    function updateHPUI() {
+        const dispHP = document.getElementById('dispHP');
+        const dispTemp = document.getElementById('dispTempHP');
+        const pctEl = document.getElementById('dispHealthPct');
+        const barFill = document.getElementById('hpBarFill');
+
+        const pct = Math.max(0, Math.min(100, Math.round((curHP / maxHP) * 100)));
+        barFill.style.width = pct + '%';
+        pctEl.innerText = pct + '%';
+
+        if (pct > 50) {
+            barFill.style.backgroundColor = '#238636';
+            pctEl.style.color = 'var(--accent-green)';
+            dispHP.style.color = 'var(--accent-green)';
+        } else if (pct > 25) {
+            barFill.style.backgroundColor = '#d4a359';
+            pctEl.style.color = 'var(--accent-gold)';
+            dispHP.style.color = 'var(--accent-gold)';
+        } else {
+            barFill.style.backgroundColor = '#da3633';
+            pctEl.style.color = 'var(--accent-red)';
+            dispHP.style.color = 'var(--accent-red)';
+        }
+
+        dispHP.innerText = `${curHP}/${maxHP}`;
+        dispTemp.innerText = `+${tempHP} Temp`;
+    }
+
+    function applyDamage() {
+        const deltaInput = document.getElementById('hpDeltaInput');
+        const dmg = parseInt(deltaInput.value) || 1;
+        
+        let remainingDmg = dmg;
+        let absorbed = 0;
+        if (tempHP > 0) {
+            if (tempHP >= remainingDmg) {
+                tempHP -= remainingDmg;
+                absorbed = remainingDmg;
+                remainingDmg = 0;
+            } else {
+                absorbed = tempHP;
+                remainingDmg -= tempHP;
+                tempHP = 0;
+            }
+        }
+        if (remainingDmg > 0) {
+            curHP = Math.max(0, curHP - remainingDmg);
+        }
+        updateHPUI();
+        logRoll(`💥 <strong>Took ${dmg} Damage:</strong> (${absorbed > 0 ? absorbed + ' absorbed by Temp, ' : ''}${remainingDmg} to HP). Current HP: ${curHP}/${maxHP}`);
+    }
+
+    function applyHeal() {
+        const deltaInput = document.getElementById('hpDeltaInput');
+        const heal = parseInt(deltaInput.value) || 1;
+        const prev = curHP;
+        curHP = Math.min(maxHP, curHP + heal);
+        updateHPUI();
+        logRoll(`💚 <strong>Healed +${heal} HP:</strong> HP restored from ${prev} ➔ ${curHP}/${maxHP}.`);
+    }
+
+    function setTempHP() {
+        const tempInput = document.getElementById('tempHpInput');
+        const val = parseInt(tempInput.value) || 0;
+        tempHP = val;
+        updateHPUI();
+        logRoll(`🛡️ <strong>Set Temporary HP:</strong> +${tempHP} Temp HP active.`);
+    }
+
+    function clearTempHP() {
+        tempHP = 0;
+        updateHPUI();
+        logRoll(`🛡️ Temporary HP cleared.`);
+    }
+
+    function takeShortRest() {
+        if (shortRestsRemaining <= 0) {
+            logRoll(`⚠️ <strong>0 Short Rests remaining today!</strong> (Max 2 per day. Take a Long Rest to reset).`);
+            return;
+        }
+        shortRestsRemaining--;
+        const d6 = Math.floor(Math.random() * 6) + 1;
+        const heal = d6 + 2; // Hit die 1d6 + CON (+2)
+        const prev = curHP;
+        curHP = Math.min(maxHP, curHP + heal);
+        helpTokens = Math.min(maxHelpTokens, helpTokens + 1);
+        updateHelpDisplay();
+        updateHPUI();
+        logRoll(`☕ <strong>Short Rest (1d6+2):</strong> Rolled [${d6}+2] = <span style="color:var(--accent-green); font-weight:700;">+${heal} HP</span> (${prev} ➔ ${curHP}/${maxHP}) & gained +1 Hex Token (${helpTokens}/2)! (${shortRestsRemaining}/2 rests remaining)`);
+    }
+
+    function takeLongRest() {
+        curHP = maxHP;
+        tempHP = 0;
+        shortRestsRemaining = maxShortRests;
+        helpTokens = maxHelpTokens;
+        updateHelpDisplay();
+        refillAllSlots();
+        updateHPUI();
+        logRoll(`🛌 <strong>Long Rest Complete:</strong> HP restored to ${maxHP}/${maxHP}, Temp HP cleared, Short Rests reset to 2/2, Spell Slots & Hex Tokens restored to full!`);
+    }
+
+    // ==========================================
+    // 🛡️ DYNAMIC AC & BUFF ENGINE
+    // ==========================================
+    function updateACDisplay() {
+        const acDisp = document.getElementById('dispAC');
+        const acSub = document.getElementById('dispACSub');
+        const mageCard = document.getElementById('card-mage-armor');
+        const mageBadge = document.getElementById('badge-mage-armor');
+        const mageSub = document.getElementById('sub-mage-armor');
+        const shieldCard = document.getElementById('card-shield');
+        const shieldBadge = document.getElementById('badge-shield');
+
+        let effectiveBase = isMageArmorActive ? 15 : 12;
+        let totalAC = effectiveBase + (isShieldActive ? 5 : 0);
+
+        acDisp.innerText = totalAC;
+
+        if (isMageArmorActive) {
+            mageCard.classList.add('active-buff');
+            mageBadge.className = 'toggle-badge on';
+            mageBadge.innerText = 'ON (15)';
+            mageSub.innerText = '15 Base AC (Active)';
+        } else {
+            mageCard.classList.remove('active-buff');
+            mageBadge.className = 'toggle-badge off';
+            mageBadge.innerText = 'OFF (12)';
+            mageSub.innerText = '12 Base AC';
+        }
+
+        if (isShieldActive) {
+            shieldCard.classList.add('active-buff');
+            shieldBadge.className = 'toggle-badge on';
+            shieldBadge.innerText = '+5 ACTIVE';
+        } else {
+            shieldCard.classList.remove('active-buff');
+            shieldBadge.className = 'toggle-badge off';
+            shieldBadge.innerText = '+5 AC';
+        }
+
+        acSub.innerText = isMageArmorActive ? (isShieldActive ? 'Mage Armor (15) + Shield (5)' : 'Mage Armor (15)') : (isShieldActive ? 'Base (12) + Shield (5)' : 'Base (10+2 DEX)');
+    }
+
+    function toggleMageArmorBuff() {
+        isMageArmorActive = !isMageArmorActive;
+        updateACDisplay();
+        logRoll(`🔮 <strong>Ward of Thorns (Mage Armor):</strong> Toggled ${isMageArmorActive ? 'ON (Base AC ➔ 15)' : 'OFF (Base AC ➔ 12)'}. Total AC: ${document.getElementById('dispAC').innerText}`);
+    }
+
+    function toggleShieldReactionBuff() {
+        isShieldActive = !isShieldActive;
+        updateACDisplay();
+        logRoll(`🛡️ <strong>Hex Ward Reaction:</strong> Toggled ${isShieldActive ? 'ON (+5 AC buff active)' : 'OFF'}. Total AC: ${document.getElementById('dispAC').innerText}`);
+    }
+
+    function castShieldSpell() {
+        if (spellSlots[1].current > 0) modSlotTier(1, -1);
+        isShieldActive = true;
+        updateACDisplay();
+        logRoll(`🛡️ <strong>Cast Hex Ward (Shield):</strong> +5 AC reaction active (AC: ${document.getElementById('dispAC').innerText}) until start of next turn! Blocks Magic Missile.`);
+    }
+
+    function activateMageArmorSpell() {
+        if (spellSlots[1].current > 0) modSlotTier(1, -1);
+        isMageArmorActive = true;
+        updateACDisplay();
+        logRoll(`🧙‍♀️ <strong>Cast Ward of Thorns (Mage Armor):</strong> 1st-level slot expended. Base AC becomes 15 for 8 hours!`);
+    }
+
+    // ==========================================
+    // 🤝 HELP TOKENS & CLASS POWERS
+    // ==========================================
+    function updateHelpDisplay() {
+        document.getElementById('help-tokens-disp').innerText = `${helpTokens} / ${maxHelpTokens} Available`;
+    }
+
+    function rollHelpToken() {
+        if (helpTokens <= 0) {
+            logRoll(`⚠️ <strong>0 Hex Tokens remaining!</strong> Regain +1 on Short Rest, or all 2 on Long Rest.`);
+            return;
+        }
+        helpTokens--;
+        updateHelpDisplay();
+        const d6 = Math.floor(Math.random() * 6) + 1;
+        logRoll(`🤝 <strong>Vespera spent a Hex Token (+1d6 within 30ft):</strong> Rolled <span style="color:var(--accent-char); font-weight:700;">+${d6}</span> to ally check! (${helpTokens}/2 remaining)`);
+    }
+
+    function resetHelpTokens() {
+        helpTokens = maxHelpTokens;
+        updateHelpDisplay();
+        logRoll(`🤝 Hex Tokens restored to 2/2.`);
+    }
+
+    function useArcaneRecovery() {
+        if (spellSlots[1].current < spellSlots[1].max) {
+            spellSlots[1].current++;
+            renderSpellSlots();
+            logRoll(`☕ <strong>Arcane Recovery (Short Rest):</strong> Regained 1 expended 1st-level spell slot (${spellSlots[1].current}/${spellSlots[1].max}).`);
+        } else {
+            logRoll(`☕ Arcane Recovery: 1st-level spell slots already full.`);
+        }
+    }
+
+    // ==========================================
+    // 🔮 MULTI-TIER SPELL SLOTS & SPELLBOOK
+    // ==========================================
+    let characterLevel = 1;
+    let spellSlots = {
+        1: { current: 2, max: 2, reqLevel: 1 },
+        2: { current: 0, max: 0, reqLevel: 3 },
+        3: { current: 0, max: 0, reqLevel: 5 }
+    };
+
+    function renderSpellSlots() {
+        for (let lvl = 1; lvl <= 3; lvl++) {
+            const slot = spellSlots[lvl];
+            const el = document.getElementById(`slot-pips-${lvl}`);
+            if (!el) continue;
+            if (characterLevel < slot.reqLevel) {
+                el.innerHTML = `<span style="color:#f87171; font-size:0.68rem; font-weight:700;" title="Unlocks at Character Level ${slot.reqLevel} as per D&D 5e">🔒 Lvl ${slot.reqLevel} Req</span>`;
+            } else if (slot.max === 0) {
+                el.innerHTML = `<span style="color:var(--text-muted); font-size:0.72rem;">— (0/0)</span>`;
+            } else {
+                let pips = "";
+                for (let i = 0; i < slot.max; i++) {
+                    pips += (i < slot.current) ? "🟦 " : "⬛ ";
+                }
+                el.innerHTML = `${pips}<strong>(${slot.current}/${slot.max})</strong>`;
+            }
+        }
+    }
+
+    function toggleSlotTier(lvl) {
+        const slot = spellSlots[lvl];
+        if (characterLevel < slot.reqLevel) {
+            logRoll(`🔒 <strong>Level ${lvl} Spell Slots Locked!</strong> Vespera must reach <strong>Character Level ${slot.reqLevel}</strong> to unlock Level ${lvl} spell slots as per D&D 5e.`);
+            return;
+        }
+        if (slot.max === 0) {
+            slot.max = 2;
+            slot.current = slot.max;
+        } else {
+            slot.current = slot.current > 0 ? slot.current - 1 : slot.max;
+        }
+        renderSpellSlots();
+        logRoll(`Level ${lvl} Slots: ${slot.current}/${slot.max} available.`);
+    }
+
+    function modSlotTier(lvl, delta) {
+        const slot = spellSlots[lvl];
+        if (characterLevel < slot.reqLevel && delta > 0) {
+            logRoll(`🔒 <strong>Level ${lvl} Spell Slots Locked!</strong> Vespera must reach <strong>Character Level ${slot.reqLevel}</strong> to unlock Level ${lvl} spell slots as per D&D 5e.`);
+            return;
+        }
+        if (delta > 0 && slot.max === 0) {
+            slot.max = 2;
+            slot.current = slot.max;
+        } else if (delta < 0 && slot.max > 0 && slot.current === 0) {
+            slot.max = Math.max(0, slot.max - 1);
+            slot.current = Math.min(slot.current, slot.max);
+        } else {
+            slot.current = Math.max(0, Math.min(slot.max, slot.current + delta));
+        }
+        renderSpellSlots();
+    }
+
+    function refillAllSlots() {
+        for (let lvl = 1; lvl <= 3; lvl++) {
+            spellSlots[lvl].current = spellSlots[lvl].max;
+        }
+        renderSpellSlots();
+        logRoll(`🟦 All Spell Slots restored to full capacity!`);
+    }
+
+    const maxPreparedSpells = 4; // Level 1 Wizard + INT Mod (+3) = 4 spells max
+
+    function renderSpellbook() {
+        const container = document.getElementById('spellbook-grid');
+        container.innerHTML = '';
+        let prepCount = 0;
+
+        fullSpellbook.forEach(sp => {
+            if (sp.prepared) prepCount++;
+            const card = document.createElement('div');
+            card.className = `action-card ${sp.prepared ? '' : 'unprepared-card'}`;
+
+            const badgeText = sp.prepared ? 'PREPARED' : '+ PREPARE';
+            const badgeBg = sp.prepared ? 'background:var(--accent-char-soft); color:var(--accent-char); border:1px solid rgba(159,196,144,0.4);' : 'background:var(--panel-sub); color:var(--text-dim); border:1px solid var(--card-border);';
+
+            let controlsHtml = '';
+            if (sp.prepared) {
+                if (sp.hasLevelSelect) {
+                    controlsHtml += `
+                        <select id="lvl-select-${sp.id}" class="lvl-dropdown" title="Select Spell Level">
+                            <option value="1">Lvl 1</option>
+                            <option value="2">Lvl 2</option>
+                            <option value="3">Lvl 3</option>
+                        </select>
+                    `;
+                }
+
+                if (sp.buttons) {
+                    sp.buttons.forEach((btn, bIdx) => {
+                        controlsHtml += `<button class="${btn.class}" onclick="execSpellButton('${sp.id}', ${bIdx})">${btn.label}</button>`;
+                    });
+                }
+            } else {
+                controlsHtml = `<span style="font-size:0.68rem; color:var(--text-muted); font-style:italic;">In Grimoire archive — click toggle to prepare</span>`;
+            }
+
+            const tagText = sp.tag || 'Spell • 1 Action';
+
+            card.innerHTML = `
+                <div class="action-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <div class="action-card-title" onclick="openSpellDetailsModal('${sp.id}')" style="cursor:pointer; font-weight:700; color:var(--text-light); transition:color 0.15s;" onmouseover="this.style.color='var(--accent-char)'" onmouseout="this.style.color='var(--text-light)'">
+                            ${sp.name} <span style="font-size:0.68rem; color:var(--text-muted);">ℹ️</span>
+                        </div>
+                        <div style="font-size:0.67rem; font-weight:600; color:var(--text-dim); margin-top:1px;">${tagText}</div>
+                    </div>
+                    <button class="btn-act" style="${badgeBg} font-size:0.65rem; padding:2px 6px; font-weight:700; flex-shrink:0;" onclick="toggleSpellPrep('${sp.id}')">${badgeText}</button>
+                </div>
+                <div class="action-desc" style="font-size:0.72rem; color:var(--text-dim); margin-top:2px;">${sp.desc}</div>
+                <div class="action-btn-row">${controlsHtml}</div>
+            `;
+            container.appendChild(card);
+        });
+
+        const counterEl = document.getElementById('prep-counter');
+        if (prepCount >= maxPreparedSpells) {
+            counterEl.innerHTML = `<span style="color:var(--accent-char); font-weight:700;">${prepCount}/${maxPreparedSpells} Prepared (MAX)</span>`;
+        } else {
+            counterEl.innerHTML = `<span>${prepCount}/${maxPreparedSpells} Prepared</span> <span style="color:var(--text-dim); font-size:0.68rem;">(${maxPreparedSpells - prepCount} left)</span>`;
+        }
+    }
+
+    // ==========================================
+    // 🔮 SPELL & ACTION DETAILS MODAL ENGINE
+    // ==========================================
+    function openSpellDetailsModal(spellId) {
+        const sp = spellActionDatabase[spellId] || fullSpellbook.find(s => s.id === spellId);
+        if (!sp) return;
+
+        document.getElementById('spell-modal-title').innerHTML = `${sp.name}`;
+        const body = document.getElementById('spell-modal-body');
+
+        let combatStatsHtml = '';
+        if (sp.attackMod || sp.damage) {
+            combatStatsHtml = `
+                <div style="background:var(--panel-sub); border:1px solid var(--card-border); border-radius:6px; padding:8px 10px; display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:6px; font-size:0.75rem;">
+                    ${sp.attackMod ? `<div><span style="color:var(--text-dim); font-size:0.68rem; text-transform:uppercase; font-weight:700;">Attack / Save:</span><div style="font-weight:700; color:var(--accent-char);">${sp.attackMod}</div></div>` : ''}
+                    ${sp.damage ? `<div><span style="color:var(--text-dim); font-size:0.68rem; text-transform:uppercase; font-weight:700;">Damage / Effect:</span><div style="font-weight:700; color:#fca5a5;">${sp.damage}</div></div>` : ''}
+                </div>
+            `;
+        }
+
+        let upcastHtml = '';
+        if (sp.upcastNotes) {
+            upcastHtml = `
+                <div style="background:var(--panel-sub); border-left:3px solid var(--accent-char); border-radius:4px; padding:7px 9px; font-size:0.75rem; color:var(--text-light); line-height:1.4;">
+                    <div style="color:var(--accent-char); text-transform:uppercase; font-size:0.68rem; font-weight:700; margin-bottom:2px;">🔮 At Higher Levels:</div>
+                    ${sp.upcastNotes}
+                </div>
+            `;
+        }
+
+        let flavorHtml = '';
+        if (sp.flavor) {
+            flavorHtml = `
+                <div style="background:var(--panel-sub); border:1px solid var(--card-border); border-radius:6px; padding:7px 10px; font-size:0.75rem; color:var(--text-dim); font-style:italic; line-height:1.4;">
+                    "${sp.flavor}"
+                </div>
+            `;
+        }
+
+        body.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
+                    <span class="pill-badge pill-char">${sp.school || 'Spell'}</span>
+                    <span class="pill-badge">⏱️ ${sp.castingTime || '1 Action'}</span>
+                    <span class="pill-badge">📏 ${sp.range || 'Self'}</span>
+                    <span class="pill-badge">🧩 ${sp.components || 'V, S'}</span>
+                    <span class="pill-badge">⏳ ${sp.duration || 'Instantaneous'}</span>
+                </div>
+
+                ${combatStatsHtml}
+
+                <div style="background:var(--panel-sub); border:1px solid var(--card-border); border-radius:6px; padding:9px 11px; font-size:0.78rem; color:var(--text-light); line-height:1.5;">
+                    <div style="font-size:0.7rem; font-weight:700; color:var(--accent-char); text-transform:uppercase; margin-bottom:4px;">📖 D&D 5e Rules & Mechanics:</div>
+                    <div>${sp.fullRules || sp.desc}</div>
+                </div>
+
+                ${upcastHtml}
+                ${flavorHtml}
+            </div>
+        `;
+
+        const actionsContainer = document.getElementById('spell-modal-actions');
+        actionsContainer.innerHTML = '';
+
+        if (sp.modalButtons) {
+            sp.modalButtons.forEach(btn => {
+                const b = document.createElement('button');
+                b.className = btn.class;
+                b.innerHTML = btn.label;
+                b.onclick = () => { btn.onClick(); };
+                actionsContainer.appendChild(b);
+            });
+        } else if (sp.buttons && sp.prepared) {
+            if (sp.hasLevelSelect) {
+                const sel = document.createElement('select');
+                sel.className = 'lvl-dropdown';
+                sel.id = `modal-lvl-select-${sp.id}`;
+                sel.innerHTML = `
+                    <option value="1">Lvl 1</option>
+                    <option value="2">Lvl 2</option>
+                    <option value="3">Lvl 3</option>
+                `;
+                actionsContainer.appendChild(sel);
+            }
+            sp.buttons.forEach((btn, bIdx) => {
+                const b = document.createElement('button');
+                b.className = btn.class;
+                b.innerHTML = btn.label;
+                b.onclick = () => {
+                    const modalSel = document.getElementById(`modal-lvl-select-${sp.id}`);
+                    const lvl = modalSel ? parseInt(modalSel.value) || 1 : 1;
+                    const mainSel = document.getElementById(`lvl-select-${sp.id}`);
+                    if (mainSel) mainSel.value = lvl;
+                    execSpellButton(sp.id, bIdx);
+                };
+                actionsContainer.appendChild(b);
+            });
+        } else if (sp.buttons && !sp.prepared) {
+            actionsContainer.innerHTML = `<span style="font-size:0.72rem; color:var(--text-muted); font-style:italic;">Unprepared spell (prepare in Grimoire to cast)</span>`;
+        }
+
+        document.getElementById('spell-modal').classList.add('active');
+    }
+
+    function closeSpellModal() {
+        const modal = document.getElementById('spell-modal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    function closeSpellModalOnBackdrop(e) {
+        if (e.target.id === 'spell-modal') {
+            closeSpellModal();
+        }
+    }
+
+    function toggleSpellPrep(spellId) {
+        const sp = fullSpellbook.find(s => s.id === spellId);
+        if (!sp) return;
+
+        const currentPrepCount = fullSpellbook.filter(s => s.prepared).length;
+
+        if (!sp.prepared && currentPrepCount >= maxPreparedSpells) {
+            logRoll(`⚠️ <strong>Preparation Limit Reached (${currentPrepCount}/${maxPreparedSpells})!</strong> Vespera can only prepare up to <strong>${maxPreparedSpells} spells</strong> at Level 1 (INT Mod +3 + Level 1). Unprepare an active spell first!`);
+            return;
+        }
+
+        sp.prepared = !sp.prepared;
+        renderSpellbook();
+        const newCount = fullSpellbook.filter(s => s.prepared).length;
+        logRoll(sp.prepared ? `✨ Prepared <strong>"${sp.name}"</strong> (${newCount}/${maxPreparedSpells} Prepared)!` : `📖 Moved <strong>"${sp.name}"</strong> to grimoire archive (${newCount}/${maxPreparedSpells} Prepared).`);
+    }
+
+    function getSelectedSpellLevel(spellId) {
+        const select = document.getElementById(`lvl-select-${spellId}`);
+        return select ? parseInt(select.value) || 1 : 1;
+    }
+
+    function execSpellButton(spellId, btnIdx) {
+        const sp = fullSpellbook.find(s => s.id === spellId);
+        if (!sp || !sp.buttons || !sp.buttons[btnIdx]) return;
+        const btn = sp.buttons[btnIdx];
+        const lvl = getSelectedSpellLevel(spellId);
+
+        if (btn.costSlot) {
+            if (characterLevel < spellSlots[lvl].reqLevel) {
+                logRoll(`🔒 <strong>Cannot cast at Level ${lvl}!</strong> Level ${lvl} spell slots unlock at Level ${spellSlots[lvl].reqLevel}. Please cast at Level 1!`);
+                return;
+            }
+            if (spellSlots[lvl] && spellSlots[lvl].max > 0) {
+                if (spellSlots[lvl].current > 0) {
+                    spellSlots[lvl].current--;
+                    renderSpellSlots();
+                } else {
+                    logRoll(`⚠️ <strong>0 Level ${lvl} Spell Slots remaining!</strong> Choose another slot tier or rest.`);
+                    return;
+                }
+            }
+        }
+        btn.onClick(lvl);
+    }
+
+    // Scaled Spell Rollers
+    function rollRayOfSicknessScaled(slotLevel) {
+        const diceCount = 1 + slotLevel; // Lvl 1: 2d8, Lvl 2: 3d8, Lvl 3: 4d8
+        const rolls = [];
+        let total = 0;
+        for (let i = 0; i < diceCount; i++) {
+            const r = Math.floor(Math.random() * 8) + 1;
+            rolls.push(r);
+            total += r;
+        }
+        logRoll(`🤢 <strong>Ray of Sickness (Level ${slotLevel} Slot • ${diceCount}d8):</strong> [${rolls.join(' + ')}] = <span style="color:var(--accent-char); font-weight:700;">${total} Poison Damage</span>! (Target makes DC 13 CON Save or is <strong>Poisoned</strong>)`);
+    }
+
+    function castFalseLifeScaled(slotLevel) {
+        const d4 = Math.floor(Math.random() * 4) + 1;
+        const bonus = 4 + ((slotLevel - 1) * 5); // Lvl 1: 1d4+4, Lvl 2: 1d4+9, Lvl 3: 1d4+14
+        const total = d4 + bonus;
+        tempHP = Math.max(tempHP, total);
+        updateHPUI();
+        logRoll(`🩸 <strong>False Life (Level ${slotLevel} Slot • 1d4+${bonus}):</strong> Gained [d4:${d4}+${bonus}] = <span style="color:var(--accent-blue); font-weight:700;">+${total} Temp HP</span>!`);
+    }
+
+    function castUtility(text) {
+        logRoll(text);
+    }
+
+    // ==========================================
+    // 🎲 ROLLER SYSTEM & FORMATTER
+    // ==========================================
+    function logRoll(htmlMsg) {
+        const res = document.getElementById('roll-res');
+        res.innerHTML = htmlMsg;
+        res.classList.remove('highlight-roll');
+        void res.offsetWidth;
+        res.classList.add('highlight-roll');
+    }
+
+    function modDiceMod(delta) {
+        const input = document.getElementById('dice-mod');
+        input.value = (parseInt(input.value) || 0) + delta;
+    }
+
+    function toggleAdvantage(mode) {
+        if (rollMode === mode) {
+            rollMode = 'norm';
+            document.getElementById('btn-adv').style.background = '#21262d';
+            document.getElementById('btn-adv').style.color = 'var(--text-dim)';
+            document.getElementById('btn-dis').style.background = '#21262d';
+            document.getElementById('btn-dis').style.color = 'var(--text-dim)';
+        } else {
+            rollMode = mode;
+            document.getElementById('btn-adv').style.background = (mode === 'adv') ? 'var(--accent-green)' : '#21262d';
+            document.getElementById('btn-adv').style.color = (mode === 'adv') ? '#0d1117' : 'var(--text-dim)';
+            document.getElementById('btn-dis').style.background = (mode === 'dis') ? 'var(--accent-red)' : '#21262d';
+            document.getElementById('btn-dis').style.color = (mode === 'dis') ? '#0d1117' : 'var(--text-dim)';
+        }
+    }
+
+    function rollCustomDie(sides) {
+        const mod = parseInt(document.getElementById('dice-mod').value) || 0;
+        const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
+
+        if (sides === 20 && rollMode !== 'norm') {
+            const r1 = Math.floor(Math.random() * 20) + 1;
+            const r2 = Math.floor(Math.random() * 20) + 1;
+            const chosen = (rollMode === 'adv') ? Math.max(r1, r2) : Math.min(r1, r2);
+            const total = chosen + mod;
+            const modeLabel = rollMode === 'adv' ? 'Advantage' : 'Disadvantage';
+            let msg = `🎲 <strong>d20 (${modeLabel}: [${r1}, ${r2}] ➔ ${chosen}) ${modStr} = <span style="font-size:1.05rem; color:var(--accent-char); font-weight:700;">${total}</span></strong>`;
+            if (chosen === 20) msg += " <span class='crit-badge'>NAT 20 CRIT!</span>";
+            if (chosen === 1) msg += " <span class='fail-badge'>NAT 1 FAIL!</span>";
+            logRoll(msg);
+            return;
+        }
+
+        const roll = Math.floor(Math.random() * sides) + 1;
+        const total = roll + mod;
+        let msg = `🎲 <strong>d${sides} (${roll}) ${modStr} = <span style="font-size:1.05rem; color:var(--accent-char); font-weight:700;">${total}</span></strong>`;
+        if (sides === 20 && roll === 20) msg += " <span class='crit-badge'>NAT 20 CRIT!</span>";
+        if (sides === 20 && roll === 1) msg += " <span class='fail-badge'>NAT 1 FAIL!</span>";
+        logRoll(msg);
+    }
+
+    function rollD20(label, mod) {
+        const modInput = parseInt(document.getElementById('dice-mod').value) || 0;
+        const totalMod = mod + modInput;
+        const modStr = totalMod >= 0 ? `+${totalMod}` : `${totalMod}`;
+
+        if (rollMode !== 'norm') {
+            const r1 = Math.floor(Math.random() * 20) + 1;
+            const r2 = Math.floor(Math.random() * 20) + 1;
+            const chosen = (rollMode === 'adv') ? Math.max(r1, r2) : Math.min(r1, r2);
+            const total = chosen + totalMod;
+            const modeLabel = rollMode === 'adv' ? 'Advantage' : 'Disadvantage';
+            let msg = `🎯 <strong>${label}:</strong> [${r1}, ${r2}] ➔ d20(${chosen}) ${modStr} = <span style="font-size:1.05rem; color:var(--accent-char); font-weight:700;">${total}</span> <small style="color:var(--text-muted);">(${modeLabel})</small>`;
+            if (chosen === 20) msg += " <span class='crit-badge'>NAT 20 CRIT!</span>";
+            if (chosen === 1) msg += " <span class='fail-badge'>NAT 1 FAIL!</span>";
+            logRoll(msg);
+            return;
+        }
+
+        const d20 = Math.floor(Math.random() * 20) + 1;
+        const total = d20 + totalMod;
+        let msg = `🎯 <strong>${label}:</strong> d20(${d20}) ${modStr} = <span style="font-size:1.05rem; color:var(--accent-char); font-weight:700;">${total}</span>`;
+        if (d20 === 20) msg += " <span class='crit-badge'>NAT 20 CRIT!</span>";
+        if (d20 === 1) msg += " <span class='fail-badge'>NAT 1 FAIL!</span>";
+        logRoll(msg);
+    }
+
+    function rollFormulaDamage(label, sides, bonus, type) {
+        const roll = Math.floor(Math.random() * sides) + 1;
+        const total = roll + bonus;
+        logRoll(`💥 <strong>${label}:</strong> [d${sides}:${roll} + ${bonus}] = <span style="font-size:1.05rem; color:var(--accent-char); font-weight:700;">${total}</span> ${type} Damage`);
+    }
+
+    // ==========================================
+    // 💰 INTERACTIVE GOLD & CURRENCY PURSE
+    // ==========================================
+    const DEFAULT_START_GP = 18;
+    const DEFAULT_START_SP = 6;
+
+    function getStoredGold(key, defaultVal) {
+        const val = localStorage.getItem(key);
+        if (val === null || val === 'NaN' || val === undefined || isNaN(parseInt(val))) {
+            localStorage.setItem(key, defaultVal);
+            return defaultVal;
+        }
+        return parseInt(val);
+    }
+
+    let curGP = getStoredGold('dnd_gold_vespera_v1', DEFAULT_START_GP);
+    let curSP = getStoredGold('dnd_silver_vespera_v1', DEFAULT_START_SP);
+
+    function getGoldHistory() {
+        const stored = localStorage.getItem('dnd_gold_tx_vespera');
+        if (!stored) {
+            const initial = [{
+                type: 'initial',
+                label: 'Noble Heritage Coffers',
+                delta: `${DEFAULT_START_GP} GP, ${DEFAULT_START_SP} SP`,
+                total: `${DEFAULT_START_GP} GP, ${DEFAULT_START_SP} SP`,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }];
+            localStorage.setItem('dnd_gold_tx_vespera', JSON.stringify(initial));
+            return initial;
+        }
+        try {
+            return JSON.parse(stored);
+        } catch(e) {
+            return [];
+        }
+    }
+
+    function saveGoldHistory(history) {
+        localStorage.setItem('dnd_gold_tx_vespera', JSON.stringify(history.slice(0, 50)));
+    }
+
+    function logGoldTx(type, label, deltaStr, totalStr) {
+        const history = getGoldHistory();
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        history.unshift({
+            type: type,
+            label: label || (type === 'gain' ? 'Loot / Income' : type === 'spend' ? 'Purchase / Expense' : 'Adjustment'),
+            delta: deltaStr,
+            total: totalStr,
+            time: timeStr
+        });
+        saveGoldHistory(history);
+        renderGoldHistory();
+    }
+
+    function normalizeCoins() {
+        if (isNaN(curGP)) curGP = 0;
+        if (isNaN(curSP)) curSP = 0;
+        
+        if (curSP >= 10) {
+            const extraGP = Math.floor(curSP / 10);
+            curGP += extraGP;
+            curSP = curSP % 10;
+        }
+        
+        while (curSP < 0 && curGP > 0) {
+            curGP -= 1;
+            curSP += 10;
+        }
+        
+        if (curGP <= 0 && curSP < 0) {
+            curGP = 0;
+            curSP = 0;
+        }
+    }
+
+    function updateGoldUI() {
+        normalizeCoins();
+        document.getElementById('gold-disp').innerText = curGP;
+        document.getElementById('silver-disp').innerText = curSP;
+        
+        const modalG = document.getElementById('modal-gold-disp');
+        const modalS = document.getElementById('modal-silver-disp');
+        if (modalG) modalG.innerText = curGP;
+        if (modalS) modalS.innerText = curSP;
+
+        localStorage.setItem('dnd_gold_vespera_v1', curGP);
+        localStorage.setItem('dnd_silver_vespera_v1', curSP);
+    }
+
+    function resetGoldPurse() {
+        if (confirm(`Reset Gold Purse to starting balance (${DEFAULT_START_GP} GP, ${DEFAULT_START_SP} SP)?`)) {
+            curGP = DEFAULT_START_GP;
+            curSP = DEFAULT_START_SP;
+            updateGoldUI();
+            logGoldTx('reset', '🔄 Reset to Official Balance', `${DEFAULT_START_GP} GP, ${DEFAULT_START_SP} SP`, `${curGP} GP, ${curSP} SP`);
+            logRoll(`💰 <strong>Gold Purse Reset:</strong> Restored to ${curGP} GP, ${curSP} SP.`);
+        }
+    }
+
+    function stepGold(delta) {
+        let totalSP = (curGP * 10) + curSP;
+        totalSP = Math.max(0, totalSP + (delta * 10));
+        curGP = Math.floor(totalSP / 10);
+        curSP = totalSP % 10;
+        
+        updateGoldUI();
+        const type = delta > 0 ? 'gain' : 'spend';
+        const deltaStr = `${delta > 0 ? '+' : ''}${delta} GP`;
+        logGoldTx(type, delta > 0 ? 'Quick Add' : 'Quick Spend', deltaStr, `${curGP} GP, ${curSP} SP`);
+        logRoll(`💰 <strong>Gold Purse:</strong> ${deltaStr} ➔ ${curGP} GP, ${curSP} SP`);
+    }
+
+    function stepSilver(delta) {
+        if (isNaN(curSP)) curSP = DEFAULT_START_SP;
+        if (isNaN(curGP)) curGP = DEFAULT_START_GP;
+        
+        const prevGP = curGP;
+        curSP += delta;
+        normalizeCoins();
+        updateGoldUI();
+        
+        const deltaStr = `${delta > 0 ? '+' : ''}${delta} SP`;
+        let logMsg = `🥈 <strong>Silver Step:</strong> ${deltaStr} ➔ ${curGP} GP, ${curSP} SP`;
+        if (curGP < prevGP) {
+            logMsg += ` <small style="color:var(--accent-gold);">(Converted 1 GP ➔ 10 SP)</small>`;
+        } else if (curGP > prevGP) {
+            logMsg += ` <small style="color:var(--accent-green);">(10 SP Converted ➔ +1 GP)</small>`;
+        }
+        
+        logGoldTx('silver', delta > 0 ? 'Silver +1' : 'Silver -1', deltaStr, `${curGP} GP, ${curSP} SP`);
+        logRoll(logMsg);
+    }
+
+    function renderGoldHistory() {
+        const list = document.getElementById('modal-tx-list');
+        if (!list) return;
+        const history = getGoldHistory();
+        if (history.length === 0) {
+            list.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:12px;">No transactions recorded yet.</div>`;
+            return;
+        }
+        list.innerHTML = history.map(item => {
+            let badgeClass = 'tx-gain';
+            let color = 'var(--accent-green)';
+            if (item.type === 'spend') { badgeClass = 'tx-spend'; color = 'var(--accent-red)'; }
+            else if (item.type === 'silver') { badgeClass = 'tx-silver'; color = 'var(--accent-blue)'; }
+            else if (item.type === 'reset' || item.type === 'initial') { badgeClass = 'tx-reset'; color = 'var(--accent-char)'; }
+
+            return `
+                <div class="tx-item ${badgeClass}">
+                    <div>
+                        <div style="font-weight:700; color:var(--text-light); display:flex; align-items:center; gap:6px;">
+                            <span>${item.label}</span>
+                            <span style="font-size:0.65rem; color:var(--text-muted); font-weight:normal;">• ${item.time}</span>
+                        </div>
+                        <div style="font-size:0.68rem; color:var(--text-dim);">Balance: ${item.total}</div>
+                    </div>
+                    <div style="font-weight:800; font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:${color};">
+                        ${item.delta}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function openGoldHistoryModal() {
+        renderGoldHistory();
+        updateGoldUI();
+        document.getElementById('gold-modal').classList.add('active');
+    }
+
+    function closeGoldHistoryModal() {
+        document.getElementById('gold-modal').classList.remove('active');
+    }
+
+    function closeGoldHistoryOnBackdrop(e) {
+        if (e.target.id === 'gold-modal') {
+            closeGoldHistoryModal();
+        }
+    }
+
+    function clearGoldHistory() {
+        if (confirm("Clear all recorded transaction history? Current balance will be kept.")) {
+            localStorage.setItem('dnd_gold_tx_vespera', JSON.stringify([{
+                type: 'initial',
+                label: 'History Reset',
+                delta: `${curGP} GP, ${curSP} SP`,
+                total: `${curGP} GP, ${curSP} SP`,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }]));
+            renderGoldHistory();
+            logRoll("📜 Gold transaction history cleared.");
+        }
+    }
+
+    // ==========================================
+    // 🎒 INVENTORY MANAGEMENT & WORLD LOOT VAULT
+    // ==========================================
+    const worldLootVault = {
+        "potion of healing": {
+            name: "🧪 Potion of Healing",
+            category: "HEAL • Common Potion",
+            origin: "Apothecary / Vespera's Satchel",
+            desc: "A swirling crimson draught smelling of wild rose and bitter herbs.",
+            effect: "• <strong>Action to Drink:</strong> Restores <strong>2d4 + 2 Hit Points</strong>."
+        },
+        "nightshade poison vials": {
+            name: "🧪 Nightshade Poison Vials",
+            category: "TOXIN • Uncommon Consumable",
+            origin: "Distilled from Blackthorne Family Greenhouses",
+            desc: "A viscous, midnight-green oil in a silver-stoppered glass vial.",
+            effect: "• <strong>Bonus Action to Coat Weapon:</strong> For 1 minute, your weapon attacks deal an extra <strong>1d4 Poison Damage</strong> on hit (DC 12 CON Save or poisoned)."
+        },
+        "serpent-skin grimoire": {
+            name: "📖 Serpent-Skin Grimoire",
+            category: "ARCANE FOCUS • Spellbook",
+            origin: "Ancestral Family Heirloom",
+            desc: "Heavy vellum parchment bound in scaly black viper hide with silver lock-clasps.",
+            effect: "• Contains Vespera's complete spell formulas, dark treaties, and ritual incantations."
+        },
+        "alchemical skull focus": {
+            name: "🕯️ Alchemical Skull Focus",
+            category: "ARCANE FOCUS • Wondrous Item",
+            origin: "Carved from fossilized raven bone",
+            desc: "An intricate carved skull etched with glowing necromantic runes.",
+            effect: "• Channels necromancy spells and provides focus for somatic casting."
+        },
+        "obsidian ritual dagger": {
+            name: "🗡️ Obsidian Ritual Dagger",
+            category: "WEAPON • Finesse Blade",
+            origin: "Forged in volcanic glass",
+            desc: "A double-edged obsidian dagger etched with venom channels.",
+            effect: "• <strong>+4 to Hit, 1d4+2 Piercing Damage</strong> (Finesse, Light, Thrown 20/60)."
+        },
+        "signet ring of house blackthorne": {
+            name: "💍 Signet Ring of House Blackthorne",
+            category: "NOBLE HEIRLOOM • Priceless",
+            origin: "House Blackthorne Estate",
+            desc: "Heavy platinum signet ring bearing the crowned serpent crest.",
+            effect: "• Grants Advantage on Charisma (Persuasion/Intimidation) checks when dealing with aristocracy and formal legal contracts."
+        }
+    };
+
+    function getItemDetails(rawItemName) {
+        const parsed = parseItemInfo(rawItemName);
+        const clean = parsed.name.toLowerCase().replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').replace(/\(.*?\)/g, '').trim();
+
+        for (let key in worldLootVault) {
+            if (clean.includes(key) || key.includes(clean)) {
+                return {
+                    ...worldLootVault[key],
+                    qty: parsed.qty,
+                    hasQty: parsed.hasQty,
+                    raw: rawItemName
+                };
+            }
+        }
+
+        return {
+            name: (parsed.emoji ? parsed.emoji + ' ' : '') + parsed.name,
+            category: "ADVENTURING GEAR • Loot",
+            origin: "Carried in adventurer pack",
+            desc: "An item carried in the witch's satchel.",
+            effect: `• <strong>Item Details:</strong> ${rawItemName}`,
+            qty: parsed.qty,
+            hasQty: parsed.hasQty,
+            raw: rawItemName
+        };
+    }
+
+    function openItemDetailsModal(index) {
+        const items = getStoredItems();
+        if (!items[index]) return;
+        const itemStr = items[index];
+        const details = getItemDetails(itemStr);
+        
+        document.getElementById('item-modal-title').innerHTML = `${details.name}`;
+        const body = document.getElementById('item-modal-body');
+
+        body.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+                    <span class="pill-badge pill-char">${details.category}</span>
+                    <span style="font-size:0.68rem; color:var(--text-muted); font-style:italic;">📍 ${details.origin}</span>
+                </div>
+                <div style="background:var(--panel-sub); border:1px solid var(--card-border); border-radius:6px; padding:8px 10px; font-size:0.76rem; color:var(--text-dim); font-style:italic; line-height:1.4;">
+                    "${details.desc}"
+                </div>
+                <div style="background:var(--panel-sub); border:1px solid var(--card-border); border-radius:6px; padding:8px 10px; font-size:0.78rem; color:var(--text-light); line-height:1.5;">
+                    <div style="font-size:0.7rem; font-weight:700; color:var(--accent-char); text-transform:uppercase; margin-bottom:4px;">⚡ In-Game Mechanics & Effects:</div>
+                    <div>${details.effect}</div>
+                </div>
+            </div>
+        `;
+
+        const actions = document.getElementById('item-modal-actions');
+        if (details.hasQty) {
+            actions.innerHTML = `
+                <button class="btn-act btn-act-pre" onclick="stepItemQty(${index}, -1); openItemDetailsModal(${index});" style="color:var(--accent-char); font-size:0.72rem; padding:4px 8px;">🧪 Consume 1 (${details.qty} left)</button>
+            `;
+        } else {
+            actions.innerHTML = ``;
+        }
+
+        document.getElementById('item-modal').classList.add('active');
+    }
+
+    function closeItemModal() {
+        const modal = document.getElementById('item-modal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    function closeItemModalOnBackdrop(e) {
+        if (e.target.id === 'item-modal') {
+            closeItemModal();
+        }
+    }
+
+    function getStoredItems() {
+        let stored = localStorage.getItem('dnd_inv_vespera_v1');
+        if (!stored) {
+            localStorage.setItem('dnd_inv_vespera_v1', JSON.stringify(defaultItems));
+            return [...defaultItems];
+        }
+        return JSON.parse(stored);
+    }
+
+    function saveStoredItems(items) {
+        localStorage.setItem('dnd_inv_vespera_v1', JSON.stringify(items));
+    }
+
+    function parseItemInfo(itemStr) {
+        if (!itemStr) return { hasQty: false, qty: 1, emoji: '', name: '', raw: '' };
+        
+        const emojiMatch = itemStr.match(/^([\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\s]+)/u);
+        const emoji = emojiMatch ? emojiMatch[1].trim() + ' ' : '';
+        let rest = (emojiMatch ? itemStr.slice(emojiMatch[0].length) : itemStr).trim();
+
+        let qty = 1;
+        let hasQty = false;
+        let name = rest;
+
+        const prefixMatch = rest.match(/^(?:(\d+)\s*[xX]|[xX]\s*(\d+))\s+(.+)$/);
+        const suffixMatch = rest.match(/^(.+?)\s+(?:[xX]\s*(\d+)|(\d+)\s*[xX])$/);
+        const parenMatch = rest.match(/^(.+?)\s*\(\s*(?:[xX]\s*(\d+)|(\d+)\s*[xX]?)\s*\)$/);
+
+        if (prefixMatch) {
+            hasQty = true;
+            qty = parseInt(prefixMatch[1] || prefixMatch[2]) || 1;
+            name = prefixMatch[3].trim();
+        } else if (suffixMatch) {
+            hasQty = true;
+            qty = parseInt(suffixMatch[2] || suffixMatch[3]) || 1;
+            name = suffixMatch[1].trim();
+        } else if (parenMatch) {
+            hasQty = true;
+            qty = parseInt(parenMatch[2] || parenMatch[3]) || 1;
+            name = parenMatch[1].trim();
+        }
+
+        return {
+            hasQty: hasQty,
+            qty: qty,
+            emoji: emoji,
+            name: name,
+            raw: itemStr
+        };
+    }
+
+    function renderInventory() {
+        const list = document.getElementById('inventory-list');
+        if (!list) return;
+        const items = getStoredItems();
+        list.innerHTML = '';
+
+        if (items.length === 0) {
+            list.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:10px;">Inventory is empty.</div>`;
+            return;
+        }
+
+        items.forEach((item, index) => {
+            const parsed = parseItemInfo(item);
+            const div = document.createElement('div');
+            div.className = 'inv-row-item';
+
+            let controlsHtml = '';
+            if (parsed.hasQty) {
+                controlsHtml = `
+                    <div class="inv-stepper">
+                        <button class="btn-step-qty" onclick="stepItemQty(${index}, -1)" title="Use / Consume 1 (➖)">➖</button>
+                        <span class="inv-qty-val">${parsed.qty}x</span>
+                        <button class="btn-step-qty" onclick="stepItemQty(${index}, 1)" title="Add / Restock 1 (➕)">➕</button>
+                    </div>
+                    <button class="btn-del-item" onclick="deleteItem(${index})" title="Discard entire stack">✕</button>
+                `;
+                div.innerHTML = `
+                    <div class="inv-item-info" title="Click to view full description and lore">
+                        <span onclick="openItemDetailsModal(${index})" style="cursor:pointer; color:var(--text-light); transition:color 0.15s;" onmouseover="this.style.color='var(--accent-char)'" onmouseout="this.style.color='var(--text-light)'">${parsed.emoji}${parsed.name}</span>
+                    </div>
+                    <div class="inv-controls">
+                        ${controlsHtml}
+                    </div>
+                `;
+            } else {
+                controlsHtml = `
+                    <div class="inv-stepper" style="border:none; background:transparent;">
+                        <button class="btn-step-qty" onclick="stepItemQty(${index}, 1)" title="Turn into stack / Add 1 (➕)" style="border:1px solid var(--card-border); border-radius:3px; padding:1px 5px;">➕</button>
+                    </div>
+                    <button class="btn-del-item" onclick="deleteItem(${index})" title="Discard item">✕</button>
+                `;
+                div.innerHTML = `
+                    <div class="inv-item-info" title="Click to view full description and lore">
+                        <span onclick="openItemDetailsModal(${index})" style="cursor:pointer; color:var(--text-light); transition:color 0.15s;" onmouseover="this.style.color='var(--accent-char)'" onmouseout="this.style.color='var(--text-light)'">${item}</span>
+                    </div>
+                    <div class="inv-controls">
+                        ${controlsHtml}
+                    </div>
+                `;
+            }
+
+            list.appendChild(div);
+        });
+    }
+
+    function getSessionDelta() {
+        return {
+            added: JSON.parse(localStorage.getItem('dnd_delta_add_vespera') || '[]'),
+            removed: JSON.parse(localStorage.getItem('dnd_delta_rem_vespera') || '[]')
+        };
+    }
+
+    function saveSessionDelta(delta) {
+        localStorage.setItem('dnd_delta_add_vespera', JSON.stringify(delta.added));
+        localStorage.setItem('dnd_delta_rem_vespera', JSON.stringify(delta.removed));
+    }
+
+    function recordDeltaItem(type, baseName, count = 1) {
+        if (!baseName || count <= 0) return;
+        const delta = getSessionDelta();
+        const normalizedName = baseName.replace(/^(\d+)\s*[xX]\s*/, '').trim();
+        
+        const oppositeType = type === 'added' ? 'removed' : 'added';
+        const currentList = delta[type];
+        const oppList = delta[oppositeType];
+
+        function findEntryIndex(list, name) {
+            return list.findIndex(entry => {
+                const entryName = entry.replace(/^(\d+)\s*[xX]\s*/, '').trim();
+                return entryName === name;
+            });
+        }
+
+        function getEntryCount(entry) {
+            const m = entry.match(/^(\d+)\s*[xX]\s*/);
+            return m ? parseInt(m[1]) : 1;
+        }
+
+        let oppIdx = findEntryIndex(oppList, normalizedName);
+        if (oppIdx !== -1) {
+            let oppCount = getEntryCount(oppList[oppIdx]);
+            if (oppCount > count) {
+                oppList[oppIdx] = `${oppCount - count}x ${normalizedName}`;
+            } else if (oppCount === count) {
+                oppList.splice(oppIdx, 1);
+            } else {
+                oppList.splice(oppIdx, 1);
+                let remaining = count - oppCount;
+                let currIdx = findEntryIndex(currentList, normalizedName);
+                if (currIdx !== -1) {
+                    let currCount = getEntryCount(currentList[currIdx]);
+                    currentList[currIdx] = `${currCount + remaining}x ${normalizedName}`;
+                } else {
+                    currentList.push(remaining > 1 ? `${remaining}x ${normalizedName}` : `1x ${normalizedName}`);
+                }
+            }
+        } else {
+            let currIdx = findEntryIndex(currentList, normalizedName);
+            if (currIdx !== -1) {
+                let currCount = getEntryCount(currentList[currIdx]);
+                currentList[currIdx] = `${currCount + count}x ${normalizedName}`;
+            } else {
+                currentList.push(count > 1 ? `${count}x ${normalizedName}` : `1x ${normalizedName}`);
+            }
+        }
+
+        saveSessionDelta(delta);
+    }
+
+    function stepItemQty(index, delta) {
+        const items = getStoredItems();
+        if (!items[index]) return;
+        const parsed = parseItemInfo(items[index]);
+        const cleanName = parsed.name.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
+
+        if (delta < 0) {
+            const newQty = parsed.qty + delta;
+            recordDeltaItem('removed', cleanName, 1);
+            
+            if (newQty <= 0) {
+                const removed = items.splice(index, 1);
+                saveStoredItems(items);
+                renderInventory();
+                logRoll(`🗑️ <strong>Consumed:</strong> "${parsed.emoji}${parsed.name}" is now depleted and removed.`);
+            } else {
+                items[index] = `${parsed.emoji}${newQty}x ${parsed.name}`.trim();
+                saveStoredItems(items);
+                renderInventory();
+                logRoll(`🧪 <strong>Consumed 1x:</strong> ${parsed.name} (${newQty} remaining).`);
+            }
+        } else if (delta > 0) {
+            const newQty = parsed.qty + delta;
+            items[index] = `${parsed.emoji}${newQty}x ${parsed.name}`.trim();
+            saveStoredItems(items);
+            recordDeltaItem('added', cleanName, 1);
+            renderInventory();
+            logRoll(`🎒 <strong>Restocked +1x:</strong> ${parsed.name} (${newQty} total).`);
+        }
+    }
+
+    function addItem() {
+        const input = document.getElementById('new-item-input');
+        const text = input.value.trim();
+        if (!text) return;
+        const items = getStoredItems();
+        items.push(text);
+        saveStoredItems(items);
+
+        const parsed = parseItemInfo(text);
+        const cleanName = parsed.name.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
+        recordDeltaItem('added', cleanName, parsed.qty);
+
+        input.value = '';
+        renderInventory();
+        logRoll(`🎒 Added "${text}" to satchel.`);
+    }
+
+    function deleteItem(index) {
+        const items = getStoredItems();
+        if (!items[index]) return;
+        const itemStr = items[index];
+        const parsed = parseItemInfo(itemStr);
+        const cleanName = parsed.name.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
+
+        items.splice(index, 1);
+        saveStoredItems(items);
+
+        recordDeltaItem('removed', cleanName, parsed.qty);
+
+        renderInventory();
+        logRoll(`🗑️ Discarded: "${itemStr}"`);
+    }
+
+    function resetInventory() {
+        if (confirm("Reset inventory and coin purse to official campaign loadout?")) {
+            curGP = DEFAULT_START_GP;
+            curSP = DEFAULT_START_SP;
+            updateGoldUI();
+            saveStoredItems(defaultItems);
+            localStorage.removeItem('dnd_delta_add_vespera');
+            localStorage.removeItem('dnd_delta_rem_vespera');
+            renderInventory();
+            logRoll("🎒 Inventory and Gold Purse reset to official loadout.");
+        }
+    }
+
+    // 1-Click Session Delta Export Protocol
+    function exportSheetState() {
+        const delta = getSessionDelta();
+        let deltaParts = [];
+        if (delta.added.length > 0) {
+            deltaParts.push(`➕ Added: ${delta.added.join(', ')}`);
+        }
+        if (delta.removed.length > 0) {
+            deltaParts.push(`➖ Consumed/Removed: ${delta.removed.join(', ')}`);
+        }
+        const invSummary = deltaParts.length > 0 ? deltaParts.join(' | ') : '📦 Inventory: (No session changes)';
+        
+        const slotsStr = `L1(${spellSlots[1].current}/${spellSlots[1].max})`;
+        const stateStr = `🧪 LADY VESPERA [HP: ${curHP}/${maxHP}${tempHP > 0 ? ' (+'+tempHP+' Temp)' : ''} | Slots: ${slotsStr} | Help: ${helpTokens}/2 | AC: ${document.getElementById('dispAC').innerText} | Wealth: ${curGP} GP, ${curSP} SP] • ${invSummary}`;
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(stateStr).then(() => {
+                logRoll(`📋 <strong>Session Delta Exported!</strong><br><small style="color:var(--text-dim);">${stateStr}</small>`);
+            }).catch(() => {
+                prompt("Copy Vespera's session export string:", stateStr);
+            });
+        } else {
+            prompt("Copy Vespera's session export string:", stateStr);
+        }
+    }
+
+    // Event Listeners
+    document.getElementById('hpDeltaInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') applyDamage();
+    });
+    document.getElementById('new-item-input').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') addItem();
+    });
+
+    // Init on Page Load
+    updateHPUI();
+    updateACDisplay();
+    updateHelpDisplay();
+    updateGoldUI();
+    renderSpellSlots();
+    renderSpellbook();
+    renderInventory();
+</script>
+
+</body>
+</html>

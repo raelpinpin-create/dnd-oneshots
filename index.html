@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <title>D&amp;D 5e One-Shot Vault — Live Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg-page: #0b0d12;
+            --bg-card: #12151d;
+            --bg-sub: #171b25;
+            --bg-well: #0f1219;
+            --border: rgba(255, 255, 255, 0.1);
+            --gold: #e2b254;
+            --gold-soft: rgba(226, 178, 84, 0.14);
+            --gold-border: rgba(226, 178, 84, 0.45);
+            --blue: #58a6df;
+            --green: #3fb980;
+            --text: #f3f5f9;
+            --dim: #aeb8c9;
+            --muted: #7f8b9f;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: radial-gradient(ellipse 90% 45% at 50% 0%, rgba(226, 178, 84, 0.12), transparent 68%), var(--bg-page);
+            color: var(--text);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 32px 16px 60px;
+            display: flex;
+            justify-content: center;
+        }
+        .container { width: 100%; max-width: 1060px; display: flex; flex-direction: column; gap: 22px; }
+        header {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-top: 2px solid var(--gold);
+            border-radius: 14px;
+            padding: 26px 22px;
+            text-align: center;
+            box-shadow: 0 16px 42px rgba(0, 0, 0, 0.6);
+        }
+        header h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: clamp(1.45rem, 2.5vw, 2.05rem);
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+        }
+        header p { color: var(--dim); font-size: 0.9rem; max-width: 720px; margin: 0 auto 14px; line-height: 1.5; }
+        .pill-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+        .pill {
+            font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+            background: var(--bg-sub); border: 1px solid var(--border); color: var(--dim);
+        }
+        .pill.gold { color: var(--gold); border-color: var(--gold-border); background: var(--gold-soft); }
+        .section-head {
+            display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
+            border-bottom: 1px solid var(--border); padding-bottom: 8px;
+        }
+        .section-head h2 {
+            font-family: 'Cinzel', serif; font-size: 1.08rem; color: var(--gold); letter-spacing: 0.04em;
+        }
+        .section-head span { font-size: 0.78rem; color: var(--muted); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; }
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px;
+            display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
+            transition: border-color 0.16s ease, transform 0.16s ease;
+        }
+        .card:hover { border-color: var(--gold-border); transform: translateY(-2px); }
+        .card h3 { font-family: 'Cinzel', serif; font-size: 1.15rem; color: var(--text); margin-bottom: 4px; }
+        .card .meta { font-size: 0.74rem; color: var(--gold); font-weight: 700; margin-bottom: 8px; }
+        .card p { font-size: 0.82rem; color: var(--dim); line-height: 1.48; }
+        .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn {
+            flex: 1; min-width: 120px; display: inline-flex; justify-content: center; align-items: center; gap: 6px;
+            padding: 9px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; text-decoration: none;
+            background: var(--bg-sub); color: var(--gold); border: 1px solid var(--gold-border);
+        }
+        .btn:hover { background: #222837; }
+        .btn.secondary { color: var(--dim); border-color: var(--border); }
+        .empty-box {
+            background: var(--bg-card); border: 1px dashed var(--border); border-radius: 12px;
+            padding: 26px 20px; text-align: center; color: var(--dim); font-size: 0.88rem; line-height: 1.6;
+        }
+        .empty-box code {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+            background: var(--bg-well); border: 1px solid var(--border); padding: 2px 6px; border-radius: 5px; color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ D&amp;D 5e ONE-SHOT VAULT</h1>
+            <p>Lightweight, modular one-shot launcher powered by one shared RPG Engine, v3.0 Matte-Charcoal Theme, and isolated Firebase rooms per session.</p>
+            <div class="pill-row">
+                <span class="pill gold">Shared Engine: shared/cos_rpg_engine.js</span>
+                <span class="pill">Theme: shared/cos_sheet_theme.css (v3.0)</span>
+                <span class="pill">Isolated RTDB: oneshot_&lt;slug&gt;</span>
+            </div>
+        </header>
+
+        <section>
+            <div class="section-head">
+                <h2>🎲 Active One-Shots</h2>
+                <span>Each one-shot lives cleanly in its own subfolder &amp; can be archived/deleted anytime</span>
+            </div>
+            <div class="grid" style="margin-top: 12px;">
+                <!-- ADD NEW ONE-SHOT CARDS HERE -->
+                <div class="empty-box" style="grid-column: 1 / -1;">
+                    <strong>No active one-shots mounted yet.</strong><br>
+                    Ask your AI DM to run <code>/oneshot</code> (e.g., <em>"Make a Level 5 heist one-shot for 3 players"</em>) to generate a new <code>&lt;slug&gt;/</code> folder with on-the-fly sheets, live Firebase room, and instant links here.
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-head">
+                <h2>🗄️ Archived One-Shots &amp; Early Prototypes</h2>
+                <span>Preserved legacy sheets from earlier sessions</span>
+            </div>
+            <div class="grid" style="margin-top: 12px;">
+                <div class="card">
+                    <div>
+                        <h3>⚔️ The Siblings Pact</h3>
+                        <div class="meta">Legacy Prototype • Level 1 Trio</div>
+                        <p>Early standalone character cards (Lady Vespera, Sister Beatrice, Sir Valerius) before the shared RPG Engine.</p>
+                    </div>
+                    <div class="btn-row">
+                        <a href="archive/siblings-and-early-tests/index.html" class="btn secondary">Open Archive Portal</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div>
+                        <h3>🧪 Early Standalone Test Cards</h3>
+                        <div class="meta">Legacy Prototypes • Individual Sheets</div>
+                        <p>Standalone early HTML sheets preserved for reference (Lelouch &amp; The Waterball).</p>
+                    </div>
+                    <div class="btn-row">
+                        <a href="archive/siblings-and-early-tests/LELOUCH_PLAYER_SHEET.html" class="btn secondary">Lelouch</a>
+                        <a href="archive/siblings-and-early-tests/WATERBALL_PLAYER_SHEET.html" class="btn secondary">Waterball</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

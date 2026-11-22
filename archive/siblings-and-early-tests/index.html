@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Siblings Pact — Character Roster & Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #0d1117;
+            --bg-card: #161b22;
+            --panel-bg: #1c2128;
+            --panel-sub: #141820;
+            --card-border: #2d333b;
+            --card-border-hover: #444c56;
+            --accent-gold: #d4a359;
+            --accent-blue: #85a7cf;
+            --accent-sage: #9fc490;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --text-light: #e6edf3;
+            --text-dim: #8b949e;
+            --text-muted: #6e7681;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 16px;
+        }
+
+        .hub-container {
+            width: 100%;
+            max-width: 1160px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .hub-header {
+            text-align: center;
+            background: linear-gradient(180deg, #1f2530 0%, #161b22 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 24px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .hub-header h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-gold);
+            font-size: 2rem;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .party-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .hero-card {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        .hero-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--card-border-hover);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+        }
+
+        .card-witch { border-top: 3px solid var(--accent-sage); }
+        .card-witch:hover { border-color: rgba(159, 196, 144, 0.6); }
+        .card-nun { border-top: 3px solid var(--accent-gold); }
+        .card-nun:hover { border-color: rgba(212, 163, 89, 0.6); }
+        .card-paladin { border-top: 3px solid var(--accent-blue); }
+        .card-paladin:hover { border-color: rgba(133, 167, 207, 0.6); }
+
+        .pill-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+            text-transform: uppercase;
+        }
+        .pill-witch { background: rgba(159, 196, 144, 0.15); color: var(--accent-sage); border: 1px solid rgba(159, 196, 144, 0.4); }
+        .pill-nun { background: rgba(212, 163, 89, 0.15); color: var(--accent-gold); border: 1px solid rgba(212, 163, 89, 0.4); }
+        .pill-paladin { background: rgba(133, 167, 207, 0.15); color: var(--accent-blue); border: 1px solid rgba(133, 167, 207, 0.4); }
+
+        .vitals-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin: 10px 0;
+        }
+
+        .v-box {
+            background: var(--panel-sub);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 6px 3px;
+            text-align: center;
+        }
+        .v-lbl { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; }
+        .v-val { font-size: 1.05rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+
+        .feature-list {
+            font-size: 0.76rem;
+            color: var(--text-dim);
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            line-height: 1.4;
+        }
+        .feature-list li strong { color: var(--text-light); }
+
+        .btn-launch {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-transform: uppercase;
+        }
+        .btn-launch-witch {
+            background: #1b2e23;
+            color: #86efac;
+            border: 1px solid #284433;
+        }
+        .btn-launch-witch:hover { background: #233b2c; border-color: #3b634b; }
+
+        .btn-launch-nun {
+            background: #2b2317;
+            color: #fde047;
+            border: 1px solid #4a3c26;
+        }
+        .btn-launch-nun:hover { background: #3a2f1e; border-color: #634f31; }
+
+        .btn-launch-paladin {
+            background: #1c2738;
+            color: #93c5fd;
+            border: 1px solid #2e415e;
+        }
+        .btn-launch-paladin:hover { background: #24334a; border-color: #3e587f; }
+    </style>
+</head>
+<body>
+
+    <div class="hub-container">
+        <header class="hub-header">
+            <h1>⚔️ THE SIBLINGS PACT</h1>
+            <p style="color:var(--text-dim); font-size:0.86rem; margin-top:4px;">Gold-Standard Interactive Character Cards with Live Dice Rolls, Spell Upcasting, Health Controllers & Inventory Tracking.</p>
+        </header>
+
+        <div class="party-grid">
+            
+            <!-- THE WITCH -->
+            <div class="hero-card card-witch">
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <h2 style="font-family:'Cinzel', serif; font-size:1.35rem; color:var(--accent-sage);">🧪 Lady Vespera</h2>
+                            <div style="font-size:0.8rem; font-weight:600; color:var(--accent-sage);">Level 1 Witch (Necromancy Wizard)</div>
+                        </div>
+                        <span class="pill-badge pill-witch">LAWFUL EVIL</span>
+                    </div>
+
+                    <div class="vitals-preview">
+                        <div class="v-box"><div class="v-lbl">Hit Points</div><div class="v-val" style="color:var(--accent-green);">8/8</div></div>
+                        <div class="v-box"><div class="v-lbl">Armor Class</div><div class="v-val" style="color:var(--accent-gold);">12-15</div></div>
+                        <div class="v-box"><div class="v-lbl">DC / Hit</div><div class="v-val" style="color:var(--accent-sage);">DC 13 | +5</div></div>
+                    </div>
+
+                    <ul class="feature-list">
+                        <li>• <strong>Poison Spray:</strong> 10ft puff dealing 1d12 poison damage (DC 13 CON Save).</li>
+                        <li>• <strong>Toll the Dead:</strong> 1d8 / 1d12 necrotic damage to injured foes.</li>
+                        <li>• <strong>Ray of Sickness:</strong> 2d8 poison damage & inflicts Poisoned condition.</li>
+                        <li>• <strong>False Life:</strong> Grants 1d4+4 Temporary HP to bolster survival.</li>
+                    </ul>
+                </div>
+
+                <a href="VESPERA_WITCH_SHEET.html" class="btn-launch btn-launch-witch">
+                    <span>🧪 Launch Lady Vespera</span>
+                </a>
+            </div>
+
+            <!-- THE NUN -->
+            <div class="hero-card card-nun">
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <h2 style="font-family:'Cinzel', serif; font-size:1.35rem; color:var(--accent-gold);">☀️ Sister Beatrice</h2>
+                            <div style="font-size:0.8rem; font-weight:600; color:var(--accent-gold);">Level 1 Light Cleric (Holy Inquisitor)</div>
+                        </div>
+                        <span class="pill-badge pill-nun">LAWFUL NEUTRAL</span>
+                    </div>
+
+                    <div class="vitals-preview">
+                        <div class="v-box"><div class="v-lbl">Hit Points</div><div class="v-val" style="color:var(--accent-green);">10/10</div></div>
+                        <div class="v-box"><div class="v-lbl">Armor Class</div><div class="v-val" style="color:var(--accent-gold);">16-18</div></div>
+                        <div class="v-box"><div class="v-lbl">DC / Hit</div><div class="v-val" style="color:var(--accent-gold);">DC 13 | +5</div></div>
+                    </div>
+
+                    <ul class="feature-list">
+                        <li>• <strong>Guiding Bolt:</strong> 4d6 Radiant nuke & grants Advantage to next attack.</li>
+                        <li>• <strong>Inflict Wounds:</strong> 3d10 close-quarters execution damage.</li>
+                        <li>• <strong>Warding Flare:</strong> Reaction to impose Disadvantage on attackers (3/day).</li>
+                        <li>• <strong>Healing Word:</strong> Bonus Action emergency ranged revive.</li>
+                    </ul>
+                </div>
+
+                <a href="BEATRICE_NUN_SHEET.html" class="btn-launch btn-launch-nun">
+                    <span>☀️ Launch Sister Beatrice</span>
+                </a>
+            </div>
+
+            <!-- THE PALADIN -->
+            <div class="hero-card card-paladin">
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <h2 style="font-family:'Cinzel', serif; font-size:1.35rem; color:var(--accent-blue);">🛡️ Sir Valerius</h2>
+                            <div style="font-size:0.8rem; font-weight:600; color:var(--accent-blue);">Level 1 Paladin (Frontline Tank)</div>
+                        </div>
+                        <span class="pill-badge pill-paladin">LAWFUL GOOD</span>
+                    </div>
+
+                    <div class="vitals-preview">
+                        <div class="v-box"><div class="v-lbl">Hit Points</div><div class="v-val" style="color:var(--accent-green);">12/12</div></div>
+                        <div class="v-box"><div class="v-lbl">Armor Class</div><div class="v-val" style="color:var(--accent-blue);">18</div></div>
+                        <div class="v-box"><div class="v-lbl">Melee Hit</div><div class="v-val" style="color:var(--accent-gold);">+5 / 1d8+3</div></div>
+                    </div>
+
+                    <ul class="feature-list">
+                        <li>• <strong>18 AC Fortress:</strong> Chain Mail & Heavy Shield defend the party.</li>
+                        <li>• <strong>Interception Stance:</strong> Reaction to block damage to allies (-1d10+2).</li>
+                        <li>• <strong>Lay on Hands:</strong> 5 HP pool to heal wounds or cure toxins.</li>
+                        <li>• <strong>Divine Sense:</strong> Detect undead, fiends & celestials (3/day).</li>
+                    </ul>
+                </div>
+
+                <a href="VALERIUS_PALADIN_SHEET.html" class="btn-launch btn-launch-paladin">
+                    <span>🛡️ Launch Sir Valerius</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
